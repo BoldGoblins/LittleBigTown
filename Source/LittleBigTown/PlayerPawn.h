@@ -26,6 +26,11 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	void Move(const FVector& World, float scale);
+
+	// Assume scale is already clamped (1-10) before coming as argument.
+	void Zoom(float scale);
+
 protected : 
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
@@ -33,8 +38,18 @@ protected :
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class USpringArmComponent* SpringArmComp;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class USceneComponent* RootComp;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class USphereComponent* SphereComp;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UFloatingPawnMovement* PawnMovement;
 
 	UPROPERTY(BlueprintReadOnly)
-		class USceneComponent* RootComp;
+		class APlayerController* PlayerController;
+
 
 };
