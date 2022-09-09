@@ -27,6 +27,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+private :
+
+	bool CollisionQuery();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -48,7 +52,11 @@ public:
 	// Assume scale is already clamped (1-10) before coming as argument
 	void Zoom(int scale);
 	
-	void SpringArmPitchRotation (const FRotator& Rotation);
+	void SpringArmPitchRotationByAxis (float Axis, float MinPitchAngle, float MaxPitchAngle);
+
+	void SpringArmPitchRotationByMaxAngle (float NewAngle, float Previous);
+
+	void ArrowComponentYawRotationByAxis (float Axis);
 
 
 protected :
@@ -63,11 +71,14 @@ protected :
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class USpringArmComponent* SpringArmComp;
 
-	UPROPERTY(VisibleAnywhere, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class USphereComponent* SphereComp;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
 		class UFloatingPawnMovement* PawnMovement;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+		class UArrowComponent* ArrowComp;
 
 
 	// --------------------------------------		ZOOM PARAMETERS		  --------------------------------------

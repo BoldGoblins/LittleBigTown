@@ -10,7 +10,7 @@
 // Clamp 
 #include "Math/UnrealMathUtility.h"
 
-//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f"), ScaleValue * ZoomFactor));
+//GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f : %f"), CamRotation.Pitch, CamRotation.Yaw));
 
 AMainPlayerController::AMainPlayerController()
 {
@@ -73,61 +73,75 @@ void AMainPlayerController::DecreaseZoom()
 
 void AMainPlayerController::EnableMouseCameraRotation()
 {
-	// As we got differents key that can trigger this function
-
-	// if (DisableCameraMovements != true)
-		DisableCameraMovements = true;
-
-	// if (DisableCameraRotation != false)
-		DisableCameraRotation = false;
+	// To prevent mouse input to be disabled if true
+	bShowMouseCursor = false;
+	DisableCameraMovements = true;
+	DisableCameraRotation = false;
 }
 
 void AMainPlayerController::DisableMouseCameraRotation()
 {
-	// As we got differents key that can trigger this function
 
-	// if (DisableCameraMovements != false)
-		DisableCameraMovements = false;
-
-	// if (DisableCameraRotation != true)
-		DisableCameraRotation = true;
+	if (this->IsInputKeyDown(FKey("LeftAlt")) || this->IsInputKeyDown(FKey("RightMouseButton")))
+	{
+		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%s"), TEXT("TA GUEULE.")));
+		return;
+	}
+	// To prevent mouse input to be disabled if true
+	bShowMouseCursor = true;
+	DisableCameraMovements = false;
+	DisableCameraRotation = true;
 }
 
 void AMainPlayerController::PitchRotation(float Axis)
 {
-	if (DisableCameraRotation)
-		return;
-
-	CameraRotation.Add(Axis, 0, 0);
-	// Clamp Pitch angle
-	CameraRotation.Pitch = FMath::ClampAngle(CameraRotation.Pitch, MinPitchAngle, MaxPitchAngle);
-	PlayerPawn->SpringArmPitchRotation(CameraRotation);
+	if (!DisableCameraRotation || InputComponent->GetAxisValue("KeyboardUpRotation") != 0.0f)
+		PlayerPawn->SpringArmPitchRotationByAxis(Axis, MinPitchAngle, MaxPitchAngle);
 }
 
 void AMainPlayerController::YawRotation(float Axis)
 {
-	if (DisableCameraRotation)
-		return;
-
-	CameraRotation.Add(0, Axis, 0);
-	PlayerPawn->SetActorRotation(FRotator(PlayerPawn->GetActorRotation().Pitch, CameraRotation.Yaw, 0));
+	if (!DisableCameraRotation || InputComponent->GetAxisValue("KeyboardRightRotation") != 0.0f)
+		PlayerPawn->ArrowComponentYawRotationByAxis(Axis);
 }
-
+// DEPRECATED
 void AMainPlayerController::SetManualPitchRotationByAngle(float Angle)
 {
 	checkf(Angle >= MinPitchAngle && Angle <= MaxPitchAngle, TEXT("Error SetManualRotationByAngle : Angle out of range."));
 
-	CameraRotation.Pitch = Angle;
-	PlayerPawn->SpringArmPitchRotation(CameraRotation);
+	// CameraRotation.Pitch = Angle;
+
+
+	
+	//PlayerPawn->SpringArmPitchRotationByMaxAngle(Angle);
 }
 
 void AMainPlayerController::SetMaxPitchAngle()
 {
 	float temp = MaxPitchAngle;
 	MaxPitchAngle = MAX_PITCH_ANGLE + (((ZoomScale - ZoomScaleMax)) * (DEFAULT_PITCH_ROTATION_PAWN - MAX_PITCH_ANGLE)) / static_cast <float> (ZoomScaleMin - ZoomScaleMax);
+	PlayerPawn->SpringArmPitchRotationByMaxAngle(MaxPitchAngle, temp);
+}
 
-	if (FMath::IsNearlyEqual(CameraRotation.Pitch, temp, 0.5f))
-		SetManualPitchRotationByAngle(MaxPitchAngle);
+void AMainPlayerController::MoveKeyboardForward(float Axis)
+{
+	if (InputComponent->GetAxisValue("KeyboardMoveForward") == 1.0f)
+		PlayerPawn->Move(FVector::ForwardVector, 1);
+	else if (InputComponent->GetAxisValue("KeyboardMoveForward") == -1.0f)
+		PlayerPawn->Move(FVector::BackwardVector, 1);
+	else
+		return;
+
+}
+
+void AMainPlayerController::MoveKeyboardRight(float Axis)
+{
+	if (InputComponent->GetAxisValue("KeyboardMoveRight") == 1.0f)
+		PlayerPawn->Move(FVector::RightVector, 1);
+	else if (InputComponent->GetAxisValue("KeyboardMoveRight") == -1.0f)
+		PlayerPawn->Move(FVector::LeftVector, 1);
+	else
+		return;
 }
 
 void AMainPlayerController::Tick(float DeltaTime)
@@ -137,7 +151,6 @@ void AMainPlayerController::Tick(float DeltaTime)
 	MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(Super::GetWorld());
 	// Be able to trigger Edge Scrolling at each frame
 	MouseEdgeScrolling (MousePos, ScreenSize, borderX, borderY);
-
 }
 
 void AMainPlayerController::SetupInputComponent()
@@ -153,6 +166,10 @@ void AMainPlayerController::SetupInputComponent()
 		InputComponent->BindAction(FName("CameraRotation"), IE_Released, this, &AMainPlayerController::DisableMouseCameraRotation);
 		InputComponent->BindAxis(FName("YRotation"), this, &AMainPlayerController::PitchRotation);
 		InputComponent->BindAxis(FName("ZRotation"), this, &AMainPlayerController::YawRotation);
+		InputComponent->BindAxis(FName("KeyboardUpRotation"), this, &AMainPlayerController::PitchRotation);
+		InputComponent->BindAxis(FName("KeyboardRightRotation"), this, &AMainPlayerController::YawRotation);
+		InputComponent->BindAxis(FName("KeyboardMoveForward"), this, &AMainPlayerController::MoveKeyboardForward);
+		InputComponent->BindAxis(FName("KeyboardMoveRight"), this, &AMainPlayerController::MoveKeyboardRight);
 	}
 	
 	

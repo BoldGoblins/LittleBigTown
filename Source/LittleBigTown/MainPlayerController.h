@@ -50,9 +50,14 @@ public :
 		// To compute ZoomUnits and ZoomInterpSpeed in Pawn
 		int GetZoomMin() { return ZoomScaleMin; }
 
+		// DEPRECATED
 		void SetManualPitchRotationByAngle(float Angle);
 
 		void SetMaxPitchAngle();
+
+		void MoveKeyboardForward(float Axis);
+
+		void MoveKeyboardRight(float Axis);
 
 
 protected :
@@ -124,6 +129,7 @@ protected :
 	UPROPERTY(BlueprintReadWrite, Category = "Camera Parameters")
 		bool DisableCameraRotation { true };
 
+	// DEPRECATED
 	UPROPERTY(BlueprintReadOnly)
 		FRotator CameraRotation;
 
