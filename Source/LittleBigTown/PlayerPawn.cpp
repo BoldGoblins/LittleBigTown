@@ -15,8 +15,10 @@
 #include "Kismet/GameplayStatics.h"
 // Player Controller header
 #include "MainPlayerController.h"
-
+// Arrow comp
 #include "Components/ArrowComponent.h"
+// DrawDebug
+#include "DrawDebugHelpers.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -50,12 +52,13 @@ APlayerPawn::APlayerPawn()
 	PawnMovement->Acceleration = ACCELERATION;
 	PawnMovement->Deceleration = DECELERATION;
 
-}
 
+}
 // Called when the game starts or when spawned
 void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
+
 
 	// Value SpringArm related that needs SpringArm to be initialized with the good value.
 	ZoomUnits = SpringArmComp->TargetArmLength / PlayerController->GetZoomMin();
@@ -63,36 +66,52 @@ void APlayerPawn::BeginPlay()
 	CamZoomDestination = SpringArmComp->TargetArmLength;
 	// Set default rotation for Spring Arm 
 	SpringArmComp->SetRelativeRotation(FRotator(DEFAULT_PITCH_ROTATION_PAWN, 0.0f, 0.0f));
+
 }
 
-bool APlayerPawn::CollisionQuery()
+bool APlayerPawn::CollisionQueryAlongXYAxis()
 {
-	FVector Start { this->GetActorLocation() };
-	FHitResult Result {};
-
-	const FName TraceTag("MyTraceTag");
-	GetWorld()->DebugDrawTraceTag = TraceTag;
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.TraceTag = TraceTag;
+	const FVector PawnLoc { this->GetActorLocation() };
+	const FVector Forward { ArrowComp->GetForwardVector() };
 
 	for (int i{ 0 }; i < 8; i++)
 	{
-		FVector Forward { ArrowComp->GetForwardVector()};
-		Forward.RotateAngleAxis((360 / 8) * i, FVector(0,1,0));
-		
-		FVector End { (Forward * 800) + Start };
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f"), Forward.Y));
+		FHitResult Result{};
+		FCollisionQueryParams CollisionParams;
+
+		float Angle{ static_cast <float> (360 / 8) * i };
+
+		FVector Start { Forward.RotateAngleAxis(Angle, ArrowComp->GetUpVector()) };
+		Start *= 50;
+		Start += PawnLoc;
+
+		FVector End{ Forward.RotateAngleAxis(Angle, ArrowComp->GetUpVector()) };
+		End *= 250;
+		End += PawnLoc;
+
 		GetWorld()->LineTraceSingleByChannel(Result, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
+
+		if (Result.bBlockingHit)
+			return true;
 	}
-
-
-
-
-
-
 	return false;
 }
 
+float APlayerPawn::FindAvailableDistanceUnderPawn()
+{
+	FVector Start{ GetActorLocation() };
+	// Ensure we don't begin the line trace into the sphere (which radius is 32)
+	Start.X += 50;
+
+	FVector End{ Start.X, Start.Y, Start.Z - MAX_ALTITUDE_IN_LEVEL };
+
+	FHitResult Result{};
+	FCollisionQueryParams CollisionParams;
+
+	GetWorld()->LineTraceSingleByChannel(Result, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
+
+	return Result.Distance - 100.0f;
+}
 // Called every frame
 void APlayerPawn::Tick(float DeltaTime)
 {
@@ -102,7 +121,6 @@ void APlayerPawn::Tick(float DeltaTime)
 		SpringArmComp->TargetArmLength = FMath::FInterpTo(SpringArmComp->TargetArmLength, CamZoomDestination, DeltaTime, ZoomInterpSpeed);
 	
 }
-
 // Called to bind functionality to input
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -128,39 +146,72 @@ void APlayerPawn::Move(const FVector& World, float scale)
 
 	Direction.Z = 0;
 	AddMovementInput(Direction, scale, false);
-	// CollisionQuery();
+
+	if (CollisionQueryAlongXYAxis())
+	{
+		FVector PawnLoc{ GetActorLocation() };
+
+		do
+		{
+			PawnLoc.Z += 500;
+			SetActorLocation(PawnLoc, true);
+
+		} while (CollisionQueryAlongXYAxis());
+		// return;
+	}
+	// check if pawn is allready at RequiredZLocation and if not, try to set it to
+	if (RequiredZLocation != GetActorLocation().Z)
+		TryMovePawnAtRequiredZLocation();
 }
 
-void APlayerPawn::Zoom (int scale)
+void APlayerPawn::Zoom (int ZoomScale)
 {
-	CamZoomDestination = ZoomUnits * scale;
+	CamZoomDestination = ZoomUnits * ZoomScale;
+	// Set Good Z Axis Location according to ZoomScale
+	TryMovePawnAtRequiredZLocation();
 }
 
-void APlayerPawn::SpringArmPitchRotationByAxis (float Axis, float MinPitchAngle, float MaxPitchAngle)
+void APlayerPawn::AddSpringArmPitchRotation (float Angle, float MinPitchAngle, float MaxPitchAngle)
 {
-
 	FRotator Rotation{ SpringArmComp->GetRelativeRotation() };
 
-	Rotation.Add(Axis, 0.0f, 0.0f);
+	Rotation.Add(Angle, 0.0f, 0.0f);
+
 	Rotation.Pitch = FMath::ClampAngle(Rotation.Pitch, MinPitchAngle, MaxPitchAngle);
+
 	SpringArmComp->SetRelativeRotation(Rotation);
 }
-void APlayerPawn::SpringArmPitchRotationByMaxAngle(float NewAngle, float Previous)
+
+void APlayerPawn::SetSpringArmPitchRotation(float NewAngle, float MinPitchAngle, float MaxPitchAngle)
 {
+	NewAngle = FMath::ClampAngle(NewAngle, MinPitchAngle, MaxPitchAngle);
 
-	FRotator Rotation{ SpringArmComp->GetRelativeRotation() };
-
-	if (FMath::IsNearlyEqual(Rotation.Pitch, Previous, 0.5f))
-	{
-		Rotation.Pitch = NewAngle;
-		SpringArmComp->SetRelativeRotation(Rotation);
-	}
+	SpringArmComp->SetRelativeRotation(FRotator(NewAngle, 0, 0));
 }
 
-void APlayerPawn::ArrowComponentYawRotationByAxis(float Axis)
+float APlayerPawn::GetSpringArmPitchRotation()
+{
+	return SpringArmComp->GetRelativeRotation().Pitch;
+}
+
+void APlayerPawn::AddArrowComponentYawRotation(float Angle)
 {
 	FRotator Rotation{ ArrowComp->GetRelativeRotation() };
-	Rotation.Add(0.0f, Axis, 0.0f);
+	Rotation.Add(0.0f, Angle, 0.0f);
 	ArrowComp->SetRelativeRotation(Rotation);
+}
+
+void APlayerPawn::TryMovePawnAtRequiredZLocation()
+{
+	FVector PawnLoc { GetActorLocation() };
+	float AvailableDistance = FindAvailableDistanceUnderPawn();
+	// If we can move the pawn
+	if (RequiredZLocation >= PawnLoc.Z - AvailableDistance)
+		PawnLoc.Z = RequiredZLocation;
+
+	else
+		PawnLoc.Z -= AvailableDistance;
+	
+	SetActorLocation(PawnLoc, true);
 }
 

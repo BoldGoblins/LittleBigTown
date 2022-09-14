@@ -27,10 +27,6 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-private :
-
-	bool CollisionQuery();
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -47,16 +43,38 @@ public:
 	// Call AddMovementInput function itself
 	void Move(const FVector& World, float scale);
 
-
-	// Called by AddZoom or DecreaseZoom, updates CamZoomDestination, so movement can be triggered via Tick statement (Interep)
-	// Assume scale is already clamped (1-10) before coming as argument
-	void Zoom(int scale);
+	// Called by Zoom, updates CamZoomDestination, so movement can be triggered via Tick statement (Interep)
+	// Call TryToMovePawnAtRequiredZLocation
+	void Zoom(int ZoomScale);
 	
-	void SpringArmPitchRotationByAxis (float Axis, float MinPitchAngle, float MaxPitchAngle);
+	// Add a given Angle to SpringArm Pitch actual rotation
+	// Clamp new Pitch Rotation between min and max Pitch Angle
+	void AddSpringArmPitchRotation (float Angle, float MinPitchAngle, float MaxPitchAngle);
 
-	void SpringArmPitchRotationByMaxAngle (float NewAngle, float Previous);
+	// Set a new given Angle to SpringArmPitch after clamped it betwen min and max pitch angle
+	void SetSpringArmPitchRotation(float NewAngle, float MinPitchAngle, float MaxPitchAngle);
 
-	void ArrowComponentYawRotationByAxis (float Axis);
+	// Return SpringArmPitchRotation
+	float GetSpringArmPitchRotation();
+
+	// Add Rotation to the ArrowComponent by a given Angle
+	void AddArrowComponentYawRotation (float Angle);
+
+	// SetNewRequiredZLocation for the pawn (computed from ZoomScale in Zoom function)
+	void SetRequiredZLocation(float NewZLocation) { RequiredZLocation = NewZLocation; }
+
+
+private:
+
+	// Check in 8 direction from the Pawn for collisions
+	bool CollisionQueryAlongXYAxis();
+
+	// Return Distance available under Pawn (-50, to allow a certain distance between pawn and others objects)
+	float FindAvailableDistanceUnderPawn();
+
+	// Called from Zoom and Move function 
+	// Continuously try to adjust to the Required Z Location
+	void TryMovePawnAtRequiredZLocation();
 
 
 protected :
@@ -85,10 +103,12 @@ protected :
 
 
 	// Speed of the Interp that allows camera to move smoothly
+	// Auto computed in event begin play
 	UPROPERTY(BlueprintReadOnly, Category = "Zoom Parameters")
 		float ZoomInterpSpeed;
 
 	// How much resize the Spring Arm at each Zoom (in/out)
+	// Auto computed in event begin play
 	UPROPERTY(BlueprintReadOnly, Category = "Zoom Parameters")
 		int ZoomUnits;
 
@@ -99,10 +119,18 @@ protected :
 	UPROPERTY(BlueprintReadOnly)
 		class AMainPlayerController* PlayerController;
 
+	// --------------------------------------		PAWN COLLISION PARAMETERS		  --------------------------------------
+
+
+	// RequiredZLocation (Depend on ZoomScale)
+	UPROPERTY(BlueprintReadOnly, Category = "Pawn collisions parameters")
+		float RequiredZLocation{};
+
 
 	// --------------------------------------		IMPLEMENTATION PARAMETERS		  --------------------------------------
 	
 
 	// Use to store the update resized value of the spring arm so it's can be used as a target by the Interp function
 	float CamZoomDestination { DEFAULT_SPRING_ARM_LENGTH };
+
 };
