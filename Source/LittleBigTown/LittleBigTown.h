@@ -12,6 +12,8 @@
 #define ZOOM_FACTOR_MIN 0.800000f
 #define ZOOM_FACTOR_MAX 1.000000f 
 
+#define DEFAULT_ZOOM_UNITS 500
+
 // Remember that MaxSpeed/Acceleration = time to get to MaxSpeed
 // Exemple : 2 / 200 = 0.01 sec to get to Speed = 2
 

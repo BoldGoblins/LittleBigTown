@@ -23,29 +23,29 @@
 // Sets default values
 APlayerPawn::APlayerPawn()
 {
- 	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
+	// Set this pawn to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Get Player Controller Ref
-	PlayerController = Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	
+	PlayerController = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
 	// Construction hidden Static Mesh
-	SphereComp = CreateDefaultSubobject <USphereComponent> (TEXT("Hidden Sphere"));
+	SphereComp = CreateDefaultSubobject <USphereComponent>(TEXT("Hidden Sphere"));
 	SetRootComponent(SphereComp);
 
 	// Construction ArrowComponent
-	ArrowComp = CreateDefaultSubobject <UArrowComponent> (TEXT("Arrow Component"));
+	ArrowComp = CreateDefaultSubobject <UArrowComponent>(TEXT("Arrow Component"));
 	ArrowComp->AttachToComponent(SphereComp, FAttachmentTransformRules::KeepRelativeTransform);
 
 	// Construction SpringArm
-	SpringArmComp = CreateDefaultSubobject <USpringArmComponent> (TEXT("SpringArm"));
+	SpringArmComp = CreateDefaultSubobject <USpringArmComponent>(TEXT("SpringArm"));
 	SpringArmComp->AttachToComponent(ArrowComp, FAttachmentTransformRules::KeepRelativeTransform);
 	SpringArmComp->TargetArmLength = DEFAULT_SPRING_ARM_LENGTH;
 
 	// Construction Camera
-	CameraComp = CreateDefaultSubobject <UCameraComponent> (TEXT("Camera"));
+	CameraComp = CreateDefaultSubobject <UCameraComponent>(TEXT("Camera"));
 	CameraComp->AttachToComponent(SpringArmComp, FAttachmentTransformRules::KeepRelativeTransform);
-	
+
 	// Construction PawnMovement
 	PawnMovement = CreateDefaultSubobject <UFloatingPawnMovement>(TEXT("FloatingPawnMovement"));
 	PawnMovement->MaxSpeed = MAX_SPEED;
@@ -59,11 +59,6 @@ void APlayerPawn::BeginPlay()
 {
 	Super::BeginPlay();
 
-
-	// Value SpringArm related that needs SpringArm to be initialized with the good value.
-	ZoomUnits = SpringArmComp->TargetArmLength / PlayerController->GetZoomMin();
-	ZoomInterpSpeed = ZoomUnits / 100;
-	CamZoomDestination = SpringArmComp->TargetArmLength;
 	// Set default rotation for Spring Arm 
 	SpringArmComp->SetRelativeRotation(FRotator(DEFAULT_PITCH_ROTATION_PAWN, 0.0f, 0.0f));
 
@@ -71,8 +66,8 @@ void APlayerPawn::BeginPlay()
 
 bool APlayerPawn::CollisionQueryAlongXYAxis()
 {
-	const FVector PawnLoc { this->GetActorLocation() };
-	const FVector Forward { ArrowComp->GetForwardVector() };
+	const FVector PawnLoc{ this->GetActorLocation() };
+	const FVector Forward{ ArrowComp->GetForwardVector() };
 
 	for (int i{ 0 }; i < 8; i++)
 	{
@@ -80,8 +75,8 @@ bool APlayerPawn::CollisionQueryAlongXYAxis()
 		FCollisionQueryParams CollisionParams;
 
 		float Angle{ static_cast <float> (360 / 8) * i };
-
-		FVector Start { Forward.RotateAngleAxis(Angle, ArrowComp->GetUpVector()) };
+		// Optimiser (end = start + 250)
+		FVector Start{ Forward.RotateAngleAxis(Angle, ArrowComp->GetUpVector()) };
 		Start *= 50;
 		Start += PawnLoc;
 
@@ -117,9 +112,6 @@ void APlayerPawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (SpringArmComp->TargetArmLength != CamZoomDestination)
-		SpringArmComp->TargetArmLength = FMath::FInterpTo(SpringArmComp->TargetArmLength, CamZoomDestination, DeltaTime, ZoomInterpSpeed);
-	
 }
 // Called to bind functionality to input
 void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -130,10 +122,23 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerPawn::Move(const FVector& World, float scale)
 {
+
+	if (CollisionQueryAlongXYAxis())
+	{
+		FVector PawnLoc{ GetActorLocation() };
+
+		do
+		{
+			PawnLoc.Z += 500;
+			SetActorLocation(PawnLoc, true);
+
+		} while (CollisionQueryAlongXYAxis());
+	}
+
 	FVector Direction{};
-	
+
 	if (World == FVector::ForwardVector)
-		Direction = ArrowComp->GetForwardVector(); 
+		Direction = ArrowComp->GetForwardVector();
 
 	if (World == FVector::BackwardVector)
 		Direction = ArrowComp->GetForwardVector() * -1;
@@ -147,31 +152,24 @@ void APlayerPawn::Move(const FVector& World, float scale)
 	Direction.Z = 0;
 	AddMovementInput(Direction, scale, false);
 
-	if (CollisionQueryAlongXYAxis())
-	{
-		FVector PawnLoc{ GetActorLocation() };
-
-		do
-		{
-			PawnLoc.Z += 500;
-			SetActorLocation(PawnLoc, true);
-
-		} while (CollisionQueryAlongXYAxis());
-		// return;
-	}
 	// check if pawn is allready at RequiredZLocation and if not, try to set it to
 	if (RequiredZLocation != GetActorLocation().Z)
 		TryMovePawnAtRequiredZLocation();
 }
 
-void APlayerPawn::Zoom (int ZoomScale)
+void APlayerPawn::Zoom(float ZoomScale)
 {
-	CamZoomDestination = ZoomUnits * ZoomScale;
-	// Set Good Z Axis Location according to ZoomScale
+	const FVector PawnLocation { GetActorLocation() };
+	const FVector DirectionXY { SpringArmComp->GetForwardVector() * ZoomScale };
+
+	FVector NewLocation { (DirectionXY * ZoomUnits) + PawnLocation};
+	// Set XY location but not Z
+	SetActorLocation(FVector(NewLocation.X, NewLocation.Y, PawnLocation.Z));
+	// Set Z location
 	TryMovePawnAtRequiredZLocation();
 }
 
-void APlayerPawn::AddSpringArmPitchRotation (float Angle, float MinPitchAngle, float MaxPitchAngle)
+void APlayerPawn::AddSpringArmPitchRotation(float Angle, float MinPitchAngle, float MaxPitchAngle)
 {
 	FRotator Rotation{ SpringArmComp->GetRelativeRotation() };
 
@@ -203,7 +201,7 @@ void APlayerPawn::AddArrowComponentYawRotation(float Angle)
 
 void APlayerPawn::TryMovePawnAtRequiredZLocation()
 {
-	FVector PawnLoc { GetActorLocation() };
+	FVector PawnLoc{ GetActorLocation() };
 	float AvailableDistance = FindAvailableDistanceUnderPawn();
 	// If we can move the pawn
 	if (RequiredZLocation >= PawnLoc.Z - AvailableDistance)
@@ -211,7 +209,8 @@ void APlayerPawn::TryMovePawnAtRequiredZLocation()
 
 	else
 		PawnLoc.Z -= AvailableDistance;
-	
+
 	SetActorLocation(PawnLoc, true);
 }
+
 

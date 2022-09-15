@@ -27,6 +27,7 @@ void AMainPlayerController::BeginPlay()
 
 	ZoomFactorVariation = (ZoomFactorMax - ZoomFactorMin) / ZoomScaleMin;
 	ZoomScale = ZoomScaleMin;
+
 	// Init MaxPitchAngle
 	SetMaxPitchAngle();
 
@@ -67,11 +68,11 @@ void AMainPlayerController::Zoom(float Axis)
 	}
 	else
 		return;
+
 	// Set RequiredZLocation of the Pawn from ZoomScale
 	float NewRequiredZLocation{ PawnMinLocationZAxis + (((ZoomScale - ZoomScaleMax)) * (PawnMaxLocationZAxis - PawnMinLocationZAxis) / static_cast <float> (ZoomScaleMin - ZoomScaleMax)) };
-
 	PlayerPawn->SetRequiredZLocation(NewRequiredZLocation);
-	PlayerPawn->Zoom(ZoomScale);
+	PlayerPawn->Zoom(Axis);
 
 	SetMaxPitchAngle();
 }
@@ -178,10 +179,11 @@ void AMainPlayerController::CheckMouseAxisForEdgeScrolling(float MouseAxis, floa
 void AMainPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	// Setting position of the mouse at each frame
+
+	// Updating position of the mouse at each frame
 	MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(Super::GetWorld());
-	// Be able to trigger Edge Scrolling at each frame
-	MouseEdgeScrolling ();
+	// Checking for EdgeScrolling at each frame
+	MouseEdgeScrolling();
 }
 
 void AMainPlayerController::SetupInputComponent()

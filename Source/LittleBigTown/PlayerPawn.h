@@ -45,7 +45,7 @@ public:
 
 	// Called by Zoom, updates CamZoomDestination, so movement can be triggered via Tick statement (Interep)
 	// Call TryToMovePawnAtRequiredZLocation
-	void Zoom(int ZoomScale);
+	void Zoom(float ZoomScale);
 	
 	// Add a given Angle to SpringArm Pitch actual rotation
 	// Clamp new Pitch Rotation between min and max Pitch Angle
@@ -74,6 +74,8 @@ private:
 
 	// Called from Zoom and Move function 
 	// Continuously try to adjust to the Required Z Location
+	// Call FindAvailableDistanceUnderPawn before adjusting
+	// If there is not enough distance under pawn, ZLocation is set as closest as possible of RequiredZLocation
 	void TryMovePawnAtRequiredZLocation();
 
 
@@ -101,16 +103,9 @@ protected :
 
 	// --------------------------------------		ZOOM PARAMETERS		  --------------------------------------
 
-
-	// Speed of the Interp that allows camera to move smoothly
-	// Auto computed in event begin play
-	UPROPERTY(BlueprintReadOnly, Category = "Zoom Parameters")
-		float ZoomInterpSpeed;
-
-	// How much resize the Spring Arm at each Zoom (in/out)
-	// Auto computed in event begin play
-	UPROPERTY(BlueprintReadOnly, Category = "Zoom Parameters")
-		int ZoomUnits;
+	// How much to multiply to forward vector of SpringArmComp
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Zoom Parameters")
+		int ZoomUnits { DEFAULT_ZOOM_UNITS };
 
 
 	// --------------------------------------		REFERENCES PARAMETERS		  --------------------------------------
@@ -129,8 +124,5 @@ protected :
 
 	// --------------------------------------		IMPLEMENTATION PARAMETERS		  --------------------------------------
 	
-
-	// Use to store the update resized value of the spring arm so it's can be used as a target by the Interp function
-	float CamZoomDestination { DEFAULT_SPRING_ARM_LENGTH };
 
 };

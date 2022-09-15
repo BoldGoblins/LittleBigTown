@@ -27,10 +27,6 @@ public :
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
-public : 
-
-		// To compute ZoomUnits and ZoomInterpSpeed in Pawn class
-		int GetZoomMin() { return ZoomScaleMin; }
 
 protected : 		
 		
@@ -83,10 +79,6 @@ protected :
 	UPROPERTY(BlueprintReadOnly)
 		class APlayerPawn* PlayerPawn {};
 
-	// Mouse Position on the viewport, updated in C++
-	UPROPERTY(BlueprintReadOnly)
-		FVector2D MousePos {};
-
 	// Set this value to true to disable all kinds of inputs to the Pawn class (zoom, move, rotate)
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Pawn Control Parameter")
 		bool DisablePawnControl { false };
@@ -100,6 +92,10 @@ protected :
 
 	// --------------------------------------		SCREEN PARAMETERS		--------------------------------------
 	
+
+	// Mouse Position on the viewport, updated in C++
+	UPROPERTY(BlueprintReadWrite, Category = "Screen Parameters")
+		FVector2D MousePos {};
 
 	// Value currently Edited in BP
 	UPROPERTY(BlueprintReadWrite, Transient)
@@ -116,7 +112,7 @@ protected :
 
 	// --------------------------------------		ZOOM PARAMETERS		  --------------------------------------
 	
-
+	
 	// Compute the length of SpringArm, by default == to ZoomScaleMin
 	UPROPERTY(BlueprintReadOnly, Category = "Zoom Parameters")
 		int ZoomScale;
