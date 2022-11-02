@@ -10,16 +10,22 @@
 // Clamp 
 #include "Math/UnrealMathUtility.h"
 
+#include "UI_BuildingSelection.h"
+
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f : %f"), CamRotation.Pitch, CamRotation.Yaw));
 
 AMainPlayerController::AMainPlayerController()
 {
+	InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
+	// OnSlotClickedDelegate.AddUniqueDynamic(this, &AMainPlayerController::PrintBuildWidget);
 }
 
 void AMainPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	World = Super::GetWorld();
 
 	PlayerPawn = Cast <APlayerPawn> (GetPawn());
 	bEnableClickEvents = true;
@@ -27,6 +33,8 @@ void AMainPlayerController::BeginPlay()
 
 	ZoomFactorVariation = (ZoomFactorMax - ZoomFactorMin) / ZoomScaleMin;
 	ZoomScale = ZoomScaleMin;
+
+	this->SetInputMode(InputModeGameAndUI);
 
 	// Init MaxPitchAngle
 	SetMaxPitchAngle();
@@ -41,8 +49,18 @@ void AMainPlayerController::MouseEdgeScrolling ()
 	if (DisablePawnControl)
 		return;
 
-	CheckMouseAxisForEdgeScrolling(MousePos.X, ScreenSize.X, borderX);
-	CheckMouseAxisForEdgeScrolling(MousePos.Y, ScreenSize.Y, borderY);
+	if (FMath::IsNearlyEqual(MousePos.X, 0, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(FVector::LeftVector, ZoomFactor);
+	
+	else if (FMath::IsNearlyEqual(MousePos.X, ScreenSize.X, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(FVector::RightVector, ZoomFactor);
+
+	if (FMath::IsNearlyEqual(MousePos.Y, 0, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(FVector::ForwardVector, ZoomFactor);
+
+	else if (FMath::IsNearlyEqual(MousePos.Y, ScreenSize.Y, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(FVector::BackwardVector, ZoomFactor);
+
 }
 
 void AMainPlayerController::Zoom(float Axis)
@@ -161,27 +179,14 @@ void AMainPlayerController::MoveKeyboardRight(float Axis)
 		return;
 }
 
-void AMainPlayerController::CheckMouseAxisForEdgeScrolling(float MouseAxis, float ScreenSizeAxis, float LimitScreenAxis)
-{
-	if ((MouseAxis < (0 + LimitScreenAxis)) && !DisableCameraMovements)
-	{
-		float ScaleValue{ FMath::Abs((FMath::Clamp(MouseAxis / LimitScreenAxis, 0.0f, 1.0f) - 1)) };
-		PlayerPawn->Move((ScreenSizeAxis == ScreenSize.X ? FVector::LeftVector : FVector::ForwardVector), ScaleValue * ZoomFactor);
-	}
-
-	if ((MouseAxis > (ScreenSizeAxis - LimitScreenAxis)) && !DisableCameraMovements)
-	{
-		float ScaleValue{ FMath::Abs((FMath::Clamp((ScreenSizeAxis - MouseAxis) / LimitScreenAxis, 0.0f, 1.0f) - 1)) };
-		PlayerPawn->Move((ScreenSizeAxis == ScreenSize.X ? FVector::RightVector : FVector::BackwardVector), ScaleValue * ZoomFactor);
-	}
-}
-
 void AMainPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
 	// Updating position of the mouse at each frame
-	MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(Super::GetWorld());
+	MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(World) * UWidgetLayoutLibrary::GetViewportScale(World);
+	// Updating screen size at each frame
+	GEngine->GameViewport->GetViewportSize(ScreenSize);
 	// Checking for EdgeScrolling at each frame
 	MouseEdgeScrolling();
 }
@@ -203,4 +208,49 @@ void AMainPlayerController::SetupInputComponent()
 		InputComponent->BindAxis(FName("Zoom"), this, &AMainPlayerController::Zoom);
 	}
 }
+/*
+void AMainPlayerController::PrintBuildWidget(const ESlotType& SlotType)
+{
+	switch (SlotType)
+	{
+
+	case ESlotType::Residential : 
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Residential !"));
+		break;
+
+	case ESlotType::Commercial:
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Commercial !"));
+		break;
+	
+	case ESlotType::Offices:
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Offices !"));
+		break;
+
+	case ESlotType::Industrial:
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Industrial !"));
+		break;
+
+	case ESlotType::Special:
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Special !"));
+		break;
+
+	case ESlotType::DefaultEnum:
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Default !"));
+		break;
+
+	default :
+		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("Something went wrong !"));
+		break;
+
+	}
+
+}
+*/
+
+void AMainPlayerController::SetOpennedBuildingWidget(UUI_BuildingSelection* BuildingWidget)
+{
+	if (BuildingWidget)
+		OpennedBuildingWidget = BuildingWidget;
+}
+
 

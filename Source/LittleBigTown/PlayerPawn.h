@@ -10,7 +10,7 @@
 
 #include "PlayerPawn.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class LITTLEBIGTOWN_API APlayerPawn : public APawn
 {
 	GENERATED_BODY()

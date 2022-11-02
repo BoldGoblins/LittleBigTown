@@ -9,7 +9,13 @@
 
 #include "MainPlayerController.generated.h"
 
-UCLASS()
+// Delegate signature
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConstructibleSlotClickedSignature, AConstructibleSlot*, ConstructibleSlot);
+
+// Delegate signature
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
+
+UCLASS(Abstract)
 class LITTLEBIGTOWN_API AMainPlayerController : public APlayerController
 {
 	GENERATED_BODY()
@@ -24,6 +30,19 @@ public :
 		virtual void BeginPlay() override;
 		virtual void Tick(float DeltaTime) override;
 		virtual void SetupInputComponent() override;
+
+		// Delegate signature
+		UPROPERTY(BlueprintAssignable)
+			FOnConstructibleSlotClickedSignature OnSlotClickedDelegate;
+
+		// Delegate signature
+		UPROPERTY(BlueprintAssignable)
+			FConstructionPropositionSignature ConstructionPropositionDelegate;
+
+		UFUNCTION(BlueprintCallable)
+			UUI_BuildingSelection* GetOpennedBuildingWidget() { return OpennedBuildingWidget; }
+
+		void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -65,16 +84,19 @@ protected :
 		void MoveKeyboardRight(float Axis);
 
 
-private : 
-		// Check on axis on by one to determine in where direction and how much move the pawn
-		void CheckMouseAxisForEdgeScrolling(float MouseAxis, float ScreenSizeAxis, float LimitScreenAxis);
+protected :
+
+
+	// --------------------------------------		GENERAL PARAMETERS		--------------------------------------
+
+
+	UPROPERTY(BlueprintReadOnly)
+		class UWorld* World{};
 
 
 	// --------------------------------------		PAWN CONTROL PARAMETERS		--------------------------------------
-
-
-protected :
-
+	 
+	
 	// Hold Reference to the current PlayerPawn
 	UPROPERTY(BlueprintReadOnly)
 		class APlayerPawn* PlayerPawn {};
@@ -90,24 +112,21 @@ protected :
 	FInputModeGameAndUI InputModeGameAndUI {};
 
 
-	// --------------------------------------		SCREEN PARAMETERS		--------------------------------------
+	// --------------------------------------		MOUSE PARAMETERS		--------------------------------------
 	
 
 	// Mouse Position on the viewport, updated in C++
 	UPROPERTY(BlueprintReadWrite, Category = "Screen Parameters")
 		FVector2D MousePos {};
 
+
+	// --------------------------------------		SCREEN PARAMETERS		--------------------------------------
+
+
 	// Value currently Edited in BP
+	// Set in ReadOnly ??
 	UPROPERTY(BlueprintReadWrite, Transient)
 		FVector2D ScreenSize;
-
-	// Border (10% of ScreenSize.X) where to trigger Pawn movement. Edit via BP method.
-	UPROPERTY(BlueprintReadWrite, Transient)
-		float borderX;
-
-	// Border (10% of ScreenSize.Y) where to trigger Pawn movement. Edit via BP method.
-	UPROPERTY(BlueprintReadWrite, Transient)
-		float borderY;
 
 
 	// --------------------------------------		ZOOM PARAMETERS		  --------------------------------------
@@ -172,5 +191,9 @@ protected :
 	// Maximum altitude possible for the pawn
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Pawn collisions parameters")
 		float PawnMaxLocationZAxis{ DEFAULT_PAWN_LOCATION_Z_AXIS_MAX };
+
+
+	UPROPERTY(BlueprintReadOnly)
+		class UUI_BuildingSelection* OpennedBuildingWidget{};
 
 };

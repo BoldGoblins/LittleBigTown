@@ -6,6 +6,25 @@
 
 // DEFINITIONS : 
 
+
+// --------------------------------------		DEBUG		--------------------------------------
+
+
+#define DEBUG_ONLY
+
+#ifdef DEBUG_ONLY
+
+namespace DEBUGGER
+{
+	FString AssertDebugLogger(const FString& ClassName, const FString& FunctionName, const FString& Message);
+}
+
+#endif
+
+
+// --------------------------------------		Camera/pawn/playercontroller movements		--------------------------------------
+
+
 #define ZOOM_MIN 10
 #define ZOOM_MAX 1
 
@@ -32,3 +51,27 @@
 #define DEFAULT_PAWN_LOCATION_Z_AXIS_MAX 1800.0f
 
 #define MAX_ALTITUDE_IN_LEVEL 10000
+
+
+// --------------------------------------		BuildingWidget		--------------------------------------
+
+
+#define X_BUTTON_TRANSLATION_MAX 50.0f
+
+
+// --------------------------------------		UI_BuildingSelection		--------------------------------------
+
+UENUM(BlueprintType)
+
+enum class EBuildingTheme : uint8
+{
+	ResHouses, ResAppartments, ResBuildings, OffGeneric, OffComputing, OffHeadQuarters, IndusCosmetics, IndusFood, IndusFurnApp, IndusLuxury, IndusManufacture,
+	ComCulTourism, ComEntertain, ComFoodDrinks, ComRetailServices, DefaultEnum
+};
+
+// --------------------------------------		ConstructibleSlot		--------------------------------------
+UENUM(BlueprintType)
+enum ESlotType
+{
+	Residential, Commercial, Offices, Industrial, Special, DefaultEnum
+};
