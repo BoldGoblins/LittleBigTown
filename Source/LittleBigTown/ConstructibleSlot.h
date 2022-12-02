@@ -28,9 +28,19 @@ public:
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		TEnumAsByte <ESlotType> GetSlotType() { return SlotType; }
 
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		TEnumAsByte <ESlotSize>	GetSlotSize() { return SlotSize; }
+	/*
 	// Return ConstructionTheme of this ConstructibleSlot
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		TMap <FName, bool> GetConstructionThemes() { return ConstructionThemes; }
+*/
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		FName GetDistrictName() { return SlotDistrictName; }
+
+	UFUNCTION(BlueprintCallable)
+		void ModifySlotPriceBy(int Value) { SlotPrice += Value; }
 
 protected:
 
@@ -39,14 +49,26 @@ protected:
 
 	// Type of the Slot (Enum defined in LittleBigTown.h)
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
-		TEnumAsByte <ESlotType> SlotType { ESlotType::DefaultEnum };
+		TEnumAsByte <ESlotType> SlotType { ESlotType::DefaultTypeEnum };
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		TEnumAsByte <ESlotSize> SlotSize { ESlotSize::DefaultSizeEnum };
+	/*
 	// Map used to activate/deactivate Thematic Buttons
 	// According to what kind of Buildings Themes are availables for a specific Slot
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		TMap <FName, bool> ConstructionThemes;
+*/
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		int SlotPrice { 0 };
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FName SlotDistrictName {"District"};
 
 	class AMainPlayerController* MainPlayerControllerRef {};
+
+private :
+
 
 public:	
 	// Called every frame

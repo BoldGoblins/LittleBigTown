@@ -42,7 +42,20 @@ public :
 		UFUNCTION(BlueprintCallable)
 			UUI_BuildingSelection* GetOpennedBuildingWidget() { return OpennedBuildingWidget; }
 
+		UFUNCTION(BlueprintCallable)
+			const AMainGameMode* GetMainGameMode() { return GameMode; }
+
+
+	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
+
+
 		void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
+
+		UFUNCTION(BlueprintCallable)
+			void SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S);
+
+		const TEnumAsByte <ESlotType>& GetLastSlotType() const { return LastSlotType; }
+		const TEnumAsByte <ESlotSize>& GetLastSlotSize() const { return LastSlotSize; }
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -100,6 +113,9 @@ protected :
 	// Hold Reference to the current PlayerPawn
 	UPROPERTY(BlueprintReadOnly)
 		class APlayerPawn* PlayerPawn {};
+
+	UPROPERTY(BlueprintReadOnly)
+		class AMainGameMode* GameMode {};
 
 	// Set this value to true to disable all kinds of inputs to the Pawn class (zoom, move, rotate)
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Pawn Control Parameter")
@@ -193,7 +209,16 @@ protected :
 		float PawnMaxLocationZAxis{ DEFAULT_PAWN_LOCATION_Z_AXIS_MAX };
 
 
+	// --------------------------------------		BUILDING WIDGETS PARAMETERS		  --------------------------------------
+
+
 	UPROPERTY(BlueprintReadOnly)
 		class UUI_BuildingSelection* OpennedBuildingWidget{};
+
+	UPROPERTY(BlueprintReadOnly)
+		TEnumAsByte <ESlotType> LastSlotType {ESlotType::DefaultTypeEnum};
+
+	UPROPERTY(BlueprintReadOnly)
+		TEnumAsByte <ESlotSize> LastSlotSize {ESlotSize::DefaultSizeEnum};
 
 };

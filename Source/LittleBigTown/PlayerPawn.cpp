@@ -84,6 +84,9 @@ bool APlayerPawn::CollisionQueryAlongXYAxis()
 		End *= 250;
 		End += PawnLoc;
 
+		// DEBUG
+		// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5);
+
 		GetWorld()->LineTraceSingleByChannel(Result, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 
 		if (Result.bBlockingHit)
@@ -102,6 +105,9 @@ float APlayerPawn::FindAvailableDistanceUnderPawn()
 
 	FHitResult Result{};
 	FCollisionQueryParams CollisionParams;
+
+	// DEBUG
+	// DrawDebugLine(GetWorld(), Start, End, FColor::Red, false, 5);
 
 	GetWorld()->LineTraceSingleByChannel(Result, Start, End, ECollisionChannel::ECC_Visibility, CollisionParams);
 

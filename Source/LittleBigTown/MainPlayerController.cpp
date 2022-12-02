@@ -3,6 +3,7 @@
 #include "MainPlayerController.h"
 // APlayerPawn
 #include "PlayerPawn.h"
+#include "MainGameMode.h"
 // MousePosOnViewport
 #include "Blueprint/WidgetLayoutLibrary.h"
 // GameSettings
@@ -28,6 +29,8 @@ void AMainPlayerController::BeginPlay()
 	World = Super::GetWorld();
 
 	PlayerPawn = Cast <APlayerPawn> (GetPawn());
+	GameMode = Cast <AMainGameMode> (World->GetAuthGameMode());
+
 	bEnableClickEvents = true;
 	PrimaryActorTick.bCanEverTick = true;
 
@@ -42,6 +45,11 @@ void AMainPlayerController::BeginPlay()
 	PlayerPawn->SetRequiredZLocation(PawnMaxLocationZAxis);
 
 	SetupInputComponent();
+}
+void AMainPlayerController::SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S)
+{
+	LastSlotType = T;
+	LastSlotSize = S;
 }
 
 void AMainPlayerController::MouseEdgeScrolling ()
@@ -158,9 +166,9 @@ void AMainPlayerController::MoveKeyboardForward(float Axis)
 		return;
 
 	if (InputComponent->GetAxisValue("KeyboardMoveForward") == 1.0f)
-		PlayerPawn->Move(FVector::ForwardVector, 1);
+		PlayerPawn->Move(FVector::ForwardVector, ZoomFactor);
 	else if (InputComponent->GetAxisValue("KeyboardMoveForward") == -1.0f)
-		PlayerPawn->Move(FVector::BackwardVector, 1);
+		PlayerPawn->Move(FVector::BackwardVector, ZoomFactor);
 	else
 		return;
 
@@ -172,9 +180,9 @@ void AMainPlayerController::MoveKeyboardRight(float Axis)
 		return;
 
 	if (InputComponent->GetAxisValue("KeyboardMoveRight") == 1.0f)
-		PlayerPawn->Move(FVector::RightVector, 1);
+		PlayerPawn->Move(FVector::RightVector, ZoomFactor);
 	else if (InputComponent->GetAxisValue("KeyboardMoveRight") == -1.0f)
-		PlayerPawn->Move(FVector::LeftVector, 1);
+		PlayerPawn->Move(FVector::LeftVector, ZoomFactor);
 	else
 		return;
 }

@@ -12,15 +12,6 @@
 
 #define DEBUG_ONLY
 
-#ifdef DEBUG_ONLY
-
-namespace DEBUGGER
-{
-	FString AssertDebugLogger(const FString& ClassName, const FString& FunctionName, const FString& Message);
-}
-
-#endif
-
 
 // --------------------------------------		Camera/pawn/playercontroller movements		--------------------------------------
 
@@ -59,19 +50,15 @@ namespace DEBUGGER
 #define X_BUTTON_TRANSLATION_MAX 50.0f
 
 
-// --------------------------------------		UI_BuildingSelection		--------------------------------------
-
-UENUM(BlueprintType)
-
-enum class EBuildingTheme : uint8
-{
-	ResHouses, ResAppartments, ResBuildings, OffGeneric, OffComputing, OffHeadQuarters, IndusCosmetics, IndusFood, IndusFurnApp, IndusLuxury, IndusManufacture,
-	ComCulTourism, ComEntertain, ComFoodDrinks, ComRetailServices, DefaultEnum
-};
-
 // --------------------------------------		ConstructibleSlot		--------------------------------------
 UENUM(BlueprintType)
 enum ESlotType
 {
-	Residential, Commercial, Offices, Industrial, Special, DefaultEnum
+	Residential, Commercial, Offices, Industrial, Special, DefaultTypeEnum
+};
+
+UENUM(BlueprintType)
+enum ESlotSize
+{
+	Small, Medium, Large, NoSize, DefaultSizeEnum
 };

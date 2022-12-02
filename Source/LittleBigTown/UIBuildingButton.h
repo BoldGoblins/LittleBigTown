@@ -23,11 +23,9 @@ public :
 	// Set Style and variable
 	void SetButtonClicked(bool IsClicked);
 
-	// Set Style and variable
-	// If not in ThematicWidget, Set visibility of Button on Collapsed
-	void SetButtonDisabled(bool IsDisabled, bool ThematicWidget);
-
 	bool GetButtonClicked();
+
+	// void SetButtonText(const FName& Text);
 
 	UFUNCTION(BlueprintCallable)
 		const FName& GetButtonText() { return Name; }
@@ -38,9 +36,6 @@ protected :
 
 	UPROPERTY(EditDefaultsOnly, Category = "Style")
 		struct FButtonStyle OnClickedStyle;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Style")
-		struct FButtonStyle OnDisabledStyle;
 
 	UPROPERTY(EditAnywhere, Category = "Style")
 		FName Name;

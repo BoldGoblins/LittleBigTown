@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "Building.h"
 
 #include "UI_BuildingSelection.generated.h"
 
@@ -24,7 +25,9 @@ public :
 	// Reset ScrollBox and Buttons
 	// Set this Widget as OpennedBuildingWidget in Editor
 	UFUNCTION(BlueprintCallable)
-		void ResetInterface(bool ResetScroll = true);
+		void ResetScrollBox(bool ResetScroll = true);
+
+	// void PopulateScrollBox(const TMap <FName, TSubclassOf <ABuilding>>& BuildingMap, int ComboBoxIndex);
 
 	void NativeConstruct() override;
 
@@ -32,7 +35,7 @@ protected :
 	
 	UPROPERTY(BlueprintReadOnly)
 		class AMainPlayerController* PlayerController;
-	
+
 	UPROPERTY(BlueprintReadWrite)
 		class UUIBuildingButton* LastButtonClicked;
 

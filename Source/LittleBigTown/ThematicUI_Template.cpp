@@ -3,93 +3,44 @@
 #include "Components/VerticalBox.h"
 #include "UI_ComboBoxBuildSelection.h"
 #include "Components/WidgetSwitcher.h"
+#include "Components/ScrollBox.h"
+#include "Components/ComboBoxString.h"
+
+#include "Kismet/GameplayStatics.h"
+#include "MainGameMode.h"
+
+#include "UI_BuildingSelection.h"
+
+#include "ConstructibleSlot.h"
 
 
 void UThematicUI_Template::NativeConstruct()
 {
 	Super::NativeConstruct();
-
-	OnVisibilityChanged.AddUniqueDynamic(this, &UThematicUI_Template::ResetInterface);
 }
 
-void UThematicUI_Template::ButtonInteraction(UUIBuildingButton* Button, int SwitcherIndex)
+void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte <ESlotSize> SlotSize)
 {
-	if (!Button)
-		return;
-
-	bool temp { Button->GetButtonClicked() };
-
-	ResetInterface(ESlateVisibility::Visible);
-
-	if (!temp)
-	{
-		Button->SetRenderTranslation(FVector2D(XButtonTranslationMax, 0));
-		Button->SetButtonClicked(true);
-		LastButtonClicked = Button;
-
-		if (WidgetSwitcher)
-		{
-			WidgetSwitcher->SetActiveWidgetIndex(SwitcherIndex);
-
-			auto Element = Cast <UUI_ComboBoxBuildSelection> (WidgetSwitcher->GetChildAt(SwitcherIndex));
-
-			if (Element)
-				Element->ResetComboBox();
-		
-			WidgetSwitcher->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
-}
-
-void UThematicUI_Template::ResetInterface(ESlateVisibility InVisibility)
-{
-	if (!LastButtonClicked || Visibility != ESlateVisibility::Visible)
-		return;
-
-	LastButtonClicked->SetRenderTranslation(FVector2D(0, 0));
-	LastButtonClicked->SetButtonClicked(false);
-
-	WidgetSwitcher->SetVisibility(ESlateVisibility::Collapsed);
-}
-
-void UThematicUI_Template::UpdateAndDisplayInterface(const TMap <FName, bool> & ConstructionThemes)
-{
-	auto ButtonArray { VerticalBox->GetAllChildren() };
-
 #ifdef DEBUG_ONLY
 
-	checkf(ButtonArray.Num() == ConstructionThemes.Num(), 
-		TEXT("Error in UpdateAndDisplayInterface::UThematicUI_Template) : array size in parameter (%d) != nb of buttons (%d)."), 
-		ConstructionThemes.Num(), ButtonArray.Num());
+	checkf(SlotSize != ESlotSize::DefaultSizeEnum, TEXT("Error in UUThematicUI_Template::UpdateAndDisplayInterface : SlotSize == ESlotSize::DefaultSizeEnum."));
 
 #endif
 
-	if (ConstructionThemes.Num() == 0 || ButtonArray.Num() == 0)
+	if (SlotSize == ESlotSize::DefaultSizeEnum)
 		return;
 
-	for (auto Element : ButtonArray)
-	{
-		auto Button = Cast <UUIBuildingButton> (Element);
+	if (SlotSize==ESlotSize::NoSize)
+		WidgetSwitcher->SetActiveWidgetIndex(0);
 
-		if (Button)
-		{
+	else
+		WidgetSwitcher->SetActiveWidgetIndex(SlotSize);
 
-#ifdef DEBUG_ONLY
+	auto Element = Cast <UUI_ComboBoxBuildSelection>(WidgetSwitcher->GetActiveWidget());
 
-			// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d")), Button->GetButtonClicked());
-
-			checkf(ConstructionThemes.Contains(Button->GetButtonText()),
-				TEXT("Error in UpdateAndDisplayInterface::UThematicUI_Template : cannot find Button name in map."));
-
-#endif
-			if (ConstructionThemes.Contains(Button->GetButtonText()))
-				Button->SetButtonDisabled(ConstructionThemes[Button->GetButtonText()] ? false : true, true);
-			else
-				continue;
-		}
-	}
+	if (Element)
+		Element->ResetComboBox();
 
 	this->SetVisibility(ESlateVisibility::Visible);
 }
-
 

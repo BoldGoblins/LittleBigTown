@@ -16,7 +16,13 @@ void UUIBuildingButton::NativePreConstruct()
 	Button->SetStyle(BasicStyle);
 
 }
-
+/*
+void UUIBuildingButton::SetButtonText(const FName& Text) 
+{
+	Name = Text;
+	TextBlock->SetText(FText::FromName(Name));
+}
+*/
 void UUIBuildingButton::SetButtonClicked(bool IsClicked)
 {
 	ButtonClicked = IsClicked;
@@ -29,24 +35,6 @@ void UUIBuildingButton::SetButtonClicked(bool IsClicked)
 		Button->SetStyle(OnClickedStyle);
 	else
 		Button->SetStyle(BasicStyle);
-}
-
-void UUIBuildingButton::SetButtonDisabled(bool IsDisabled, bool ThematicWidget)
-{
-	ButtonDisabled = IsDisabled;
-
-	if (IsDisabled)
-	{
-		Button->SetStyle(OnDisabledStyle);
-
-		if (!ThematicWidget)
-			Button->SetVisibility(ESlateVisibility::Collapsed);
-
-	}
-	else
-	{
-		Button->SetStyle(BasicStyle);
-	}
 }
 
 bool UUIBuildingButton::GetButtonClicked()
