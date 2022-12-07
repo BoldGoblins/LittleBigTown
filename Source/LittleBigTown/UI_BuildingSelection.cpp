@@ -7,11 +7,10 @@
 #include "MainGameMode.h"
 #include "UIBuildingButton.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/WidgetSwitcher.h"
-#include "Components/ScrollBox.h"
-#include "LittleBigTown.h"
-#include "UI_MainBuildSelection.h"
-#include "Building.h"
+// #include "Components/WidgetSwitcher.h"
+// #include "LittleBigTown.h"
+// #include "UI_MainBuildSelection.h"
+// #include "Building.h"
 
 
 void UUI_BuildingSelection::NativeConstruct()
@@ -38,27 +37,69 @@ void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 	Button->SetButtonClicked(true);
 	PlayerController->ConstructionPropositionDelegate.Broadcast(Button->GetButtonText());
 }
-/*
-void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, TSubclassOf <ABuilding>>& BuildingMap, int ComboBoxIndex)
+
+void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
 {
-	PlayerController->SetOpennedBuildingWidget(this);
-	WidgetSwitcher->SetActiveWidgetIndex(ComboBoxIndex);
+	if (LastButtonClicked)
+		LastButtonClicked->SetButtonClicked(false);
 
-	auto ScrollBox { Cast <UUI_MainBuildSelection>(WidgetSwitcher->GetActiveWidget()) };
+	if (ScrollBox && ResetScroll)
+		ScrollBox->ScrollToStart();
+}
 
-	for (auto Element : ScrollBox->GetScrollBox()->GetAllChildren())
+void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption)
+{
+	if (ScrollBox->GetChildrenCount() != MAX_SCROLLBOX_BUTTONS || M.Num() == 0)
+		return;
+
+	auto Arr { ScrollBox->GetAllChildren() };
+
+#ifdef DEBUG_ONLY
+
+	checkf(ScrollBox->GetChildrenCount() == MAX_SCROLLBOX_BUTTONS && M.Num() != 0,
+		TEXT("Error in UUI_BuildingSelection::PopulateScrollBox : Map is empty or not enough Buttons in ScrollBox."));
+
+	checkf(Arr.Num() != 0, TEXT("Error in UUI_BuildingSelection::PopulateScrollBox : Arr is empty."));
+
+#endif
+
+	int count{ 0 };
+
+	for (auto& Element : M)
 	{
-		auto Button { Cast <UUIBuildingButton>(Element) };
+		if (Element.Value.ComboBoxOptionType != ComboBoxOption)
+			continue;
 
-		if (!BuildingMap.Contains(Button->GetButtonText()))
-			Element->SetVisibility(ESlateVisibility::Collapsed);
-		else
-			Element->SetVisibility(ESlateVisibility::Visible);
+		auto Button { Cast <UUIBuildingButton> (Arr[count]) };
+
+		if (Button)
+		{
+			Button->SetButtonText(Element.Key);
+			Button->SetVisibility(ESlateVisibility::Visible);
+		}
+
+		++count;
 	}
 
-	ScrollBox->ResetScrollBox();
-}*/
+	for (int i{ count }; i < Arr.Num(); ++i)
+		Arr[i]->SetVisibility(ESlateVisibility::Collapsed);
 
+}
+
+void UUI_BuildingSelection::ClearScrollBox()
+{
+	for (auto Element : ScrollBox->GetAllChildren())
+	{
+		/*
+		auto Button { Cast <UUIBuildingButton>(Element) };
+		
+		if (Button)
+			Button->SetButtonText("");
+*/
+		Element->SetVisibility(ESlateVisibility::Collapsed);
+	}
+}
+/*
 void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
 {
 #ifdef DEBUG_ONLY
@@ -92,3 +133,4 @@ void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
 		}
 	}
 }
+*/

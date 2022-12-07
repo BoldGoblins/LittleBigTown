@@ -3,6 +3,9 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Components/ComboBoxString.h"
+#include "Building.h"
+#include "LittleBigTown.generated.h"
 
 // DEFINITIONS : 
 
@@ -47,7 +50,8 @@
 // --------------------------------------		BuildingWidget		--------------------------------------
 
 
-#define X_BUTTON_TRANSLATION_MAX 50.0f
+// #define X_BUTTON_TRANSLATION_MAX 50.0f
+#define MAX_SCROLLBOX_BUTTONS 20
 
 
 // --------------------------------------		ConstructibleSlot		--------------------------------------
@@ -62,3 +66,23 @@ enum ESlotSize
 {
 	Small, Medium, Large, NoSize, DefaultSizeEnum
 };
+
+USTRUCT(BlueprintType)
+struct FBuildingContainers
+{
+	GENERATED_USTRUCT_BODY()
+
+public :
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		FString ComboBoxOptionType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TSubclassOf <ABuilding> Building;
+};
+
+namespace MyPersonalLibrary
+{
+	// Clear and Refresh the ComboBox automatically
+	void AddOptionsToComboBoxString(UComboBoxString* ComboBox, const TArray <FString>& Options);
+}

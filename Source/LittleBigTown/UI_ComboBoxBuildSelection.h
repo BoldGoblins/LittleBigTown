@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Types/SlateEnums.h"
+// #include "Types/SlateEnums.h"
 #include "LittleBigTown.h"
 
 #include "UI_ComboBoxBuildSelection.generated.h"

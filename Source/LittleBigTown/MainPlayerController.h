@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
 // For definitions
 #include "LittleBigTown.h"
 
@@ -38,10 +39,10 @@ public :
 		// Delegate signature
 		UPROPERTY(BlueprintAssignable)
 			FConstructionPropositionSignature ConstructionPropositionDelegate;
-
+		
 		UFUNCTION(BlueprintCallable)
-			UUI_BuildingSelection* GetOpennedBuildingWidget() { return OpennedBuildingWidget; }
-
+			class UThematicUI_Template* GetConstructionWidget() { return ConstructionWidget; }
+		
 		UFUNCTION(BlueprintCallable)
 			const AMainGameMode* GetMainGameMode() { return GameMode; }
 
@@ -49,13 +50,16 @@ public :
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
 
-		void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
+		// void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
 
 		UFUNCTION(BlueprintCallable)
+			void SetConstructionWidget(UUserWidget* Widget);
+		/*
+		UFUNCTION(BlueprintCallable)
 			void SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S);
-
-		const TEnumAsByte <ESlotType>& GetLastSlotType() const { return LastSlotType; }
-		const TEnumAsByte <ESlotSize>& GetLastSlotSize() const { return LastSlotSize; }
+*/
+		// const TEnumAsByte <ESlotType>& GetLastSlotType() const { return LastSlotType; }
+		// const TEnumAsByte <ESlotSize>& GetLastSlotSize() const { return LastSlotSize; }
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -212,13 +216,13 @@ protected :
 	// --------------------------------------		BUILDING WIDGETS PARAMETERS		  --------------------------------------
 
 
-	UPROPERTY(BlueprintReadOnly)
-		class UUI_BuildingSelection* OpennedBuildingWidget{};
-
+	UPROPERTY(BlueprintReadWrite)
+		class UThematicUI_Template* ConstructionWidget {};
+	/*
 	UPROPERTY(BlueprintReadOnly)
 		TEnumAsByte <ESlotType> LastSlotType {ESlotType::DefaultTypeEnum};
 
 	UPROPERTY(BlueprintReadOnly)
 		TEnumAsByte <ESlotSize> LastSlotSize {ESlotSize::DefaultSizeEnum};
-
+*/
 };
