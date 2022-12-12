@@ -13,8 +13,10 @@
 // Delegate signature
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConstructibleSlotClickedSignature, AConstructibleSlot*, ConstructibleSlot);
 
+
 // Delegate signature
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
+
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API AMainPlayerController : public APlayerController
@@ -39,7 +41,7 @@ public :
 		// Delegate signature
 		UPROPERTY(BlueprintAssignable)
 			FConstructionPropositionSignature ConstructionPropositionDelegate;
-		
+	
 		UFUNCTION(BlueprintCallable)
 			class UThematicUI_Template* GetConstructionWidget() { return ConstructionWidget; }
 		

@@ -14,33 +14,11 @@
 
 #include "ThematicUI_Template.generated.h"
 
-/*
-UCLASS(Abstract)
-class LITTLEBIGTOWN_API UThematicUI_Template : public UUserWidget
-{
-	GENERATED_BODY()
-
-public : 
-
-	virtual void NativeConstruct() override;
-
-	// Update Thematic Widget with Map of Themes submitted by a Constructible Slot
-	// Check if Map in parameters as same Num() as Child Buttons of the VerticalBox
-	// Called in BPPlayerController (in Editor)
-	UFUNCTION(BlueprintCallable)
-		void UpdateAndDisplayInterface(TEnumAsByte <ESlotSize> SlotSize);
-
-protected :
-
-	UPROPERTY(meta = (BindWidget))
-		UWidgetSwitcher* WidgetSwitcher;
-
-
-};
-*/
-
 #define BUILDING_SELECTION_WIDGET_POS 3
 #define COMBOBOX_OPTIONS_NUM 15
+
+// Delegate signature
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API UThematicUI_Template : public UUserWidget
@@ -61,6 +39,10 @@ public :
 		UUI_BuildingSelection* GetBuildingSelectionWidget() { return BuildingSelectionWidget; }
 
 	TArray <FString> CheckTypeAndSize(TEnumAsByte <ESlotSize> SlotSize, TEnumAsByte <ESlotType> SlotType);
+
+	// Delegate signature
+	UPROPERTY(BlueprintAssignable)
+		FConstructionPropositionSignature ConstructionPropositionDelegate;
 
 protected : 
 

@@ -45,13 +45,7 @@ void AMainPlayerController::BeginPlay()
 
 	SetupInputComponent();
 }
-/*
-void AMainPlayerController::SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S)
-{
-	LastSlotType = T;
-	LastSlotSize = S;
-}
-*/
+
 void AMainPlayerController::MouseEdgeScrolling ()
 {
 	if (DisablePawnControl)
