@@ -50,16 +50,8 @@ public :
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
 
-		// void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
-
 		UFUNCTION(BlueprintCallable)
 			void SetConstructionWidget(UUserWidget* Widget);
-		/*
-		UFUNCTION(BlueprintCallable)
-			void SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S);
-*/
-		// const TEnumAsByte <ESlotType>& GetLastSlotType() const { return LastSlotType; }
-		// const TEnumAsByte <ESlotSize>& GetLastSlotSize() const { return LastSlotSize; }
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -218,11 +210,4 @@ protected :
 
 	UPROPERTY(BlueprintReadWrite)
 		class UThematicUI_Template* ConstructionWidget {};
-	/*
-	UPROPERTY(BlueprintReadOnly)
-		TEnumAsByte <ESlotType> LastSlotType {ESlotType::DefaultTypeEnum};
-
-	UPROPERTY(BlueprintReadOnly)
-		TEnumAsByte <ESlotSize> LastSlotSize {ESlotSize::DefaultSizeEnum};
-*/
 };

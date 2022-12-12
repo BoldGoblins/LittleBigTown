@@ -24,8 +24,17 @@ void UUIBuildingButton::OnClickedHandle()
 
 	if (PC)
 	{
-		auto BuildingWidget{ PC->GetConstructionWidget()->GetBuildingSelectionWidget() };
-		BuildingWidget->ButtonInteraction(this);
+		auto BuildingWidget { PC->GetConstructionWidget()->GetBuildingSelectionWidget() };
+
+#ifdef DEBUG_ONLY
+
+		checkf(BuildingWidget,
+			TEXT("Error in UUIBuildingButton::OnClickedHandle : BuildingWidget == nullptr. Check that SetConstructionWidget methods in BPMainPlayerController is called."));
+
+#endif DEBUG_ONLY
+
+		if (BuildingWidget)
+			BuildingWidget->ButtonInteraction(this);
 	}
 }
 

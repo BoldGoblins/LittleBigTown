@@ -39,7 +39,8 @@ protected :
 };
 */
 
-#define BUILDING_SELECTION_WIDGET_POS 2
+#define BUILDING_SELECTION_WIDGET_POS 3
+#define COMBOBOX_OPTIONS_NUM 15
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API UThematicUI_Template : public UUserWidget
@@ -51,16 +52,10 @@ public :
 	virtual void NativeConstruct() override;
 
 	UFUNCTION(BlueprintCallable)
-		void UpdateAndDisplayInterface(TEnumAsByte <ESlotSize> SlotSize, TEnumAsByte <ESlotType> SlotType);
-	/*
-	UFUNCTION(BlueprintCallable)
-		FString GetComboBoxSelectedOption() { return ComboBox->GetSelectedOption(); }
-		*/
-	UFUNCTION(BlueprintCallable)
-		void UpdateFromNewSelection(FString String, ESelectInfo::Type Type);
+		void UpdateAndDisplayInterface(TEnumAsByte<ESlotType> SlotType, TEnumAsByte<ESlotSize> SlotSize);
 
 	UFUNCTION(BlueprintCallable)
-		void HideWidget() { SetVisibility(ESlateVisibility::Collapsed); }
+	void UpdateFromNewSelection(FString String, ESelectInfo::Type Type);
 
 	UFUNCTION(BlueprintCallable)
 		UUI_BuildingSelection* GetBuildingSelectionWidget() { return BuildingSelectionWidget; }
@@ -77,9 +72,10 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		UUI_BuildingSelection* BuildingSelectionWidget;
-
-	AMainPlayerController* PlayerController;
-
+	/*
+	UPROPERTY(BlueprintReadOnly)
+		AMainPlayerController* PlayerController;
+*/
 	AMainGameMode* GameMode;
 
 	UPROPERTY(BlueprintReadOnly)
@@ -87,4 +83,9 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		TEnumAsByte <ESlotSize> LastSlotSize;
+
+	UPROPERTY(EditDefaultsOnly)
+		TArray <FText> ComboBoxOptions;
+
+
 };

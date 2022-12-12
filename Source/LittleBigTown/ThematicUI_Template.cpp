@@ -1,57 +1,21 @@
 #include "ThematicUI_Template.h"
 
 #include "Components/VerticalBox.h"
-// #include "UI_ComboBoxBuildSelection.h"
-// #include "Components/WidgetSwitcher.h"
-// #include "Components/ScrollBox.h"
 #include "Components/ComboBoxString.h"
-
 #include "Kismet/GameplayStatics.h"
-// #include "MainPlayerController.h"
-
 #include "ConstructibleSlot.h"
 
-/*
-void UThematicUI_Template::NativeConstruct()
-{
-	Super::NativeConstruct();
-}
-
-void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte <ESlotSize> SlotSize)
-{
-#ifdef DEBUG_ONLY
-
-	checkf(SlotSize != ESlotSize::DefaultSizeEnum, TEXT("Error in UUThematicUI_Template::UpdateAndDisplayInterface : SlotSize == ESlotSize::DefaultSizeEnum."));
-
-#endif
-
-	if (SlotSize == ESlotSize::DefaultSizeEnum)
-		return;
-
-	if (SlotSize==ESlotSize::NoSize)
-		WidgetSwitcher->SetActiveWidgetIndex(0);
-
-	else
-		WidgetSwitcher->SetActiveWidgetIndex(SlotSize);
-
-	auto Element = Cast <UUI_ComboBoxBuildSelection>(WidgetSwitcher->GetActiveWidget());
-
-	if (Element)
-		Element->ResetComboBox();
-
-	this->SetVisibility(ESlateVisibility::Visible);
-}
-*/
 void UThematicUI_Template::UpdateFromNewSelection(FString String, ESelectInfo::Type Type)
 {
+	BuildingSelectionWidget->ResetScrollBox(true);
+	BuildingSelectionWidget->ClearScrollBox();
 	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
 }
 void UThematicUI_Template::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// PlayerController = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	auto Widget{ Cast <UUI_BuildingSelection> (VerticalBox->GetChildAt(BUILDING_SELECTION_WIDGET_POS)) };
+	auto Widget { Cast <UUI_BuildingSelection> (VerticalBox->GetChildAt(BUILDING_SELECTION_WIDGET_POS)) };
 
 	if (Widget)
 		BuildingSelectionWidget = Widget;
@@ -67,13 +31,16 @@ TArray<FString> UThematicUI_Template::CheckTypeAndSize(TEnumAsByte<ESlotSize> Sl
 
 	checkf(SlotType != ESlotType::DefaultTypeEnum,
 		TEXT("Erreur in UThematicUI_Template::UpdateAndDisplayInterface : incorrect Type."));
-#endif 
 
-	TArray <FString> Arr;
+	checkf(ComboBoxOptions.Num() > 0 && ComboBoxOptions.Num() == COMBOBOX_OPTIONS_NUM,
+		TEXT("Error in : UThematicUI_Template::UpdateAndDisplayInterface : ComboBoxOptions Array is empty or does not own enough entries"));
+	
+#endif 
 
 	switch (SlotType)
 	{
 	case ESlotType::Residential:
+
 #ifdef DEBUG_ONLY
 
 		checkf(SlotSize != ESlotSize::NoSize && SlotSize != ESlotSize::DefaultSizeEnum,
@@ -82,46 +49,52 @@ TArray<FString> UThematicUI_Template::CheckTypeAndSize(TEnumAsByte<ESlotSize> Sl
 
 		switch (SlotSize)
 		{
-		case ESlotSize::Large: return { "Riche" };
+		case ESlotSize::Large: return { ComboBoxOptions[2].ToString() };
 
 		default: 
-			return { "Pauvre", "Moyen", "Riche" };
+			return { ComboBoxOptions[0].ToString(), ComboBoxOptions[1].ToString(), ComboBoxOptions[2].ToString() };
 		}
 
 	case ESlotType::Commercial:
+
 #ifdef DEBUG_ONLY
 
 		checkf(SlotSize != ESlotSize::NoSize && SlotSize != ESlotSize::DefaultSizeEnum,
 			TEXT("Erreur in UThematicUI_Template::UpdateAndDisplayInterface : Size incompatible with Type."));
 #endif 
-		return { TEXT("Détaillants et services"), "Nourriture et boissons", "Divertissement", "Culture et tourisme" };
+
+		return { ComboBoxOptions[3].ToString(), ComboBoxOptions[4].ToString(), ComboBoxOptions[5].ToString(), ComboBoxOptions[6].ToString() };
 
 	case ESlotType::Offices:
+
 #ifdef DEBUG_ONLY
 
 		checkf(SlotSize != ESlotSize::NoSize && SlotSize != ESlotSize::DefaultSizeEnum,
 			TEXT("Erreur in UThematicUI_Template::UpdateAndDisplayInterface : Size incompatible with Type."));
 #endif 
+
 		switch (SlotSize)
 		{
-		case ESlotSize::Medium: return { "Bureaux", "Informatique" };
-		case ESlotSize::Large: return { "Bureaux", "Informatique", TEXT("Sièges sociaux") };
-		default: return { "Bureaux" };
+		case ESlotSize::Medium: return { ComboBoxOptions[7].ToString(), ComboBoxOptions[8].ToString() };
+		case ESlotSize::Large: return { ComboBoxOptions[7].ToString(), ComboBoxOptions[8].ToString(), ComboBoxOptions[9].ToString() };
+		default: return { ComboBoxOptions[7].ToString() };
 		}
 
 	case ESlotType::Industrial:
+
 #ifdef DEBUG_ONLY
 
 		checkf(SlotSize == ESlotSize::NoSize,
 			TEXT("Erreur in UThematicUI_Template::UpdateAndDisplayInterface : Size incompatible with Type."));
 #endif 
-		return { "Manufacture", TEXT("Agro-alimentaire"), "Pharmaceutique", TEXT("Electroménager"), "Luxe" };
+
+		return { ComboBoxOptions[10].ToString(), ComboBoxOptions[11].ToString(), ComboBoxOptions[12].ToString(), ComboBoxOptions[13].ToString(), ComboBoxOptions[14].ToString() };
 
 	default: return {""};
 	}
 }
 
-void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte<ESlotSize> SlotSize, TEnumAsByte<ESlotType> SlotType)
+void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> SlotType, TEnumAsByte<ESlotSize> SlotSize)
 {
 	LastSlotType = SlotType;
 	LastSlotSize = SlotSize;

@@ -67,7 +67,8 @@ void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContai
 
 	for (auto& Element : M)
 	{
-		if (Element.Value.ComboBoxOptionType != ComboBoxOption)
+
+		if (Element.Value.ComboBoxOptionType.ToString() != ComboBoxOption)
 			continue;
 
 		auto Button { Cast <UUIBuildingButton> (Arr[count]) };
@@ -90,47 +91,6 @@ void UUI_BuildingSelection::ClearScrollBox()
 {
 	for (auto Element : ScrollBox->GetAllChildren())
 	{
-		/*
-		auto Button { Cast <UUIBuildingButton>(Element) };
-		
-		if (Button)
-			Button->SetButtonText("");
-*/
 		Element->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }
-/*
-void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
-{
-#ifdef DEBUG_ONLY
-
-	checkf(ScrollBox && PlayerController, TEXT("Erreur : UIBuildingSelection::ResetInterface, ScrollBox || PlayerController == nullptr."));
-
-#endif // DEBUG_ONLY
-
-
-	if (LastButtonClicked)
-		LastButtonClicked->SetButtonClicked(false);
-
-	if (ScrollBox && ResetScroll)
-		ScrollBox->ScrollToStart();
-
-	// As we called this function before displaying this widget
-	if (PlayerController)
-	{
-		PlayerController->SetOpennedBuildingWidget(this);
-
-		for (auto Element : ScrollBox->GetAllChildren())
-		{
-			auto Button { Cast <UUIBuildingButton>(Element) };
-
-			const auto Map { PlayerController->GetMainGameMode()->GetBuildingsMap(PlayerController->GetLastSlotType(), PlayerController->GetLastSlotSize())};
-
-			if (!Map.Contains(Button->GetButtonText()))
-				Element->SetVisibility(ESlateVisibility::Collapsed);
-			else
-				Element->SetVisibility(ESlateVisibility::Visible);
-		}
-	}
-}
-*/

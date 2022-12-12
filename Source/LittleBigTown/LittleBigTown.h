@@ -75,7 +75,7 @@ struct FBuildingContainers
 public :
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		FString ComboBoxOptionType;
+		FText ComboBoxOptionType;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 		TSubclassOf <ABuilding> Building;
