@@ -4,16 +4,21 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/PlayerController.h"
+
 // For definitions
 #include "LittleBigTown.h"
 
 #include "MainPlayerController.generated.h"
 
-// Delegate signature
+// Delegate signature, called in ConstructibleSlot on Onclicked event
+// Handle in BP_MainPlayerController
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConstructibleSlotClickedSignature, AConstructibleSlot*, ConstructibleSlot);
 
-// Delegate signature
+
+// Delegate signature, called in UUI_BuildingSelection::ButtonInteraction (when a button is clicked)
+// Handle in BP_WidgetConstruction (display BP_WidgetValidation)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
+
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API AMainPlayerController : public APlayerController
@@ -38,24 +43,19 @@ public :
 		// Delegate signature
 		UPROPERTY(BlueprintAssignable)
 			FConstructionPropositionSignature ConstructionPropositionDelegate;
-
+	
 		UFUNCTION(BlueprintCallable)
-			UUI_BuildingSelection* GetOpennedBuildingWidget() { return OpennedBuildingWidget; }
-
+			class UThematicUI_Template* GetConstructionWidget() { return ConstructionWidget; }
+		
 		UFUNCTION(BlueprintCallable)
 			const AMainGameMode* GetMainGameMode() { return GameMode; }
 
 
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
-
-		void SetOpennedBuildingWidget(UUI_BuildingSelection* OpennedBuildingWidget);
-
+		// Don't forget to call this function when creating ConstructionWidget in PlayerController
 		UFUNCTION(BlueprintCallable)
-			void SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S);
-
-		const TEnumAsByte <ESlotType>& GetLastSlotType() const { return LastSlotType; }
-		const TEnumAsByte <ESlotSize>& GetLastSlotSize() const { return LastSlotSize; }
+			void SetConstructionWidget(UUserWidget* Widget);
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -212,13 +212,6 @@ protected :
 	// --------------------------------------		BUILDING WIDGETS PARAMETERS		  --------------------------------------
 
 
-	UPROPERTY(BlueprintReadOnly)
-		class UUI_BuildingSelection* OpennedBuildingWidget{};
-
-	UPROPERTY(BlueprintReadOnly)
-		TEnumAsByte <ESlotType> LastSlotType {ESlotType::DefaultTypeEnum};
-
-	UPROPERTY(BlueprintReadOnly)
-		TEnumAsByte <ESlotSize> LastSlotSize {ESlotSize::DefaultSizeEnum};
-
+	UPROPERTY(BlueprintReadWrite)
+		class UThematicUI_Template* ConstructionWidget {};
 };

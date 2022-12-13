@@ -5,24 +5,52 @@
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Styling/SlateTypes.h"
+#include "ThematicUI_Template.h"
 
 void UUIBuildingButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	Button->AddChild(TextBlock);
-	TextBlock->SetText(FText::FromName(Name));
+	// TextBlock->SetText(FText::FromName(Name));
 
 	Button->SetStyle(BasicStyle);
 
 }
-/*
+
+void UUIBuildingButton::OnClickedHandle()
+{
+	auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+
+	if (PC)
+	{
+		auto BuildingWidget { PC->GetConstructionWidget()->GetBuildingSelectionWidget() };
+
+#ifdef DEBUG_ONLY
+
+		checkf(BuildingWidget,
+			TEXT("Error in UUIBuildingButton::OnClickedHandle : BuildingWidget == nullptr. Check that SetConstructionWidget methods in BPMainPlayerController is called."));
+
+#endif DEBUG_ONLY
+
+		if (BuildingWidget)
+			BuildingWidget->ButtonInteraction(this);
+	}
+}
+
+void UUIBuildingButton::NativeConstruct()
+{
+	Super::NativeConstruct();
+
+	Button->OnClicked.AddUniqueDynamic(this, &ThisClass::OnClickedHandle);
+}
+
 void UUIBuildingButton::SetButtonText(const FName& Text) 
 {
 	Name = Text;
 	TextBlock->SetText(FText::FromName(Name));
 }
-*/
+
 void UUIBuildingButton::SetButtonClicked(bool IsClicked)
 {
 	ButtonClicked = IsClicked;

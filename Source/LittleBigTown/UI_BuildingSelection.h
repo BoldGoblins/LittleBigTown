@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "Building.h"
+#include "Components/ScrollBox.h"
+#include "LittleBigTown.h"
 
 #include "UI_BuildingSelection.generated.h"
 
@@ -14,25 +16,30 @@ class LITTLEBIGTOWN_API UUI_BuildingSelection : public UUserWidget
 {
 	GENERATED_BODY()
 
-public :
+public:
 
 	// Handle ButtonInteraction of (BuildingSelection Widget)
 	// Broadcast Delegate (ConstructionProposition in MainPlayerController) when button is Clicked
 	// Called from BP BuildingButton Template in Editor
 	UFUNCTION(BlueprintCallable)
-		void ButtonInteraction (UUIBuildingButton* Button);
+		void ButtonInteraction(UUIBuildingButton* Button);
 
-	// Reset ScrollBox and Buttons
-	// Set this Widget as OpennedBuildingWidget in Editor
+	// Reset ButtonClicked and ScrollToStart if option is true
 	UFUNCTION(BlueprintCallable)
 		void ResetScrollBox(bool ResetScroll = true);
 
-	// void PopulateScrollBox(const TMap <FName, TSubclassOf <ABuilding>>& BuildingMap, int ComboBoxIndex);
+	// Set visibility of all children of the ScrollBox on Collapsed but does not change Button's Text in any ways
+	void ClearScrollBox();
+
+	// Check that M does not own more index than MAX_SCROLLBOX_BUTTONS
+	// For each index of M, set Button Text and Set visibility on Visible
+	// Set others buttons remaining in Collapsed
+	void PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption);
 
 	void NativeConstruct() override;
 
-protected :
-	
+protected:
+
 	UPROPERTY(BlueprintReadOnly)
 		class AMainPlayerController* PlayerController;
 
@@ -41,5 +48,5 @@ protected :
 
 	UPROPERTY(meta = (BindWidget))
 		class UScrollBox* ScrollBox;
-	
+
 };

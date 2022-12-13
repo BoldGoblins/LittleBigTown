@@ -19,49 +19,44 @@ class LITTLEBIGTOWN_API AMainGameMode : public AGameModeBase
 
 public :
 
-	/*
+	// Used by BuildingSelectionWidget and BP_MainPlayerController to populate ScrollBox and Spawn Buildings
 	UFUNCTION(BlueprintCallable)
-		const TMap <FName, TSubclassOf <ABuilding>> & GetBuildingsMap() const { return BuildingsMap; }
-	*/
-
-	UFUNCTION(BlueprintCallable)
-		const TMap <FName, TSubclassOf <ABuilding>>& GetBuildingsMap(const TEnumAsByte <ESlotType> & SlotType, 
-			const TEnumAsByte <ESlotSize>& SlotSize) const;
+		const TMap <FName, FBuildingContainers> & GetBuildingsMap(TEnumAsByte <ESlotType> SlotType,
+			TEnumAsByte <ESlotSize> SlotSize) const;
 
 protected :
-	/*
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> BuildingsMap;
-		*/
+
+	// All maps for buildings
+	// See LittleBigTown.h for FBuildingContainers
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> S_ResidentialMap;
+		TMap <FName, FBuildingContainers> S_ResidentialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> M_ResidentialMap;
+		TMap <FName, FBuildingContainers> M_ResidentialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> L_ResidentialMap;
+		TMap <FName, FBuildingContainers> L_ResidentialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> S_CommercialMap;
+		TMap <FName, FBuildingContainers> S_CommercialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> M_CommercialMap;
+		TMap <FName, FBuildingContainers> M_CommercialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> L_CommercialMap;
+		TMap <FName, FBuildingContainers> L_CommercialMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> S_OfficesMap;
+		TMap <FName, FBuildingContainers> S_OfficesMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> M_OfficesMap;
+		TMap <FName, FBuildingContainers> M_OfficesMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> L_OfficesMap;
+		TMap <FName, FBuildingContainers> L_OfficesMap;
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> IndustrialMap;
+		TMap <FName, FBuildingContainers> IndustrialMap;
 	
 };

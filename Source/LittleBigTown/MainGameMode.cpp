@@ -3,11 +3,11 @@
 
 #include "MainGameMode.h"
 
-const TMap<FName, TSubclassOf<ABuilding>> & AMainGameMode::GetBuildingsMap(const TEnumAsByte <ESlotType>& SlotType, const TEnumAsByte <ESlotSize>& SlotSize) const
+const TMap<FName, FBuildingContainers> & AMainGameMode::GetBuildingsMap(TEnumAsByte <ESlotType> SlotType, TEnumAsByte <ESlotSize> SlotSize) const
 {
 	// To return something if SlotType/Size are incorrects.
 	// Cannot be return because check for Type/Size is proceed before calling this function (in Thematic Widget)
-	TMap<FName, TSubclassOf<ABuilding>> NullReturn;
+	TMap<FName, FBuildingContainers> NullReturn;
 
 
 	switch (SlotType)
