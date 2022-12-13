@@ -10,11 +10,13 @@
 
 #include "MainPlayerController.generated.h"
 
-// Delegate signature
+// Delegate signature, called in ConstructibleSlot on Onclicked event
+// Handle in BP_MainPlayerController
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConstructibleSlotClickedSignature, AConstructibleSlot*, ConstructibleSlot);
 
 
-// Delegate signature
+// Delegate signature, called in UUI_BuildingSelection::ButtonInteraction (when a button is clicked)
+// Handle in BP_WidgetConstruction (display BP_WidgetValidation)
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
 
 
@@ -51,7 +53,7 @@ public :
 
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
-
+		// Don't forget to call this function when creating ConstructionWidget in PlayerController
 		UFUNCTION(BlueprintCallable)
 			void SetConstructionWidget(UUserWidget* Widget);
 

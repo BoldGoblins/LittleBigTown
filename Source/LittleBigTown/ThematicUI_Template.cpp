@@ -11,6 +11,7 @@ void UThematicUI_Template::UpdateFromNewSelection(FString String, ESelectInfo::T
 	BuildingSelectionWidget->ClearScrollBox();
 	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
 }
+
 void UThematicUI_Template::NativeConstruct()
 {
 	Super::NativeConstruct();

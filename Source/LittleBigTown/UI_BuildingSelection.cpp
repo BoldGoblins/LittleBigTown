@@ -7,10 +7,6 @@
 #include "MainGameMode.h"
 #include "UIBuildingButton.h"
 #include "Kismet/GameplayStatics.h"
-// #include "Components/WidgetSwitcher.h"
-// #include "LittleBigTown.h"
-// #include "UI_MainBuildSelection.h"
-// #include "Building.h"
 
 
 void UUI_BuildingSelection::NativeConstruct()

@@ -19,24 +19,18 @@ class LITTLEBIGTOWN_API AMainGameMode : public AGameModeBase
 
 public :
 
-	/*
-	UFUNCTION(BlueprintCallable)
-		const TMap <FName, TSubclassOf <ABuilding>> & GetBuildingsMap() const { return BuildingsMap; }
-	*/
-
+	// Used by BuildingSelectionWidget and BP_MainPlayerController to populate ScrollBox and Spawn Buildings
 	UFUNCTION(BlueprintCallable)
 		const TMap <FName, FBuildingContainers> & GetBuildingsMap(TEnumAsByte <ESlotType> SlotType,
 			TEnumAsByte <ESlotSize> SlotSize) const;
 
 protected :
-	/*
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
-		TMap <FName, TSubclassOf <ABuilding>> BuildingsMap;
-		*/
+
+	// All maps for buildings
+	// See LittleBigTown.h for FBuildingContainers
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		TMap <FName, FBuildingContainers> S_ResidentialMap;
-
 
 	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly)
 		TMap <FName, FBuildingContainers> M_ResidentialMap;

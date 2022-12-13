@@ -18,7 +18,6 @@
 AMainPlayerController::AMainPlayerController()
 {
 	InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-	// OnSlotClickedDelegate.AddUniqueDynamic(this, &AMainPlayerController::PrintBuildWidget);
 }
 
 void AMainPlayerController::BeginPlay()

@@ -17,8 +17,6 @@
 #define BUILDING_SELECTION_WIDGET_POS 3
 #define COMBOBOX_OPTIONS_NUM 15
 
-// Delegate signature
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API UThematicUI_Template : public UUserWidget
@@ -29,20 +27,25 @@ public :
 
 	virtual void NativeConstruct() override;
 
+	// Called in Editor (BP MainPlayerController)
+	// Populate ComboBox, reset BuildingSelectionWidget and populate it (with first index ComboBox Option)
+	// Set LastSlotSize/Type for UpdateFromNewSelection Method
+	// Set visibility of the whole widget
 	UFUNCTION(BlueprintCallable)
 		void UpdateAndDisplayInterface(TEnumAsByte<ESlotType> SlotType, TEnumAsByte<ESlotSize> SlotSize);
 
+	// Bind to OnSelectionChanged (ComboBoxString)
+	// Reset, Clear and Populate ComboBox according to new option selected
 	UFUNCTION(BlueprintCallable)
 	void UpdateFromNewSelection(FString String, ESelectInfo::Type Type);
 
+	// BuildingSelectionWidget adress is assigned in Constructor (GetChildAt(BUILDING_SELECTION_WIDGET_POS))
 	UFUNCTION(BlueprintCallable)
 		UUI_BuildingSelection* GetBuildingSelectionWidget() { return BuildingSelectionWidget; }
 
+	// Check if Slot Type/Size combination are legit, and return the good options associated (to be used to populate a ComboBoxString)
 	TArray <FString> CheckTypeAndSize(TEnumAsByte <ESlotSize> SlotSize, TEnumAsByte <ESlotType> SlotType);
 
-	// Delegate signature
-	UPROPERTY(BlueprintAssignable)
-		FConstructionPropositionSignature ConstructionPropositionDelegate;
 
 protected : 
 
@@ -54,18 +57,19 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		UUI_BuildingSelection* BuildingSelectionWidget;
-	/*
-	UPROPERTY(BlueprintReadOnly)
-		AMainPlayerController* PlayerController;
-*/
+
 	AMainGameMode* GameMode;
 
+	// Used by UpdateFromNewSelection Method
 	UPROPERTY(BlueprintReadOnly)
 		TEnumAsByte <ESlotType> LastSlotType;
 
+	// Used by UpdateFromNewSelection Method
 	UPROPERTY(BlueprintReadOnly)
 		TEnumAsByte <ESlotSize> LastSlotSize;
 
+	// Set in Editor (BP_WidgetConstruction)
+	// Used in CheckTypeSize (avoid using string litterals and no localizable in code)
 	UPROPERTY(EditDefaultsOnly)
 		TArray <FText> ComboBoxOptions;
 

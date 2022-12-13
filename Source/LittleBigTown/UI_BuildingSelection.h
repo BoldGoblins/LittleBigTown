@@ -24,12 +24,16 @@ public:
 	UFUNCTION(BlueprintCallable)
 		void ButtonInteraction(UUIBuildingButton* Button);
 
-	// Set this Widget as OpennedBuildingWidget in Editor
+	// Reset ButtonClicked and ScrollToStart if option is true
 	UFUNCTION(BlueprintCallable)
 		void ResetScrollBox(bool ResetScroll = true);
 
+	// Set visibility of all children of the ScrollBox on Collapsed but does not change Button's Text in any ways
 	void ClearScrollBox();
 
+	// Check that M does not own more index than MAX_SCROLLBOX_BUTTONS
+	// For each index of M, set Button Text and Set visibility on Visible
+	// Set others buttons remaining in Collapsed
 	void PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption);
 
 	void NativeConstruct() override;
