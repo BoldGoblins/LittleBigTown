@@ -18,6 +18,14 @@
 		{
 			"Name": "CommonUI",
 			"Enabled": true
+		},
+		{
+			"Name": "SunPosition",
+			"Enabled": true
+		},
+		{
+			"Name": "ActorLayerUtilities",
+			"Enabled": false
 		}
 	]
 }
