@@ -9,7 +9,7 @@
 #include "MainGameState.generated.h"
 
 #define FIRST_YEAR 2000
-#define CLOCK_SPEED 100
+#define CLOCK_SPEED 10
 
 
 UCLASS()
@@ -25,17 +25,25 @@ public :
 
 		const FDateTime& GetGameClock() { return GameClock; }
 
-		float GetMonthPercentage();
+		// return the Month name after checking the GameClock
+		// Names are set into the Editor in the BP derivated class of the MainGameState
+		FText GetGameClockMonth();
 
 
 
 protected :
-
+	
+	// Called every tick for Updating GameClock from DeltaTime
 	void UpdateClock(float DeltaTime);
 
 	UPROPERTY(BlueprintReadOnly)
 		FDateTime GameClock { FIRST_YEAR, 1, 1 };
 
+	// Months names set in the Editor and used by GetGameClockMonth to display in UI_Main
+	UPROPERTY(EditDefaultsOnly, Category = "Clock")
+		TArray <FText> MonthsNames;
+
+	// Coefficient applied to DeltaTime in UpdateClock to control Clock speed
 	UPROPERTY(EditDefaultsOnly, Category = "Clock")
 		int32 ClockSpeed { CLOCK_SPEED };
 	

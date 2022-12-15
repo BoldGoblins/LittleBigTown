@@ -53,8 +53,28 @@
 // #define X_BUTTON_TRANSLATION_MAX 50.0f
 #define MAX_SCROLLBOX_BUTTONS 20
 
+// As we cannot use Containers of Containers (TMap of TArrays for each building sub-type for example)
+// We need to make a Map of FBuildingContainers that can hold more than just a building as a value
+// ComboBoxOptionType is used to populate ScrollBox only with Types that are concerned by the Selected Option of the ComboBox
+
+USTRUCT(BlueprintType)
+struct FBuildingContainers
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		FText ComboBoxOptionType;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+		TSubclassOf <ABuilding> Building;
+};
+
 
 // --------------------------------------		ConstructibleSlot		--------------------------------------
+
+
 UENUM(BlueprintType)
 enum ESlotType
 {
@@ -67,26 +87,11 @@ enum ESlotSize
 	Small, Medium, Large, NoSize, DefaultSizeEnum
 };
 
-// As we cannot use Containers of Containers (TMap of TArrays for each building sub-type for example)
-// We need to make a Map of FBuildingContainers that can hold more than just a building as a value
-// ComboBoxOptionType is used to populate ScrollBox only with Types that are concerned by the Selected Option of the ComboBox
-
-USTRUCT(BlueprintType)
-struct FBuildingContainers
-{
-	GENERATED_USTRUCT_BODY()
-
-public :
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		FText ComboBoxOptionType;
-
-	UPROPERTY(BlueprintReadWrite, EditAnywhere)
-		TSubclassOf <ABuilding> Building;
-};
-
 namespace MyPersonalLibrary
 {
 	// Clear and Refresh the ComboBox automatically
 	void AddOptionsToComboBoxString(UComboBoxString* ComboBox, const TArray <FString>& Options);
 }
+
+
+// --------------------------------------		Date and Time		--------------------------------------

@@ -19,9 +19,12 @@ class LITTLEBIGTOWN_API ULBT_UI_Main : public UUserWidget
 
 public : 
 
-	void GetClockUpdate(const FDateTime& GameClock, float MonthPercentage);
+	// Get Clock Update to Display Date/Time and animate ProgressBar
+	// Calls DateTimeDisplay
+	void GetClockUpdate(const FDateTime& GameClock);
 
-	FString DateFormat(const FDateTime& GameClock);
+	// Display text inside the ProgressBar
+	FString DateTimeDisplay(const FDateTime& GameClock);
 
 	void NativeConstruct() override;
 

@@ -8,7 +8,6 @@ void AMainGameState::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	UpdateClock(DeltaTime);
-	// GEngine->AddOnScreenDebugMessage(-1, 1, FColor::Red, GameClock.ToString());
 }
 
 void AMainGameState::BeginPlay()
@@ -17,18 +16,24 @@ void AMainGameState::BeginPlay()
 
 }
 
-float AMainGameState::GetMonthPercentage()
+FText AMainGameState::GetGameClockMonth()
 {
-	int32 TotalDays{ GameClock.DaysInMonth(GameClock.GetYear(), GameClock.GetMonth()) };
+	// -1 because months starts at 1 and our first index is 0
+	auto i { GameClock.GetMonth() - 1 };
 
-	int32 SumMinutes{ GameClock.GetMinute() + (GameClock.GetHour() * 60) + ((GameClock.GetDay() - 1) * 24 * 60) };
-
-	int32 TotalMinutes{ TotalDays * 24 * 60 };
-
-	return float(SumMinutes) / TotalMinutes;
+	return MonthsNames[i];
 }
 
 void AMainGameState::UpdateClock(float DeltaTime)
 {
 	GameClock += FTimespan::FromSeconds(DeltaTime * 60 * ClockSpeed);
+
+	if (GameClock.GetDay() > 1)
+	{
+		if (GameClock.GetMonth() == 12)
+			GameClock = FDateTime(GameClock.GetYear() + 1, 1, 1, 0, 0, 0);
+		else
+			GameClock = FDateTime(GameClock.GetYear(), GameClock.GetMonth() + 1, 1, 0, 0, 0);
+	}
+	
 }
