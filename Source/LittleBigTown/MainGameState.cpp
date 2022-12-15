@@ -26,6 +26,8 @@ FText AMainGameState::GetGameClockMonth()
 
 void AMainGameState::UpdateClock(float DeltaTime)
 {
+	const int32 temp { GameClock.GetMinute() };
+
 	GameClock += FTimespan::FromSeconds(DeltaTime * 60 * ClockSpeed);
 
 	if (GameClock.GetDay() > 1)
@@ -35,5 +37,8 @@ void AMainGameState::UpdateClock(float DeltaTime)
 		else
 			GameClock = FDateTime(GameClock.GetYear(), GameClock.GetMonth() + 1, 1, 0, 0, 0);
 	}
+
+	if (temp != GameClock.GetMinute())
+		OnTimeUpdatedDelegate.Broadcast(GameClock.GetHour(), GameClock.GetMinute());
 	
 }

@@ -12,6 +12,9 @@
 #define CLOCK_SPEED 10
 
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTimeUpdatedSignature, int32, Hours, int32, Minutes);
+
+
 UCLASS()
 class LITTLEBIGTOWN_API AMainGameState : public AGameStateBase
 {
@@ -28,6 +31,9 @@ public :
 		// return the Month name after checking the GameClock
 		// Names are set into the Editor in the BP derivated class of the MainGameState
 		FText GetGameClockMonth();
+
+		UPROPERTY(BlueprintAssignable)
+			FOnTimeUpdatedSignature OnTimeUpdatedDelegate;
 
 
 
