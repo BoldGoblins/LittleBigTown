@@ -7,6 +7,9 @@
 
 #include "LBTGameTimeIF.generated.h"
 
+// --------------------------------------- CLASS NOT IN USE --------------------------------------- 
+
+
 UINTERFACE(MinimalAPI)
 class ULBTGameTimeIF : public UInterface
 {
@@ -16,13 +19,5 @@ class ULBTGameTimeIF : public UInterface
 class LITTLEBIGTOWN_API ILBTGameTimeIF
 {
 	GENERATED_BODY()
-
-public :
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TimeManagement")
-		void GetDateUpdate(const FDateTime& GameClock);
-
-	UFUNCTION(BlueprintCallable, BlueprintNativeEvent, Category = "TimeManagement")
-		void GetTimeUpdate(const FDateTime& GameClock);
 
 };
