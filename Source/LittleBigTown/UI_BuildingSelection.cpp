@@ -7,11 +7,6 @@
 #include "MainGameMode.h"
 #include "UIBuildingButton.h"
 #include "Kismet/GameplayStatics.h"
-#include "Components/WidgetSwitcher.h"
-#include "Components/ScrollBox.h"
-#include "LittleBigTown.h"
-#include "UI_MainBuildSelection.h"
-#include "Building.h"
 
 
 void UUI_BuildingSelection::NativeConstruct()
@@ -38,57 +33,60 @@ void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 	Button->SetButtonClicked(true);
 	PlayerController->ConstructionPropositionDelegate.Broadcast(Button->GetButtonText());
 }
-/*
-void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, TSubclassOf <ABuilding>>& BuildingMap, int ComboBoxIndex)
-{
-	PlayerController->SetOpennedBuildingWidget(this);
-	WidgetSwitcher->SetActiveWidgetIndex(ComboBoxIndex);
-
-	auto ScrollBox { Cast <UUI_MainBuildSelection>(WidgetSwitcher->GetActiveWidget()) };
-
-	for (auto Element : ScrollBox->GetScrollBox()->GetAllChildren())
-	{
-		auto Button { Cast <UUIBuildingButton>(Element) };
-
-		if (!BuildingMap.Contains(Button->GetButtonText()))
-			Element->SetVisibility(ESlateVisibility::Collapsed);
-		else
-			Element->SetVisibility(ESlateVisibility::Visible);
-	}
-
-	ScrollBox->ResetScrollBox();
-}*/
 
 void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
 {
-#ifdef DEBUG_ONLY
-
-	checkf(ScrollBox && PlayerController, TEXT("Erreur : UIBuildingSelection::ResetInterface, ScrollBox || PlayerController == nullptr."));
-
-#endif // DEBUG_ONLY
-
-
 	if (LastButtonClicked)
 		LastButtonClicked->SetButtonClicked(false);
 
 	if (ScrollBox && ResetScroll)
 		ScrollBox->ScrollToStart();
+}
 
-	// As we called this function before displaying this widget
-	if (PlayerController)
+void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption)
+{
+	if (ScrollBox->GetChildrenCount() != MAX_SCROLLBOX_BUTTONS || M.Num() == 0)
+		return;
+
+	auto Arr { ScrollBox->GetAllChildren() };
+
+#ifdef DEBUG_ONLY
+
+	checkf(ScrollBox->GetChildrenCount() == MAX_SCROLLBOX_BUTTONS && M.Num() != 0,
+		TEXT("Error in UUI_BuildingSelection::PopulateScrollBox : Map is empty or not enough Buttons in ScrollBox."));
+
+	checkf(Arr.Num() != 0, TEXT("Error in UUI_BuildingSelection::PopulateScrollBox : Arr is empty."));
+
+#endif
+
+	int count{ 0 };
+
+	for (auto& Element : M)
 	{
-		PlayerController->SetOpennedBuildingWidget(this);
 
-		for (auto Element : ScrollBox->GetAllChildren())
+		if (Element.Value.ComboBoxOptionType.ToString() != ComboBoxOption)
+			continue;
+
+		auto Button { Cast <UUIBuildingButton> (Arr[count]) };
+
+		if (Button)
 		{
-			auto Button { Cast <UUIBuildingButton>(Element) };
-
-			const auto Map { PlayerController->GetMainGameMode()->GetBuildingsMap(PlayerController->GetLastSlotType(), PlayerController->GetLastSlotSize())};
-
-			if (!Map.Contains(Button->GetButtonText()))
-				Element->SetVisibility(ESlateVisibility::Collapsed);
-			else
-				Element->SetVisibility(ESlateVisibility::Visible);
+			Button->SetButtonText(Element.Key);
+			Button->SetVisibility(ESlateVisibility::Visible);
 		}
+
+		++count;
+	}
+
+	for (int i{ count }; i < Arr.Num(); ++i)
+		Arr[i]->SetVisibility(ESlateVisibility::Collapsed);
+
+}
+
+void UUI_BuildingSelection::ClearScrollBox()
+{
+	for (auto Element : ScrollBox->GetAllChildren())
+	{
+		Element->SetVisibility(ESlateVisibility::Collapsed);
 	}
 }

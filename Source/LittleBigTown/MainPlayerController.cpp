@@ -4,6 +4,7 @@
 // APlayerPawn
 #include "PlayerPawn.h"
 #include "MainGameMode.h"
+#include "ThematicUI_Template.h"
 // MousePosOnViewport
 #include "Blueprint/WidgetLayoutLibrary.h"
 // GameSettings
@@ -11,15 +12,12 @@
 // Clamp 
 #include "Math/UnrealMathUtility.h"
 
-#include "UI_BuildingSelection.h"
-
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f : %f"), CamRotation.Pitch, CamRotation.Yaw));
 
 AMainPlayerController::AMainPlayerController()
 {
 	InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
-	// OnSlotClickedDelegate.AddUniqueDynamic(this, &AMainPlayerController::PrintBuildWidget);
 }
 
 void AMainPlayerController::BeginPlay()
@@ -45,11 +43,6 @@ void AMainPlayerController::BeginPlay()
 	PlayerPawn->SetRequiredZLocation(PawnMaxLocationZAxis);
 
 	SetupInputComponent();
-}
-void AMainPlayerController::SetLastSlotTypeAndSize(const TEnumAsByte <ESlotType>& T, const TEnumAsByte <ESlotSize>& S)
-{
-	LastSlotType = T;
-	LastSlotSize = S;
 }
 
 void AMainPlayerController::MouseEdgeScrolling ()
@@ -158,6 +151,9 @@ void AMainPlayerController::SetMaxPitchAngle()
 	// If it's nearly equal, set the new MaxPitchAngle as the new Pitch Rotation of SpringArm
 	if (FMath::IsNearlyEqual(SpringArmRotation.Pitch, temp, 0.5f))
 		PlayerPawn->SetSpringArmPitchRotation(MaxPitchAngle, MinPitchAngle, MaxPitchAngle);
+
+	else if (SpringArmRotation.Pitch > MaxPitchAngle)
+		PlayerPawn->SetSpringArmPitchRotation(MaxPitchAngle, MinPitchAngle, MaxPitchAngle);
 }
 
 void AMainPlayerController::MoveKeyboardForward(float Axis)
@@ -216,49 +212,13 @@ void AMainPlayerController::SetupInputComponent()
 		InputComponent->BindAxis(FName("Zoom"), this, &AMainPlayerController::Zoom);
 	}
 }
-/*
-void AMainPlayerController::PrintBuildWidget(const ESlotType& SlotType)
+
+void AMainPlayerController::SetConstructionWidget(UUserWidget* Widget)
 {
-	switch (SlotType)
-	{
+	auto W { Cast <UThematicUI_Template> (Widget) };
 
-	case ESlotType::Residential : 
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Residential !"));
-		break;
-
-	case ESlotType::Commercial:
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Commercial !"));
-		break;
-	
-	case ESlotType::Offices:
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Offices !"));
-		break;
-
-	case ESlotType::Industrial:
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Industrial !"));
-		break;
-
-	case ESlotType::Special:
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Special !"));
-		break;
-
-	case ESlotType::DefaultEnum:
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("SLOT CLICKED : Default !"));
-		break;
-
-	default :
-		GEngine->AddOnScreenDebugMessage(-1, 2.f, FColor::Cyan, FString("Something went wrong !"));
-		break;
-
-	}
-
-}
-*/
-
-void AMainPlayerController::SetOpennedBuildingWidget(UUI_BuildingSelection* BuildingWidget)
-{
-	if (BuildingWidget)
-		OpennedBuildingWidget = BuildingWidget;
+	if (W)
+		ConstructionWidget = W;
 }
 
 

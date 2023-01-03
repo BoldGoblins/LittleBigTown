@@ -5,6 +5,8 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "LittleBigTown.h"
+#include "Kismet/GameplayStatics.h"
+#include "MainPlayerController.h"
 
 #include "UIBuildingButton.generated.h"
 
@@ -18,14 +20,19 @@ class LITTLEBIGTOWN_API UUIBuildingButton : public UUserWidget
 
 public :
 
-	virtual void NativePreConstruct() override;
+	void NativePreConstruct() override;
+
+	void NativeConstruct() override;
 
 	// Set Style and variable
 	void SetButtonClicked(bool IsClicked);
 
+	UFUNCTION(BlueprintCallable)
+		void OnClickedHandle();
+
 	bool GetButtonClicked();
 
-	// void SetButtonText(const FName& Text);
+	void SetButtonText(const FName& Text);
 
 	UFUNCTION(BlueprintCallable)
 		const FName& GetButtonText() { return Name; }
