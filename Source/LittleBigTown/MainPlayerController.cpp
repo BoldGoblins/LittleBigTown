@@ -151,6 +151,9 @@ void AMainPlayerController::SetMaxPitchAngle()
 	// If it's nearly equal, set the new MaxPitchAngle as the new Pitch Rotation of SpringArm
 	if (FMath::IsNearlyEqual(SpringArmRotation.Pitch, temp, 0.5f))
 		PlayerPawn->SetSpringArmPitchRotation(MaxPitchAngle, MinPitchAngle, MaxPitchAngle);
+
+	else if (SpringArmRotation.Pitch > MaxPitchAngle)
+		PlayerPawn->SetSpringArmPitchRotation(MaxPitchAngle, MinPitchAngle, MaxPitchAngle);
 }
 
 void AMainPlayerController::MoveKeyboardForward(float Axis)
