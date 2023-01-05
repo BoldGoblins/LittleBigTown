@@ -42,11 +42,11 @@ public :
 	UFUNCTION(BlueprintCallable)
 	void UpdateFromNewSelection(FString String, ESelectInfo::Type Type);
 
-	// Return ptr to BuildingValidationWidget (GetChild of CanvasPanel, check for position MACRO)
+	// Return ptr to BuildingValidationWidget (Method in NativeConstruct : GetChild of CanvasPanel, check for position MACRO)
 	UFUNCTION(BlueprintCallable)
 		UWidgetBuildingValidation* GetBuildingValidationWidget();
 
-	// BuildingSelectionWidget adress is assigned in Constructor (GetChild of VerticalBox, check for position MACRO)
+	// BuildingSelectionWidget adress is assigned in Constructor (Method in NativeConstruct : GetChild of VerticalBox, check for position MACRO)
 	UFUNCTION(BlueprintCallable)
 		UUI_BuildingSelection* GetBuildingSelectionWidget();
 
@@ -79,6 +79,10 @@ protected :
 	// Used in CheckTypeSize (avoid using string litterals and no localizable in code)
 	UPROPERTY(EditDefaultsOnly)
 		TArray <FText> ComboBoxOptions;
+
+	class UUI_BuildingSelection* BuildingSelectionWidget { nullptr };
+
+	class UWidgetBuildingValidation* BuildingValidationWidget { nullptr };
 
 
 };

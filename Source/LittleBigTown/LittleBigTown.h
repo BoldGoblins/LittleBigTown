@@ -50,8 +50,6 @@
 
 // --------------------------------------		BuildingWidget		--------------------------------------
 
-
-// #define X_BUTTON_TRANSLATION_MAX 50.0f
 #define MAX_SCROLLBOX_BUTTONS 20
 
 // As we cannot use Containers of Containers (TMap of TArrays for each building sub-type for example)
@@ -96,17 +94,3 @@ namespace MyPersonalLibrary
 
 
 // --------------------------------------		Date and Time		--------------------------------------
-
-struct Timer
-{
-	int32 m_Year;
-	int32 m_Month;
-	int32 m_DayOfWeek;
-	int32 m_Day;
-	int32 m_Hour;
-	int32 m_Min;
-	int32 m_Sec;
-	int32 m_MSec;
-
-	FString GetStringTime();
-};

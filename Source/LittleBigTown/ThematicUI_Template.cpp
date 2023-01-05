@@ -9,14 +9,10 @@
 
 void UThematicUI_Template::UpdateFromNewSelection(FString String, ESelectInfo::Type Type)
 {
-	const auto BuildingSelectionWidget{ GetBuildingSelectionWidget() };
 
-	if (BuildingSelectionWidget)
-	{
-		BuildingSelectionWidget->ResetScrollBox(true);
-		BuildingSelectionWidget->ClearScrollBox();
-		BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
-	}
+	BuildingSelectionWidget->ResetScrollBox(true);
+	BuildingSelectionWidget->ClearScrollBox();
+	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
 
 }
 
@@ -33,37 +29,45 @@ void UThematicUI_Template::NativeConstruct()
 	PC->SetConstructionWidget(this);
 
 	ComboBox->OnSelectionChanged.AddDynamic(this, &ThisClass::UpdateFromNewSelection);
+
+	const auto CanvasChild { CanvasPanel->GetChildAt(BUILDING_VALIDATION_WIDGET_POS) };
+	const auto ValidationWidget { Cast <UWidgetBuildingValidation>(CanvasChild) };
+	const auto VerticalChild { VerticalBox->GetChildAt(BUILDING_SELECTION_WIDGET_POS) };
+	const auto SelectionWidget { Cast <UUI_BuildingSelection>(VerticalChild) };
+
+#ifdef DEBUG_ONLY
+
+	checkf(ValidationWidget, TEXT("Error in UThematicUI_Template::NativeConstruct, ValidationWidget == nullptr"));
+	checkf(SelectionWidget, TEXT("Error in UThematicUI_Template::NativeConstruct, SelectionWidget == nullptr"));
+
+#endif
+
+	BuildingValidationWidget = ValidationWidget;
+	BuildingSelectionWidget = SelectionWidget;
 }
 
 UWidgetBuildingValidation* UThematicUI_Template::GetBuildingValidationWidget()
 {
-	const auto Child { CanvasPanel->GetChildAt(BUILDING_VALIDATION_WIDGET_POS) };
-
-	const auto ValidationWidget { Cast <UWidgetBuildingValidation>(Child) };
 
 #ifdef DEBUG_ONLY
 
-	checkf(ValidationWidget, TEXT("Error in UThematicUI_Template::GetBuildingValidationWidget, ValidationWidget == nullptr"));
+	checkf(BuildingValidationWidget, TEXT("Error in UThematicUI_Template::GetBuildingValidationWidget, ValidationWidget == nullptr"));
 
 #endif
 
-	return ValidationWidget;
+	return BuildingValidationWidget;
 }
 
 UUI_BuildingSelection* UThematicUI_Template::GetBuildingSelectionWidget()
 {
 
-	const auto Child { VerticalBox->GetChildAt(BUILDING_SELECTION_WIDGET_POS) };
-
-	const auto SelectionWidget { Cast <UUI_BuildingSelection>(Child) };
-
 #ifdef DEBUG_ONLY
 
-	checkf(SelectionWidget, TEXT("Error in UThematicUI_Template::GetBuildingSelectionWidget, SelectionWidget == nullptr"));
+	checkf(BuildingSelectionWidget, TEXT("Error in UThematicUI_Template::GetBuildingSelectionWidget, BuildingSelectionWidget == nullptr"));
 
 #endif
 
-	return SelectionWidget;
+	return BuildingSelectionWidget;
 }
 
 TArray<FString> UThematicUI_Template::CheckTypeAndSize(TEnumAsByte<ESlotSize> SlotSize, TEnumAsByte<ESlotType> SlotType)
@@ -144,14 +148,9 @@ void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> Slot
 
 	MyPersonalLibrary::AddOptionsToComboBoxString(ComboBox, CheckTypeAndSize(SlotSize, SlotType));
 
-	const auto BuildingSelectionWidget { GetBuildingSelectionWidget() };
-
-	if (BuildingSelectionWidget)
-	{
-		BuildingSelectionWidget->ResetScrollBox(true);
-		BuildingSelectionWidget->ClearScrollBox();
-		BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(SlotType, SlotSize), ComboBox->GetSelectedOption());
-	}
+	BuildingSelectionWidget->ResetScrollBox(true);
+	BuildingSelectionWidget->ClearScrollBox();
+	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(SlotType, SlotSize), ComboBox->GetSelectedOption());
 
 	this->SetVisibility(ESlateVisibility::Visible);
 }
