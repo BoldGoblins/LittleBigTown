@@ -5,14 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 #include "LittleBigTown.h"
-#include "Kismet/GameplayStatics.h"
-#include "MainPlayerController.h"
 
 #include "UIBuildingButton.generated.h"
 
-/**
- * 
- */
+
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API UUIBuildingButton : public UUserWidget
 {
@@ -38,6 +34,9 @@ public :
 		const FName& GetButtonText() { return Name; }
 
 protected :
+
+	class AMainPlayerController* PlayerController { nullptr };
+
 	UPROPERTY(EditAnywhere, Category = "Style")
 		struct FButtonStyle BasicStyle;
 

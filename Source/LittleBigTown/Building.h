@@ -29,4 +29,7 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
+		void OnBuildingClicked(AActor* Target, FKey ButtonPressed);
+
 };

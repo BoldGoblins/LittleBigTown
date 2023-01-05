@@ -10,15 +10,6 @@
 
 #include "MainPlayerController.generated.h"
 
-// Delegate signature, called in ConstructibleSlot on Onclicked event
-// Handle in BP_MainPlayerController
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnConstructibleSlotClickedSignature, AConstructibleSlot*, ConstructibleSlot);
-
-
-// Delegate signature, called in UUI_BuildingSelection::ButtonInteraction (when a button is clicked)
-// Handle in BP_WidgetConstruction (display BP_WidgetValidation)
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FConstructionPropositionSignature, FName, BuildingName);
-
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API AMainPlayerController : public APlayerController
@@ -36,16 +27,9 @@ public :
 		virtual void Tick(float DeltaTime) override;
 		virtual void SetupInputComponent() override;
 
-		// Delegate signature
-		UPROPERTY(BlueprintAssignable)
-			FOnConstructibleSlotClickedSignature OnSlotClickedDelegate;
 
-		// Delegate signature
-		UPROPERTY(BlueprintAssignable)
-			FConstructionPropositionSignature ConstructionPropositionDelegate;
-	
 		UFUNCTION(BlueprintCallable)
-			class UThematicUI_Template* GetConstructionWidget() { return ConstructionWidget; }
+			class UThematicUI_Template* GetConstructionWidget();
 		
 		UFUNCTION(BlueprintCallable)
 			const AMainGameMode* GetMainGameMode() { return GameMode; }
@@ -53,9 +37,8 @@ public :
 
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
-		// Don't forget to call this function when creating ConstructionWidget in PlayerController
-		UFUNCTION(BlueprintCallable)
-			void SetConstructionWidget(UUserWidget* Widget);
+		// Called in ThematicUI_Template NativeConstruct
+		void SetConstructionWidget(UThematicUI_Template* Widget);
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -212,6 +195,6 @@ protected :
 	// --------------------------------------		BUILDING WIDGETS PARAMETERS		  --------------------------------------
 
 
-	UPROPERTY(BlueprintReadWrite)
-		class UThematicUI_Template* ConstructionWidget {};
+	UPROPERTY(BlueprintReadOnly)
+		class UThematicUI_Template* ConstructionWidget {nullptr};
 };

@@ -213,12 +213,27 @@ void AMainPlayerController::SetupInputComponent()
 	}
 }
 
-void AMainPlayerController::SetConstructionWidget(UUserWidget* Widget)
+UThematicUI_Template* AMainPlayerController::GetConstructionWidget()
 {
-	auto W { Cast <UThematicUI_Template> (Widget) };
 
-	if (W)
-		ConstructionWidget = W;
+#ifdef DEBUG_ONLY
+
+	checkf(ConstructionWidget, TEXT("Error in AMainPlayerController::GetConstructionWidget, ConstructionWidget == nullptr "));
+
+#endif
+
+	return ConstructionWidget;
+}
+
+void AMainPlayerController::SetConstructionWidget(UThematicUI_Template* Widget)
+{
+#ifdef DEBUG_ONLY
+
+	checkf(Widget, TEXT("Error in AMainPlayerController::SetConstructionWidget, Widget == nullptr "));
+
+#endif
+
+	ConstructionWidget = Widget;
 }
 
 

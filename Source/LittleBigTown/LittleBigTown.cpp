@@ -25,3 +25,17 @@ void MyPersonalLibrary::AddOptionsToComboBoxString(UComboBoxString* ComboBox, co
 	ComboBox->RefreshOptions();
 	ComboBox->SetSelectedIndex(0);
 }
+
+FString Timer::GetStringTime()
+{
+	FString S;
+	S.AppendInt(m_Hour);
+	S.Append(" : ");
+	S.AppendInt(m_Min);
+	S.Append(" : ");
+	S.AppendInt(m_Sec);
+	S.Append(" : ");
+	S.AppendInt(m_MSec);
+
+	return S;
+}

@@ -6,36 +6,17 @@
 #include "Components/TextBlock.h"
 #include "Styling/SlateTypes.h"
 #include "ThematicUI_Template.h"
+#include "Kismet/GameplayStatics.h"
+#include "UI_BuildingSelection.h"
+#include "MainPlayerController.h"
 
 void UUIBuildingButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	Button->AddChild(TextBlock);
-	// TextBlock->SetText(FText::FromName(Name));
-
 	Button->SetStyle(BasicStyle);
 
-}
-
-void UUIBuildingButton::OnClickedHandle()
-{
-	auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
-
-	if (PC)
-	{
-		auto BuildingWidget { PC->GetConstructionWidget()->GetBuildingSelectionWidget() };
-
-#ifdef DEBUG_ONLY
-
-		checkf(BuildingWidget,
-			TEXT("Error in UUIBuildingButton::OnClickedHandle : BuildingWidget == nullptr. Check that SetConstructionWidget methods in BPMainPlayerController is called."));
-
-#endif DEBUG_ONLY
-
-		if (BuildingWidget)
-			BuildingWidget->ButtonInteraction(this);
-	}
 }
 
 void UUIBuildingButton::NativeConstruct()
@@ -43,6 +24,37 @@ void UUIBuildingButton::NativeConstruct()
 	Super::NativeConstruct();
 
 	Button->OnClicked.AddUniqueDynamic(this, &ThisClass::OnClickedHandle);
+
+	auto PC{ Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+
+	if (PC)
+		PlayerController = PC;
+
+}
+
+void UUIBuildingButton::OnClickedHandle()
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(PlayerController,
+		TEXT("Error in UUIBuildingButton::OnClickedHandle : PlayerController == nullptr."));
+
+#endif DEBUG_ONLY
+
+
+	if (!PlayerController)
+		return;
+
+	const auto ConstructionWidget { PlayerController->GetConstructionWidget() };
+
+	if (ConstructionWidget)
+	{
+		const auto SelectionWidget { ConstructionWidget->GetBuildingSelectionWidget() };
+		
+		if (SelectionWidget)
+			SelectionWidget->ButtonInteraction(this);
+	}
 }
 
 void UUIBuildingButton::SetButtonText(const FName& Text) 
@@ -50,6 +62,7 @@ void UUIBuildingButton::SetButtonText(const FName& Text)
 	Name = Text;
 	TextBlock->SetText(FText::FromName(Name));
 }
+
 
 void UUIBuildingButton::SetButtonClicked(bool IsClicked)
 {

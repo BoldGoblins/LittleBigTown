@@ -18,23 +18,18 @@ public:
 
 	// Sets default values for this actor's properties
 	AConstructibleSlot();
-
+	/*
 	// Bind to OnClickedEvent Delegate
 	// Call OnSlotClickedDelegate from MainPlayerController
 	UFUNCTION()
 		void OnSlotClicked(AActor* Target, FKey ButtonPressed);
-
+*/
 	// Return SlotType of this ConstructibleSlot
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		TEnumAsByte <ESlotType> GetSlotType() { return SlotType; }
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		TEnumAsByte <ESlotSize>	GetSlotSize() { return SlotSize; }
-	/*
-	// Return ConstructionTheme of this ConstructibleSlot
-	UFUNCTION(BlueprintCallable, BlueprintPure)
-		TMap <FName, bool> GetConstructionThemes() { return ConstructionThemes; }
-*/
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		FName GetDistrictName() { return SlotDistrictName; }
@@ -53,19 +48,12 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		TEnumAsByte <ESlotSize> SlotSize { ESlotSize::DefaultSizeEnum };
-	/*
-	// Map used to activate/deactivate Thematic Buttons
-	// According to what kind of Buildings Themes are availables for a specific Slot
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		TMap <FName, bool> ConstructionThemes;
-*/
+
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		int SlotPrice { 0 };
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 		FName SlotDistrictName {"District"};
-
-	class AMainPlayerController* MainPlayerControllerRef {};
 
 private :
 

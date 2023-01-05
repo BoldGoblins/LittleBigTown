@@ -16,25 +16,25 @@ AConstructibleSlot::AConstructibleSlot()
 	PrimaryActorTick.bCanEverTick = true;
 
 	// Delegates :
-	OnClicked.AddUniqueDynamic(this, &AConstructibleSlot::OnSlotClicked);
+	// OnClicked.AddUniqueDynamic(this, &AConstructibleSlot::OnSlotClicked);
 
 	// Tag used for left clic mouse events
 	Tags.Add(FName("ConstructibleSlot"));
 
 }
-
+/*
 void AConstructibleSlot::OnSlotClicked(AActor* Target, FKey ButtonPressed)
 {
+	auto MainPlayerControllerRef { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+
 	if (MainPlayerControllerRef)
 		MainPlayerControllerRef->OnSlotClickedDelegate.Broadcast(this);
 }
-
+*/
 // Called when the game starts or when spawned
 void AConstructibleSlot::BeginPlay()
 {
 	Super::BeginPlay();
-
-	MainPlayerControllerRef = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	
 }
 

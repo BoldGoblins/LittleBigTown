@@ -6,6 +6,9 @@
 #include "MainPlayerController.h"
 #include "MainGameMode.h"
 #include "UIBuildingButton.h"
+#include "ThematicUI_Template.h"
+#include "WidgetBuildingValidation.h"
+#include "Components/ScrollBox.h"
 #include "Kismet/GameplayStatics.h"
 
 
@@ -13,13 +16,23 @@ void UUI_BuildingSelection::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	// For beeing able to Broadcast delegate On Construction Launched
-	PlayerController = Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	auto PC { Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+
+	if (PC)
+		PlayerController = PC;
 }
 
 void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 {
-	if (!PlayerController)
+
+#ifdef DEBUG_ONLY
+
+	checkf(PlayerController, TEXT("Error in UUI_BuildingSelection::ButtonInteraction, PlayerController == nullptr"));
+	checkf(Button, TEXT("Error in UUI_BuildingSelection::ButtonInteraction, Button == nullptr"));
+
+#endif
+
+	if (!Button || !PlayerController)
 		return;
 
 	bool temp { Button->GetButtonClicked() };
@@ -31,7 +44,18 @@ void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 	}
 
 	Button->SetButtonClicked(true);
-	PlayerController->ConstructionPropositionDelegate.Broadcast(Button->GetButtonText());
+
+	const auto ConstructionWidget { PlayerController->GetConstructionWidget() };
+
+	if (ConstructionWidget)
+	{
+		const auto ValidationWidget { ConstructionWidget->GetBuildingValidationWidget() };
+		
+		if (ValidationWidget)
+			ValidationWidget->DisplayValidationWidget(Button->GetButtonText());
+
+	}
+
 }
 
 void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)

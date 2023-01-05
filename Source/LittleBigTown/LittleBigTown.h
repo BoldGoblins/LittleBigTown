@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Components/ComboBoxString.h"
 #include "Building.h"
+
 #include "LittleBigTown.generated.h"
 
 // DEFINITIONS : 
@@ -95,3 +96,17 @@ namespace MyPersonalLibrary
 
 
 // --------------------------------------		Date and Time		--------------------------------------
+
+struct Timer
+{
+	int32 m_Year;
+	int32 m_Month;
+	int32 m_DayOfWeek;
+	int32 m_Day;
+	int32 m_Hour;
+	int32 m_Min;
+	int32 m_Sec;
+	int32 m_MSec;
+
+	FString GetStringTime();
+};

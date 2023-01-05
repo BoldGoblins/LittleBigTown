@@ -18,6 +18,8 @@ ABuilding::ABuilding()
 	StaticMeshComponent->AttachToComponent(RootComp, FAttachmentTransformRules::KeepRelativeTransform);
 	StaticMeshComponent->SetCollisionProfileName(TEXT("Buildings"));
 	StaticMeshComponent->SetMobility(EComponentMobility::Static);
+
+	OnClicked.AddUniqueDynamic(this, &ThisClass::OnBuildingClicked);
 }
 
 // Called when the game starts or when spawned
@@ -31,6 +33,11 @@ void ABuilding::BeginPlay()
 void ABuilding::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
+}
+
+void ABuilding::OnBuildingClicked(AActor* Target, FKey ButtonPressed)
+{
 
 }
 
