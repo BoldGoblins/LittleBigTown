@@ -5,8 +5,8 @@
 #include "CoreMinimal.h"
 
 #include "GameFramework/Pawn.h"
-// For definitions
-#include "LittleBigTown.h"
+// Player Controller header
+#include "MainPlayerController.h"
 
 #include "PlayerPawn.generated.h"
 

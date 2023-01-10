@@ -5,10 +5,10 @@
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
 
-#include "WidgetBuildingValidation.generated.h"
+#include "UI_ConstructionValidation.generated.h"
 
 UCLASS()
-class LITTLEBIGTOWN_API UWidgetBuildingValidation : public UUserWidget
+class LITTLEBIGTOWN_API UUI_ConstructionValidation : public UUserWidget
 {
 	GENERATED_BODY()
 

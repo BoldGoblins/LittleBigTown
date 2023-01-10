@@ -1,23 +1,25 @@
-#include "ThematicUI_Template.h"
+#include "UI_ConstructionMain.h"
 
 #include "Components/ComboBoxString.h"
 #include "Components/CanvasPanel.h"
 #include "Kismet/GameplayStatics.h"
-#include "ConstructibleSlot.h"
+#include "LittleBigTown/Actors/ConstructibleSlot.h"
 // temp
-#include "MainPlayerController.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
+// DEBUG_ONLY
+#include "LittleBigTown/Core/Debugger.h"
 
-void UThematicUI_Template::UpdateFromNewSelection(FString String, ESelectInfo::Type Type)
+void UUI_ConstructionMain::UpdateFromNewSelection(FString String, ESelectInfo::Type Type)
 {
 
-	BuildingSelectionWidget->ResetScrollBox(true);
-	BuildingSelectionWidget->ClearScrollBox();
-	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
+	ConstructionSelectionWidget->ResetScrollBox(true);
+	ConstructionSelectionWidget->ClearScrollBox();
+	ConstructionSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(LastSlotType, LastSlotSize), String);
 
 }
 
 
-void UThematicUI_Template::NativeConstruct()
+void UUI_ConstructionMain::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -31,9 +33,9 @@ void UThematicUI_Template::NativeConstruct()
 	ComboBox->OnSelectionChanged.AddDynamic(this, &ThisClass::UpdateFromNewSelection);
 
 	const auto CanvasChild { CanvasPanel->GetChildAt(BUILDING_VALIDATION_WIDGET_POS) };
-	const auto ValidationWidget { Cast <UWidgetBuildingValidation>(CanvasChild) };
+	const auto ValidationWidget { Cast <UUI_ConstructionValidation>(CanvasChild) };
 	const auto VerticalChild { VerticalBox->GetChildAt(BUILDING_SELECTION_WIDGET_POS) };
-	const auto SelectionWidget { Cast <UUI_BuildingSelection>(VerticalChild) };
+	const auto SelectionWidget { Cast <UUI_ConstructionSelection>(VerticalChild) };
 
 #ifdef DEBUG_ONLY
 
@@ -42,35 +44,37 @@ void UThematicUI_Template::NativeConstruct()
 
 #endif
 
-	BuildingValidationWidget = ValidationWidget;
-	BuildingSelectionWidget = SelectionWidget;
+	ConstructionValidationWidget = ValidationWidget;
+	ConstructionSelectionWidget = SelectionWidget;
 }
 
-UWidgetBuildingValidation* UThematicUI_Template::GetBuildingValidationWidget()
+UUI_ConstructionValidation* UUI_ConstructionMain::GetConstructionValidationWidget()
 {
 
 #ifdef DEBUG_ONLY
 
-	checkf(BuildingValidationWidget, TEXT("Error in UThematicUI_Template::GetBuildingValidationWidget, ValidationWidget == nullptr"));
+	checkf(ConstructionValidationWidget, 
+		TEXT("Error in UThematicUI_Template::GetConstructionValidationWidget, ConstructionValidationWidget == nullptr"));
 
 #endif
 
-	return BuildingValidationWidget;
+	return ConstructionValidationWidget;
 }
 
-UUI_BuildingSelection* UThematicUI_Template::GetBuildingSelectionWidget()
+UUI_ConstructionSelection* UUI_ConstructionMain::GetConstructionSelectionWidget()
 {
 
 #ifdef DEBUG_ONLY
 
-	checkf(BuildingSelectionWidget, TEXT("Error in UThematicUI_Template::GetBuildingSelectionWidget, BuildingSelectionWidget == nullptr"));
+	checkf(ConstructionSelectionWidget,
+		TEXT("Error in UThematicUI_Template::GetConstructionSelectionWidget, ConstructionSelectionWidget == nullptr"));
 
 #endif
 
-	return BuildingSelectionWidget;
+	return ConstructionSelectionWidget;
 }
 
-TArray<FString> UThematicUI_Template::CheckTypeAndSize(TEnumAsByte<ESlotSize> SlotSize, TEnumAsByte<ESlotType> SlotType)
+TArray<FString> UUI_ConstructionMain::CheckTypeAndSize(TEnumAsByte<ESlotSize> SlotSize, TEnumAsByte<ESlotType> SlotType)
 {
 
 #ifdef DEBUG_ONLY
@@ -141,16 +145,16 @@ TArray<FString> UThematicUI_Template::CheckTypeAndSize(TEnumAsByte<ESlotSize> Sl
 	}
 }
 
-void UThematicUI_Template::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> SlotType, TEnumAsByte<ESlotSize> SlotSize)
+void UUI_ConstructionMain::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> SlotType, TEnumAsByte<ESlotSize> SlotSize)
 {
 	LastSlotType = SlotType;
 	LastSlotSize = SlotSize;
 
 	MyPersonalLibrary::AddOptionsToComboBoxString(ComboBox, CheckTypeAndSize(SlotSize, SlotType));
 
-	BuildingSelectionWidget->ResetScrollBox(true);
-	BuildingSelectionWidget->ClearScrollBox();
-	BuildingSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(SlotType, SlotSize), ComboBox->GetSelectedOption());
+	ConstructionSelectionWidget->ResetScrollBox(true);
+	ConstructionSelectionWidget->ClearScrollBox();
+	ConstructionSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(SlotType, SlotSize), ComboBox->GetSelectedOption());
 
 	this->SetVisibility(ESlateVisibility::Visible);
 }

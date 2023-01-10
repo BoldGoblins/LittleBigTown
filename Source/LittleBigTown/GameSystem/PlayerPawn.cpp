@@ -13,8 +13,6 @@
 #include "Components/SphereComponent.h"
 // UGameplayStatics::GetPlayerController()
 #include "Kismet/GameplayStatics.h"
-// Player Controller header
-#include "MainPlayerController.h"
 // Arrow comp
 #include "Components/ArrowComponent.h"
 // DrawDebug

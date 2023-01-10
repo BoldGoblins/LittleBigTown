@@ -19,25 +19,15 @@ ABuilding::ABuilding()
 	StaticMeshComponent->SetCollisionProfileName(TEXT("Buildings"));
 	StaticMeshComponent->SetMobility(EComponentMobility::Static);
 
-	OnClicked.AddUniqueDynamic(this, &ThisClass::OnBuildingClicked);
+	Tags.Add(TEXT("Building"));
+	/*
+	InfosBase.m_Name = Infos.m_Name;
+	InfosBase.m_CurrentLevel = Infos.m_CurrentLevel;
+	InfosBase.m_MaxLevel = Infos.m_MaxLevel;
+	InfosBase.m_OccupationMaxCount = Infos.m_OccupationMaxCount;
+	InfosBase.m_OccupationCurrentCount = Infos.m_OccupationCurrentCount;
+	InfosBase.m_Outgoings = Infos.m_Outgoings;
+	*/
 }
 
-// Called when the game starts or when spawned
-void ABuilding::BeginPlay()
-{
-	Super::BeginPlay();
-	
-}
-
-// Called every frame
-void ABuilding::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-
-}
-
-void ABuilding::OnBuildingClicked(AActor* Target, FKey ButtonPressed)
-{
-
-}
 

@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "LittleBigTown.h"
+#include "LittleBigTown/Core/Enums.h"
 
 #include "ConstructibleSlot.generated.h"
 
@@ -18,12 +18,7 @@ public:
 
 	// Sets default values for this actor's properties
 	AConstructibleSlot();
-	/*
-	// Bind to OnClickedEvent Delegate
-	// Call OnSlotClickedDelegate from MainPlayerController
-	UFUNCTION()
-		void OnSlotClicked(AActor* Target, FKey ButtonPressed);
-*/
+
 	// Return SlotType of this ConstructibleSlot
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		TEnumAsByte <ESlotType> GetSlotType() { return SlotType; }
@@ -33,6 +28,9 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure)
 		FName GetDistrictName() { return SlotDistrictName; }
+
+	UFUNCTION(BlueprintCallable, BlueprintPure)
+		int GetSlotPrice() { return SlotPrice; }
 
 	UFUNCTION(BlueprintCallable)
 		void ModifySlotPriceBy(int Value) { SlotPrice += Value; }

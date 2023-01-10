@@ -4,16 +4,15 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "UIBuildingButton.h"
 #include "Components/VerticalBox.h"
-#include "MainPlayerController.h"
-#include "UI_BuildingSelection.h"
-#include "MainGameMode.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "UI_ConstructionSelection.h"
+#include "LittleBigTown/GameSystem/MainGameMode.h"
 #include "Types/SlateEnums.h"
-#include "LittleBigTown.h"
-#include "WidgetBuildingValidation.h"
+#include "LittleBigTown/Core/Enums.h"
+#include "UI_ConstructionValidation.h"
 
-#include "ThematicUI_Template.generated.h"
+#include "UI_ConstructionMain.generated.h"
 
 #define BUILDING_SELECTION_WIDGET_POS 3
 #define BUILDING_VALIDATION_WIDGET_POS 0
@@ -21,7 +20,7 @@
 
 
 UCLASS(Abstract)
-class LITTLEBIGTOWN_API UThematicUI_Template : public UUserWidget
+class LITTLEBIGTOWN_API UUI_ConstructionMain : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -44,11 +43,11 @@ public :
 
 	// Return ptr to BuildingValidationWidget (Method in NativeConstruct : GetChild of CanvasPanel, check for position MACRO)
 	UFUNCTION(BlueprintCallable)
-		UWidgetBuildingValidation* GetBuildingValidationWidget();
+		UUI_ConstructionValidation* GetConstructionValidationWidget();
 
 	// BuildingSelectionWidget adress is assigned in Constructor (Method in NativeConstruct : GetChild of VerticalBox, check for position MACRO)
 	UFUNCTION(BlueprintCallable)
-		UUI_BuildingSelection* GetBuildingSelectionWidget();
+		UUI_ConstructionSelection* GetConstructionSelectionWidget();
 
 	// Check if Slot Type/Size combination are legit, and return the good options associated (to be used to populate a ComboBoxString)
 	TArray <FString> CheckTypeAndSize(TEnumAsByte <ESlotSize> SlotSize, TEnumAsByte <ESlotType> SlotType);
@@ -80,9 +79,9 @@ protected :
 	UPROPERTY(EditDefaultsOnly)
 		TArray <FText> ComboBoxOptions;
 
-	class UUI_BuildingSelection* BuildingSelectionWidget { nullptr };
+	class UUI_ConstructionSelection* ConstructionSelectionWidget { nullptr };
 
-	class UWidgetBuildingValidation* BuildingValidationWidget { nullptr };
+	class UUI_ConstructionValidation* ConstructionValidationWidget { nullptr };
 
 
 };

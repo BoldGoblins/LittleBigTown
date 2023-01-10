@@ -4,14 +4,16 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "Building.h"
-#include "LittleBigTown.h"
+#include "LittleBigTown/Actors/Building.h"
+#include "LittleBigTown/Core/Structs.h"
 
-#include "UI_BuildingSelection.generated.h"
+#include "UI_ConstructionSelection.generated.h"
+
+#define MAX_SCROLLBOX_BUTTONS 20
 
 
 UCLASS(Abstract)
-class LITTLEBIGTOWN_API UUI_BuildingSelection : public UUserWidget
+class LITTLEBIGTOWN_API UUI_ConstructionSelection : public UUserWidget
 {
 	GENERATED_BODY()
 
@@ -23,7 +25,7 @@ public:
 	// Broadcast Delegate (ConstructionProposition in MainPlayerController) when button is Clicked
 	// Called from BP BuildingButton Template in Editor
 	UFUNCTION(BlueprintCallable)
-		void ButtonInteraction(UUIBuildingButton* Button);
+		void ButtonInteraction(UUI_ConstructionButton* Button);
 
 	// Reset ButtonClicked and ScrollToStart if option is true
 	UFUNCTION(BlueprintCallable)
@@ -44,7 +46,7 @@ protected:
 		class AMainPlayerController* PlayerController;
 */
 	UPROPERTY(BlueprintReadWrite)
-		class UUIBuildingButton* LastButtonClicked;
+		class UUI_ConstructionButton* LastButtonClicked;
 
 	UPROPERTY(meta = (BindWidget))
 		class UScrollBox* ScrollBox;

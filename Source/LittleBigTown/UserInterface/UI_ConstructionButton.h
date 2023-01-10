@@ -4,13 +4,12 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
-#include "LittleBigTown.h"
 
-#include "UIBuildingButton.generated.h"
+#include "UI_ConstructionButton.generated.h"
 
 
 UCLASS(Abstract)
-class LITTLEBIGTOWN_API UUIBuildingButton : public UUserWidget
+class LITTLEBIGTOWN_API UUI_ConstructionButton : public UUserWidget
 {
 	GENERATED_BODY()
 

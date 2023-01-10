@@ -2,6 +2,8 @@
 
 
 #include "MainGameMode.h"
+// DEBUG_ONLY
+#include "LittleBigTown/Core/Debugger.h"
 
 const TMap<FName, FBuildingContainers> & AMainGameMode::GetBuildingsMap(TEnumAsByte <ESlotType> SlotType, TEnumAsByte <ESlotSize> SlotSize) const
 {
@@ -14,15 +16,18 @@ const TMap<FName, FBuildingContainers> & AMainGameMode::GetBuildingsMap(TEnumAsB
 	{
 
 #ifdef DEBUG_ONLY
-		checkf(SlotType != ESlotType::DefaultTypeEnum,
-			TEXT("Erreur AMainGameMode::GetBuildingsMap, SlotType == DefaultTypeEnum."));
+
+		checkf(SlotType != ESlotType::DefaultTypeEnum, 
+			TEXT("Error in AMainGameMode::GetBuildingsMap, SlotType == DefaultTypeEnum."));
+
 #endif
 
 	case ESlotType::Residential :
 
 #ifdef DEBUG_ONLY
+
 		checkf(SlotSize != ESlotSize::NoSize && SlotSize != ESlotSize::DefaultSizeEnum,
-			TEXT("Erreur AMainGameMode::GetBuildingsMap, SlotSize incompatible with Type Residential."));
+			TEXT("Error in AMainGameMode::GetBuildingsMap, SlotSize incompatible with Type Residential. "));
 #endif
 
 		switch (SlotSize)

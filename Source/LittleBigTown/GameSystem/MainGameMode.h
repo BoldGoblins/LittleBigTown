@@ -4,8 +4,9 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
-#include "Building.h"
-#include "LittleBigTown.h"
+#include "LittleBigTown/Actors/Building.h"
+#include "LittleBigTown/Core/Enums.h"
+#include "LittleBigTown/Core/Structs.h"
 
 #include "MainGameMode.generated.h"
 

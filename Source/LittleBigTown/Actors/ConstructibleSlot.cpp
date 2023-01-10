@@ -3,7 +3,7 @@
 
 #include "Engine/StaticMesh.h"
 
-#include "MainPlayerController.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
 
 #include "Kismet/GameplayStatics.h"
 
@@ -22,15 +22,7 @@ AConstructibleSlot::AConstructibleSlot()
 	Tags.Add(FName("ConstructibleSlot"));
 
 }
-/*
-void AConstructibleSlot::OnSlotClicked(AActor* Target, FKey ButtonPressed)
-{
-	auto MainPlayerControllerRef { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
-	if (MainPlayerControllerRef)
-		MainPlayerControllerRef->OnSlotClickedDelegate.Broadcast(this);
-}
-*/
 // Called when the game starts or when spawned
 void AConstructibleSlot::BeginPlay()
 {

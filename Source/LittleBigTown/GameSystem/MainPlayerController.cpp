@@ -4,13 +4,17 @@
 // APlayerPawn
 #include "PlayerPawn.h"
 #include "MainGameMode.h"
-#include "ThematicUI_Template.h"
+#include "LittleBigTown/UserInterface/UI_ConstructionMain.h"
 // MousePosOnViewport
 #include "Blueprint/WidgetLayoutLibrary.h"
 // GameSettings
 #include "GameFramework/GameUserSettings.h"
 // Clamp 
 #include "Math/UnrealMathUtility.h"
+// UI_Main
+#include "LittleBigTown/UserInterface/UI_Main.h"
+// DEBUG_ONLY
+#include "LittleBigTown/Core/Debugger.h"
 
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f : %f"), CamRotation.Pitch, CamRotation.Yaw));
@@ -28,6 +32,8 @@ void AMainPlayerController::BeginPlay()
 
 	PlayerPawn = Cast <APlayerPawn> (GetPawn());
 	GameMode = Cast <AMainGameMode> (World->GetAuthGameMode());
+	GameState = Cast <AMainGameState>(World->GetGameState());
+
 
 	bEnableClickEvents = true;
 	PrimaryActorTick.bCanEverTick = true;
@@ -213,7 +219,7 @@ void AMainPlayerController::SetupInputComponent()
 	}
 }
 
-UThematicUI_Template* AMainPlayerController::GetConstructionWidget()
+UUI_ConstructionMain* AMainPlayerController::GetConstructionWidget()
 {
 
 #ifdef DEBUG_ONLY
@@ -225,7 +231,31 @@ UThematicUI_Template* AMainPlayerController::GetConstructionWidget()
 	return ConstructionWidget;
 }
 
-void AMainPlayerController::SetConstructionWidget(UThematicUI_Template* Widget)
+UUI_Main* AMainPlayerController::GetMainWidget()
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(MainWidget, TEXT("Error in AMainPlayerController::GetMainWidget, MainWidget == nullptr "));
+
+#endif
+
+	return MainWidget;
+}
+
+void AMainPlayerController::SetMainWidget(UUI_Main* Widget)
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(Widget, TEXT("Error in AMainPlayerController::SetMainWidget, Widget == nullptr "));
+
+#endif
+
+	MainWidget = Widget;
+}
+
+void AMainPlayerController::SetConstructionWidget(UUI_ConstructionMain* Widget)
 {
 #ifdef DEBUG_ONLY
 

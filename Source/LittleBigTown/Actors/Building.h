@@ -4,9 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "LittleBigTown/Core/Structs.h"
+
 #include "Building.generated.h"
 
-UCLASS()
+
+
+UCLASS(Abstract)
 class LITTLEBIGTOWN_API ABuilding : public AActor
 {
 	GENERATED_BODY()
@@ -15,9 +19,12 @@ public:
 	// Sets default values for this actor's properties
 	ABuilding();
 
+	const FBuildingInfosBase& GetInfosBase() const { return InfosBase; }
+
 protected:
-	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+
+	UPROPERTY(BlueprintReadOnly)
+		FBuildingInfosBase InfosBase;
 
 	UPROPERTY(BlueprintReadOnly)
 		class USceneComponent* RootComp {};
@@ -25,11 +32,13 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UStaticMeshComponent* StaticMeshComponent{};
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	UPROPERTY(EditDefaultsOnly)
+		FText Name;
 
-	UFUNCTION()
-		void OnBuildingClicked(AActor* Target, FKey ButtonPressed);
+	UPROPERTY(EditDefaultsOnly)
+		int32 CurrentLevel { 1 };
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 MaxLevel { 0 };
 
 };

@@ -1,16 +1,18 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "UIBuildingButton.h"
+#include "UI_ConstructionButton.h"
 
 #include "Components/Button.h"
 #include "Components/TextBlock.h"
 #include "Styling/SlateTypes.h"
-#include "ThematicUI_Template.h"
+#include "UI_ConstructionMain.h"
 #include "Kismet/GameplayStatics.h"
-#include "UI_BuildingSelection.h"
-#include "MainPlayerController.h"
+#include "UI_ConstructionSelection.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
+// DEBUG_ONLY
+#include "LittleBigTown/Core/Debugger.h"
 
-void UUIBuildingButton::NativePreConstruct()
+void UUI_ConstructionButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
@@ -19,20 +21,20 @@ void UUIBuildingButton::NativePreConstruct()
 
 }
 
-void UUIBuildingButton::NativeConstruct()
+void UUI_ConstructionButton::NativeConstruct()
 {
 	Super::NativeConstruct();
 
 	Button->OnClicked.AddUniqueDynamic(this, &ThisClass::OnClickedHandle);
 
-	auto PC{ Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	auto PC{ Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
 	if (PC)
 		PlayerController = PC;
 
 }
 
-void UUIBuildingButton::OnClickedHandle()
+void UUI_ConstructionButton::OnClickedHandle()
 {
 
 #ifdef DEBUG_ONLY
@@ -50,21 +52,21 @@ void UUIBuildingButton::OnClickedHandle()
 
 	if (ConstructionWidget)
 	{
-		const auto SelectionWidget { ConstructionWidget->GetBuildingSelectionWidget() };
+		const auto SelectionWidget { ConstructionWidget->GetConstructionSelectionWidget() };
 		
 		if (SelectionWidget)
 			SelectionWidget->ButtonInteraction(this);
 	}
 }
 
-void UUIBuildingButton::SetButtonText(const FName& Text) 
+void UUI_ConstructionButton::SetButtonText(const FName& Text)
 {
 	Name = Text;
 	TextBlock->SetText(FText::FromName(Name));
 }
 
 
-void UUIBuildingButton::SetButtonClicked(bool IsClicked)
+void UUI_ConstructionButton::SetButtonClicked(bool IsClicked)
 {
 	ButtonClicked = IsClicked;
 
@@ -78,7 +80,7 @@ void UUIBuildingButton::SetButtonClicked(bool IsClicked)
 		Button->SetStyle(BasicStyle);
 }
 
-bool UUIBuildingButton::GetButtonClicked()
+bool UUI_ConstructionButton::GetButtonClicked()
 {
 	return ButtonClicked;
 }

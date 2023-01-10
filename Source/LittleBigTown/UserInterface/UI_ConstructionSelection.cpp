@@ -1,18 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "UI_BuildingSelection.h"
+#include "UI_ConstructionSelection.h"
 
-#include "MainPlayerController.h"
-#include "MainGameMode.h"
-#include "UIBuildingButton.h"
-#include "ThematicUI_Template.h"
-#include "WidgetBuildingValidation.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/MainGameMode.h"
+#include "UI_ConstructionButton.h"
+#include "UI_ConstructionMain.h"
+#include "UI_ConstructionValidation.h"
 #include "Components/ScrollBox.h"
 #include "Kismet/GameplayStatics.h"
+// DEBUG_ONLY
+#include "LittleBigTown/Core/Debugger.h"
 
 
-void UUI_BuildingSelection::NativeConstruct()
+void UUI_ConstructionSelection::NativeConstruct()
 {
 	Super::NativeConstruct();
 
@@ -22,7 +24,7 @@ void UUI_BuildingSelection::NativeConstruct()
 		PlayerController = PC;
 }
 
-void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
+void UUI_ConstructionSelection::ButtonInteraction(UUI_ConstructionButton* Button)
 {
 
 #ifdef DEBUG_ONLY
@@ -49,7 +51,7 @@ void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 
 	if (ConstructionWidget)
 	{
-		const auto ValidationWidget { ConstructionWidget->GetBuildingValidationWidget() };
+		const auto ValidationWidget { ConstructionWidget->GetConstructionValidationWidget() };
 		
 		if (ValidationWidget)
 			ValidationWidget->DisplayValidationWidget(Button->GetButtonText());
@@ -58,7 +60,7 @@ void UUI_BuildingSelection::ButtonInteraction(UUIBuildingButton* Button)
 
 }
 
-void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
+void UUI_ConstructionSelection::ResetScrollBox(bool ResetScroll)
 {
 	if (LastButtonClicked)
 		LastButtonClicked->SetButtonClicked(false);
@@ -67,7 +69,7 @@ void UUI_BuildingSelection::ResetScrollBox(bool ResetScroll)
 		ScrollBox->ScrollToStart();
 }
 
-void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption)
+void UUI_ConstructionSelection::PopulateScrollBox(const TMap <FName, FBuildingContainers>& M, const FString& ComboBoxOption)
 {
 	if (ScrollBox->GetChildrenCount() != MAX_SCROLLBOX_BUTTONS || M.Num() == 0)
 		return;
@@ -91,7 +93,7 @@ void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContai
 		if (Element.Value.ComboBoxOptionType.ToString() != ComboBoxOption)
 			continue;
 
-		auto Button { Cast <UUIBuildingButton> (Arr[count]) };
+		auto Button { Cast <UUI_ConstructionButton> (Arr[count]) };
 
 		if (Button)
 		{
@@ -107,7 +109,7 @@ void UUI_BuildingSelection::PopulateScrollBox(const TMap <FName, FBuildingContai
 
 }
 
-void UUI_BuildingSelection::ClearScrollBox()
+void UUI_ConstructionSelection::ClearScrollBox()
 {
 	for (auto Element : ScrollBox->GetAllChildren())
 	{

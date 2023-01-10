@@ -6,9 +6,37 @@
 #include "GameFramework/PlayerController.h"
 
 // For definitions
-#include "LittleBigTown.h"
+#include "LittleBigTown/LittleBigTown.h"
+#include "LittleBigTown/GameSystem/MainGameState.h"
 
 #include "MainPlayerController.generated.h"
+
+#define ZOOM_MIN 10
+#define ZOOM_MAX 1
+
+#define ZOOM_FACTOR_MIN 0.800000f
+#define ZOOM_FACTOR_MAX 1.000000f 
+
+#define DEFAULT_ZOOM_UNITS 500
+
+// Remember that MaxSpeed/Acceleration = time to get to MaxSpeed
+// Exemple : 2 / 200 = 0.01 sec to get to Speed = 2
+
+#define MAX_SPEED 25000,0
+#define ACCELERATION 250000,0
+#define DECELERATION 250000,0
+
+#define DEFAULT_SPRING_ARM_LENGTH 6000.000000f
+
+#define MIN_PITCH_ANGLE  - 80.0f
+#define MAX_PITCH_ANGLE  - 10.0f 
+
+#define DEFAULT_PITCH_ROTATION_PAWN - 50.0f
+
+#define DEFAULT_PAWN_LOCATION_Z_AXIS_MIN 300.0f
+#define DEFAULT_PAWN_LOCATION_Z_AXIS_MAX 1800.0f
+
+#define MAX_ALTITUDE_IN_LEVEL 10000
 
 
 UCLASS(Abstract)
@@ -26,19 +54,28 @@ public :
 		virtual void BeginPlay() override;
 		virtual void Tick(float DeltaTime) override;
 		virtual void SetupInputComponent() override;
-
-
-		UFUNCTION(BlueprintCallable)
-			class UThematicUI_Template* GetConstructionWidget();
 		
 		UFUNCTION(BlueprintCallable)
 			const AMainGameMode* GetMainGameMode() { return GameMode; }
 
+		UFUNCTION(BlueprintCallable)
+			const AMainGameState* GetGameState() { return GameState; }
 
 	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
 
+
+		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management
+		UFUNCTION(BlueprintCallable)
+			class UUI_ConstructionMain* GetConstructionWidget();
+
+		UFUNCTION(BlueprintCallable)
+			class UUI_Main* GetMainWidget();
+
+		void SetMainWidget(class UUI_Main* Widget);
+
+		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management
 		// Called in ThematicUI_Template NativeConstruct
-		void SetConstructionWidget(UThematicUI_Template* Widget);
+		void SetConstructionWidget(class UUI_ConstructionMain* Widget);
 
 
 	// --------------------------------------		PAWN CONTROL FUNCTIONS		--------------------------------------
@@ -99,6 +136,9 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		class AMainGameMode* GameMode {};
+
+	UPROPERTY(BlueprintReadOnly)
+		class AMainGameState* GameState{};
 
 	// Set this value to true to disable all kinds of inputs to the Pawn class (zoom, move, rotate)
 	UPROPERTY(BlueprintReadWrite, Transient, Category = "Pawn Control Parameter")
@@ -192,9 +232,12 @@ protected :
 		float PawnMaxLocationZAxis{ DEFAULT_PAWN_LOCATION_Z_AXIS_MAX };
 
 
-	// --------------------------------------		BUILDING WIDGETS PARAMETERS		  --------------------------------------
+	// --------------------------------------		WIDGETS PARAMETERS		  --------------------------------------
 
+	// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management
+	UPROPERTY(BlueprintReadOnly)
+		class UUI_ConstructionMain* ConstructionWidget {nullptr};
 
 	UPROPERTY(BlueprintReadOnly)
-		class UThematicUI_Template* ConstructionWidget {nullptr};
+		class UUI_Main* MainWidget { nullptr };
 };
