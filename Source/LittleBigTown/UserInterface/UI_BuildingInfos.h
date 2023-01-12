@@ -54,6 +54,12 @@ protected :
 		class UTextBlock* TB_Name;
 
 	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* TB_Wealth;
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* TB_Description;
+
+	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Incomes;
 
 	UPROPERTY(meta = (BindWidget))

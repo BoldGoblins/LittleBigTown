@@ -9,6 +9,7 @@
 #include "Kismet/GameplayStatics.h"
 #include "LittleBigTown/Actors/Building.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
+#include "LittleBigTown/GameSystem/City.h"
 
 #include "MainGameState.generated.h"
 
@@ -44,17 +45,25 @@ public :
 
 		const FDateTime& GetGameClock() { return GameClock; }
 
-		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return ResBuilArr; }
+		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return City.m_ResBuilArr; }
 
+		void AddOrSubResidents(const TEnumAsByte<WealthLevels>& WealthLevels, int32 Count, int32 IncomePerHabitant);
+/*
 		UFUNCTION()
 			void UpdateInformations(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos);
-
+*/
 		UFUNCTION(BlueprintCallable)
 			void AddNewBuilding(ABuilding* Building);
 
-		int32 GetPopulationCount() const { return TotalPopulation; }
+		int32 GetPopulationCount() const { return City.m_TotalPopulation; }
+		int32 GetPopulationVariation() const { return City.m_PopulationVariation; }
 		int32 GetTotalMoney() const { return TotalMoney; }
 		int32 GetIncomes() const { return TotalIncomes; }
+
+		float GetResidentialDemand(const TEnumAsByte<WealthLevels>& WealthLevels) const;
+
+		UFUNCTION(BlueprintCallable)
+			void DebugSetResidentialDemand(float Poor, float Middle, float Rich);
 
 		// return the Month name after checking the GameClock
 		// Names are set into the Editor in the BP derivated class of the MainGameState
@@ -76,7 +85,7 @@ private :
 
 	void PreMonthlySetup();
 
-	void PostMonthlySetup();
+	void PreHourSetup();
 
 protected :
 	
@@ -94,19 +103,36 @@ protected :
 	UPROPERTY(EditDefaultsOnly, Category = "Clock")
 		int32 ClockSpeed { CLOCK_SPEED };
 
-	TArray <TWeakObjectPtr<AResidentialBuilding>> ResBuilArr;
 
 
 	// --------------------------------------		Game properties		--------------------------------------
-
-
-	UPROPERTY(BlueprintReadOnly)
-		int32 TotalPopulation { 0 };
 
 	UPROPERTY(BlueprintReadOnly)
 		int32 TotalMoney { 0 };
 
 	UPROPERTY(BlueprintReadOnly)
 		int32 TotalIncomes { 0 };
+
+	UPROPERTY(BlueprintReadOnly)
+		int32 TotalOutgoings { 0 };
+
+	City City {};
+
+
 	
 };
+
+/*
+class HousingApplicants
+{
+public : 
+
+	void SetWealthLevels(float Poor, float Middle, float Rich) { m_Poor = Poor, m_Middle = Middle, m_Rich = Rich; }
+
+private : 
+
+	float m_Poor { 0.5f };
+	float m_Middle { 0.5f };
+	float m_Rich { 0.5f };
+};
+*/

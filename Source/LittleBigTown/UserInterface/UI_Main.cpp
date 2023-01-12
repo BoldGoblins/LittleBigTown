@@ -8,6 +8,9 @@
 #include "LittleBigTown/GameSystem/MainGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CanvasPanel.h"
+#include "Components/HorizontalBox.h"
+#include "LittleBigTown/UserInterface/UI_Demand.h"
+
 // InfoBuildingHandle
 #include "LittleBigTown/Actors/Building.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
@@ -23,42 +26,46 @@ void UUI_Main::NativeConstruct()
 	TB_Month->SetText(FText::FromString(FIRST_MONTH));
 	TB_Year->SetText(FText::FromString(FIRST_YEAR));
 
-
-	const auto MainGS{ Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld())) };
-
-	if (MainGS)
-		GameState = MainGS;
-
+	GameState = Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld()));;
 	GameState->OnNewYearDelegate.AddDynamic(this, &ThisClass::SetClockYearUpdate);
 	GameState->OnNewMonthDelegate.AddDynamic(this, &ThisClass::SetClockMonthUpdate);
 	GameState->OnNewHourDelegate.AddDynamic(this, &ThisClass::SetClockHourUpdate);
 	GameState->OnNewMinuteDelegate.AddDynamic(this, &ThisClass::SetClockMinuteUpdate);
 
-
 	// Set MainWidget in PC
-	const auto PC{ Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	const auto PC { Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
 	if (PC)
 		PC->SetMainWidget(this);
 
-	const auto InfosWidget{ Cast <UUI_BuildingInfos>(CanvasPanel->GetChildAt(BUILDING_INFOS_POS)) };
+	BuildingInfosWidget = Cast <UUI_BuildingInfos>(CanvasPanel->GetChildAt(BUILDING_INFOS_POS));
 
-	if (InfosWidget)
-		BuildingInfosWidget = InfosWidget;
+	DemandWidget = Cast <UUI_Demand> (HB_Low->GetChildAt(DEMAND_WIDGET_POS));
+	DemandWidget->UpdateDemand(GameState->GetResidentialDemand(WealthLevels::Poor),
+		GameState->GetResidentialDemand(WealthLevels::Middle), GameState->GetResidentialDemand(WealthLevels::Rich));
 }
 
 void UUI_Main::GamePropertiesDisplay()
 {
+	// ProgressBars :
+	DemandWidget->UpdateDemand(GameState->GetResidentialDemand(WealthLevels::Poor),
+		GameState->GetResidentialDemand(WealthLevels::Middle), GameState->GetResidentialDemand(WealthLevels::Rich));
+
+	// Text :
 	TB_Population->SetText(FText::FromString(FString::FormatAsNumber(GameState->GetPopulationCount())));
+
+	TB_PopVariation->SetText(FText::FromString((GameState->GetPopulationVariation() >= 0 ? TEXT("+") : TEXT("")) +
+		FString::FormatAsNumber(GameState->GetPopulationVariation())));
+
 	TB_TotalMoney->SetText(FText::FromString(FString::FormatAsNumber(GameState->GetTotalMoney()) + TEXT(" $")));
+
 	TB_Incomes->SetText(FText::FromString((GameState->GetIncomes() >= 0 ? TEXT("+") : TEXT("")) +
 		FString::FormatAsNumber(GameState->GetIncomes()) + TEXT(" $")));
 
-	GameState->GetTotalMoney() < 0 ? TB_TotalMoney->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f))) :
-		TB_TotalMoney->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f)));
-
-	GameState->GetIncomes() >= 0 ? TB_Incomes->SetColorAndOpacity(FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f))) :
-		TB_Incomes->SetColorAndOpacity(FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f)));
+	// Color :
+	GameState->GetPopulationVariation() < 0 ? TB_PopVariation->SetColorAndOpacity(FONT_COLOR_RED) : TB_PopVariation->SetColorAndOpacity(FONT_COLOR_GREEN);
+	GameState->GetTotalMoney() < 0 ? TB_TotalMoney->SetColorAndOpacity(FONT_COLOR_RED) : TB_TotalMoney->SetColorAndOpacity(FONT_COLOR_WHITE);
+	GameState->GetIncomes() < 0 ? TB_Incomes->SetColorAndOpacity(FONT_COLOR_RED) : TB_Incomes->SetColorAndOpacity(FONT_COLOR_GREEN);
 }
 
 void UUI_Main::SetClockMinuteUpdate(int32 Minute)
@@ -117,5 +124,3 @@ void UUI_Main::NativeTick(const FGeometry& MyGeometry, float DeltaTime)
 	Super::NativeTick(MyGeometry, DeltaTime);
 
 }
-
-

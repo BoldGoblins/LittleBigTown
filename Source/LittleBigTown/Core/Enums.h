@@ -17,3 +17,14 @@ enum ESlotSize
 {
 	Small, Medium, Large, NoSize, DefaultSizeEnum
 };
+
+UENUM(BlueprintType)
+enum WealthLevels
+{
+	Poor, Middle, Rich, DefaultWealthEnum
+};
+
+enum SortingBy
+{
+	Occupation, Satisfaction
+};

@@ -20,14 +20,18 @@ ABuilding::ABuilding()
 	StaticMeshComponent->SetMobility(EComponentMobility::Static);
 
 	Tags.Add(TEXT("Building"));
-	/*
-	InfosBase.m_Name = Infos.m_Name;
-	InfosBase.m_CurrentLevel = Infos.m_CurrentLevel;
-	InfosBase.m_MaxLevel = Infos.m_MaxLevel;
-	InfosBase.m_OccupationMaxCount = Infos.m_OccupationMaxCount;
-	InfosBase.m_OccupationCurrentCount = Infos.m_OccupationCurrentCount;
-	InfosBase.m_Outgoings = Infos.m_Outgoings;
-	*/
+}
+
+void ABuilding::BeginPlay()
+{
+	Super::BeginPlay();
+
+	InfosBase.m_OccupationCurrentCount = 0;
+	InfosBase.m_Outgoings = Current_Outgoings;
+	InfosBase.m_WealthLevel = WealthLevel;
+	InfosBase.m_Name = Name;
+	InfosBase.m_Description = Description;
+	InfosBase.m_CurrentLevel = CurrentLevel;
 }
 
 

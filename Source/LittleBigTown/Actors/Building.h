@@ -19,12 +19,11 @@ public:
 	// Sets default values for this actor's properties
 	ABuilding();
 
+	void BeginPlay() override;
+
 	const FBuildingInfosBase& GetInfosBase() const { return InfosBase; }
 
 protected:
-
-	UPROPERTY(BlueprintReadOnly)
-		FBuildingInfosBase InfosBase;
 
 	UPROPERTY(BlueprintReadOnly)
 		class USceneComponent* RootComp {};
@@ -32,8 +31,24 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UStaticMeshComponent* StaticMeshComponent{};
 
+
+	UPROPERTY(BlueprintReadOnly)
+		FBuildingInfosBase InfosBase;
+
 	UPROPERTY(EditDefaultsOnly)
 		FText Name;
+
+	UPROPERTY(EditDefaultsOnly)
+		FText Description;
+
+	UPROPERTY(EditDefaultsOnly)
+		TEnumAsByte <WealthLevels> WealthLevel{ DefaultWealthEnum };
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 Current_Outgoings;
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 ResidentsMaxCount { 0 };
 
 	UPROPERTY(EditDefaultsOnly)
 		int32 CurrentLevel { 1 };

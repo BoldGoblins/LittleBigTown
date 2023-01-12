@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "Enums.h"
 
 #include "Structs.generated.h"
 
@@ -33,12 +34,16 @@ struct FBuildingInfosBase
 {
 	GENERATED_USTRUCT_BODY()
 
+	FText GetWealthLevelAsText() const;
+
 	FText m_Name {};
+	FText m_Description{};
 	int32 m_CurrentLevel{};
 	int32 m_MaxLevel{};
 	int32 m_OccupationMaxCount{};
 	int32 m_OccupationCurrentCount{};
 	int32 m_Outgoings{};
+	TEnumAsByte <WealthLevels>  m_WealthLevel{};
 };
 
 USTRUCT(BlueprintType)
@@ -47,6 +52,7 @@ struct FResidentialBuildingInfos
 	GENERATED_USTRUCT_BODY()
 
 	float m_SatisfactionPercent{};
-	int32 m_Incomes{};
+	int32 m_TotalIncomes{};
+	int32 m_IncomesPerHab{};
 };
 
