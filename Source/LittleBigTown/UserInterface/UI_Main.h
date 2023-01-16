@@ -8,7 +8,7 @@
 #include "UI_Main.generated.h"
 
 
-#define BUILDING_INFOS_POS 1
+// #define BUILDING_INFOS_POS 1
 #define DEMAND_WIDGET_POS 1
 #define FONT_COLOR_RED FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f))
 #define FONT_COLOR_GREEN FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f))
@@ -37,9 +37,6 @@ public :
 	void NativeConstruct() override;
 
 	void NativeTick(const FGeometry& MyGeometry, float DeltaTime) override;
-
-	UFUNCTION(BlueprintCallable)
-		class UUI_BuildingInfos* GetBuildingInfosWidget() const { return BuildingInfosWidget; }
 
 private : 
 	
@@ -83,7 +80,7 @@ protected :
 
 	class AMainGameState* GameState;
 
-	class UUI_BuildingInfos* BuildingInfosWidget;
+	// class UUI_BuildingInfos* BuildingInfosWidget;
 
 	class UUI_Demand* DemandWidget;
 

@@ -38,11 +38,9 @@ void UUI_Main::NativeConstruct()
 	if (PC)
 		PC->SetMainWidget(this);
 
-	BuildingInfosWidget = Cast <UUI_BuildingInfos>(CanvasPanel->GetChildAt(BUILDING_INFOS_POS));
-
 	DemandWidget = Cast <UUI_Demand> (HB_Low->GetChildAt(DEMAND_WIDGET_POS));
-	DemandWidget->UpdateDemand(GameState->GetResidentialDemand(WealthLevels::Poor),
-		GameState->GetResidentialDemand(WealthLevels::Middle), GameState->GetResidentialDemand(WealthLevels::Rich));
+
+	GamePropertiesDisplay();
 }
 
 void UUI_Main::GamePropertiesDisplay()
@@ -59,8 +57,8 @@ void UUI_Main::GamePropertiesDisplay()
 
 	TB_TotalMoney->SetText(FText::FromString(FString::FormatAsNumber(GameState->GetTotalMoney()) + TEXT(" $")));
 
-	TB_Incomes->SetText(FText::FromString((GameState->GetIncomes() >= 0 ? TEXT("+") : TEXT("")) +
-		FString::FormatAsNumber(GameState->GetIncomes()) + TEXT(" $")));
+	TB_Incomes->SetText(FText::FromString((GameState->GetIncomes() >= 0 ? TEXT("+") : TEXT("-")) +
+		FString::FormatAsNumber(GameState->GetIncomes() >=0 ? GameState->GetIncomes() : GameState->GetIncomes() * -1) + TEXT(" $")));
 
 	// Color :
 	GameState->GetPopulationVariation() < 0 ? TB_PopVariation->SetColorAndOpacity(FONT_COLOR_RED) : TB_PopVariation->SetColorAndOpacity(FONT_COLOR_GREEN);

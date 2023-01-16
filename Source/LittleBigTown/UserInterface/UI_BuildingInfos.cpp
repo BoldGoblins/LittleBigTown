@@ -10,11 +10,15 @@
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
 
 
 void UUI_BuildingInfos::NativeConstruct()
 {
+	const auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
+	if (PC)
+		PC->SetBuildingInfosWidget(this);	
 }
 // Building passed from BP_MainPlayerController (Click Handle)
 // UpdateAndDisplay is inside the if IsA(Type) because we need to trigger the good overload version of this function

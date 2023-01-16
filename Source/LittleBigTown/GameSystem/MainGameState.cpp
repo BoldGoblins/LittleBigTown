@@ -42,6 +42,7 @@ void AMainGameState::BeginPlay()
 		}
 	}
 	
+	City.DemandModifier = DemandModifier;
 }
 
 void AMainGameState::AddOrSubResidents(const TEnumAsByte<WealthLevels>& WealthLevels, int32 Count, int32 IncomePerHabitant)

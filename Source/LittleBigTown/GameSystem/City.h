@@ -10,11 +10,10 @@
 
 struct City
 {
-	City();
-
 	int32 m_TotalPopulation { 0 };
 	int32 m_CityLevel { 1 };
 	int32 m_PopulationVariation {0};
+	int32 DemandModifier{0};
 
 	void UpdateDemand(const TEnumAsByte<WealthLevels>& WealthLevels, int32 Count);
 

@@ -18,6 +18,7 @@
 #define FIRST_MONTH "Janvier"
 #define FIRST_TIME "00:00"
 #define CLOCK_SPEED 10
+#define DEMAND_MODIFIER 1000
 
 
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTimeUpdatedSignature, int32, Hours, int32, Minutes);
@@ -107,6 +108,9 @@ protected :
 
 	// --------------------------------------		Game properties		--------------------------------------
 
+	UPROPERTY(EditDefaultsOnly, Category = "City properties")
+		int32 DemandModifier { DEMAND_MODIFIER };
+
 	UPROPERTY(BlueprintReadOnly)
 		int32 TotalMoney { 0 };
 
@@ -121,18 +125,3 @@ protected :
 
 	
 };
-
-/*
-class HousingApplicants
-{
-public : 
-
-	void SetWealthLevels(float Poor, float Middle, float Rich) { m_Poor = Poor, m_Middle = Middle, m_Rich = Rich; }
-
-private : 
-
-	float m_Poor { 0.5f };
-	float m_Middle { 0.5f };
-	float m_Rich { 0.5f };
-};
-*/

@@ -38,9 +38,17 @@ void AResidentialBuilding::UpdateNewHour(int32 Hour)
 	if (InfosBase.m_OccupationCurrentCount + OccupationVar > InfosBase.m_OccupationMaxCount)
 		OccupationVar = InfosBase.m_OccupationMaxCount - InfosBase.m_OccupationCurrentCount;
 
+	else if (InfosBase.m_OccupationCurrentCount + OccupationVar < 0)
+		OccupationVar = -InfosBase.m_OccupationCurrentCount;
+
 	InfosBase.m_OccupationCurrentCount += OccupationVar;
+
 	ResidentialInformations.m_TotalIncomes += OccupationVar * ResidentialInformations.m_IncomesPerHab;
 	MainGameSate->AddOrSubResidents(InfosBase.m_WealthLevel, OccupationVar, ResidentialInformations.m_IncomesPerHab);
+
+	// GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Red, FString::Printf(TEXT("Variation : %d"), OccupationVar));
+	// GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Red, 
+		// FString::Printf(TEXT("CA : %d"), ResidentialInformations.m_TotalIncomes - InfosBase.m_Outgoings));
 
 	OnResBuildingInfosChangedDelegate.Broadcast(InfosBase, ResidentialInformations);
 }

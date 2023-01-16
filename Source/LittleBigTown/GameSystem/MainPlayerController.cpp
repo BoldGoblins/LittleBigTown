@@ -255,6 +255,19 @@ void AMainPlayerController::SetMainWidget(UUI_Main* Widget)
 	MainWidget = Widget;
 }
 
+void AMainPlayerController::SetBuildingInfosWidget(UUI_BuildingInfos* Widget)
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(Widget, 
+		TEXT("Error in AMainPlayerController::SetBuildingInfosWidget, Widget == nultpr. Check that this ptr is set in BuildingInfos Construct."));
+
+#endif
+
+	BuildingInfosWidget = Widget;
+}
+
 void AMainPlayerController::SetConstructionWidget(UUI_ConstructionMain* Widget)
 {
 #ifdef DEBUG_ONLY

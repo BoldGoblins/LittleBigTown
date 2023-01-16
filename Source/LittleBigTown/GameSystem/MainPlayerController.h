@@ -58,13 +58,14 @@ public :
 		UFUNCTION(BlueprintCallable)
 			const AMainGameMode* GetMainGameMode() { return GameMode; }
 
+		// Peut être à supprimer si pas besoin (ne pourra pas être répliqué en multi...)
 		UFUNCTION(BlueprintCallable)
 			const AMainGameState* GetGameState() { return GameState; }
 
-	// --------------------------------------		BUILDING WIDGETS FUNCTIONS		  --------------------------------------
+	// --------------------------------------		WIDGETS FUNCTIONS		  --------------------------------------
 
 
-		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management
+		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management EDIT : Maybe not
 		UFUNCTION(BlueprintCallable)
 			class UUI_ConstructionMain* GetConstructionWidget();
 
@@ -72,8 +73,9 @@ public :
 			class UUI_Main* GetMainWidget();
 
 		void SetMainWidget(class UUI_Main* Widget);
+		void SetBuildingInfosWidget(class UUI_BuildingInfos* Widget);
 
-		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management
+		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management EDIT : Maybe not
 		// Called in ThematicUI_Template NativeConstruct
 		void SetConstructionWidget(class UUI_ConstructionMain* Widget);
 
@@ -240,4 +242,7 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		class UUI_Main* MainWidget { nullptr };
+
+	UPROPERTY(BlueprintReadOnly)
+		class UUI_BuildingInfos* BuildingInfosWidget { nullptr };
 };

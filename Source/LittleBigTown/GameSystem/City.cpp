@@ -11,28 +11,19 @@
 // debug
 #include "LittleBigTown/Core/Debugger.h"
 
-
-
-City::City()
-{
-	/*
-	const auto GS{ Cast <AMainGameState> (UGameplayStatics::GetGameState(GEngine->GameViewport->GetWorld())) };
-
-	if(GS)
-	*/
-}
-
 void City::UpdateDemand(const TEnumAsByte<WealthLevels>& WealthLevels, int32 Count)
 {
 
 #ifdef DEBUG_ONLY
 
 	checkf(WealthLevels != WealthLevels::DefaultWealthEnum,
-		TEXT("Error in City::UpdateDemand, WealthLevels == WealthLevels::DefaultWealthEnum."))
+		TEXT("Error in City::UpdateDemand, WealthLevels == WealthLevels::DefaultWealthEnum."));
+
+	checkf(DemandModifier != 0, TEXT("Error in City::UpdateDemand, DemandModifier == 0. Check this value is set in MainGameState BeginPlay."));
 
 #endif
 
-	int32 Total { m_CityLevel * 1000 };
+	int32 Total { m_CityLevel * DemandModifier };
 	float Percent { float(Count) / Total };
 
 	switch (WealthLevels)
