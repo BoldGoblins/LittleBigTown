@@ -37,13 +37,14 @@ struct FBuildingInfosBase
 	FText GetWealthLevelAsText() const;
 
 	FText m_Name {};
+	FText m_Owner{};
 	FText m_Description{};
 	int32 m_CurrentLevel{};
 	int32 m_MaxLevel{};
 	int32 m_OccupationMaxCount{};
 	int32 m_OccupationCurrentCount{};
 	int32 m_Outgoings{};
-	TEnumAsByte <WealthLevels>  m_WealthLevel{};
+	TEnumAsByte <EWealthLevels>  m_WealthLevel{};
 };
 
 USTRUCT(BlueprintType)

@@ -8,13 +8,14 @@
 #include "LittleBigTown/GameSystem/MainGameState.h"
 #include "Kismet/GameplayStatics.h"
 #include "Components/CanvasPanel.h"
+#include "Components/Button.h"
 #include "Components/HorizontalBox.h"
-#include "LittleBigTown/UserInterface/UI_Demand.h"
+#include "LittleBigTown/UserInterface/Main/UI_Demand.h"
 
 // InfoBuildingHandle
 #include "LittleBigTown/Actors/Building.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
-#include "UI_BuildingInfos.h"
+#include "LittleBigTown/UserInterface/BuildingInfos/UI_BuildingInfos.h"
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
 
@@ -38,7 +39,9 @@ void UUI_Main::NativeConstruct()
 	if (PC)
 		PC->SetMainWidget(this);
 
-	DemandWidget = Cast <UUI_Demand> (HB_Low->GetChildAt(DEMAND_WIDGET_POS));
+	// DemandWidget = Cast <UUI_Demand> (HB_Low->GetChildAt(DEMAND_WIDGET_POS));
+
+	DemandWidget = Cast <UUI_Demand>(Button_Demand->GetChildAt(0));
 
 	GamePropertiesDisplay();
 }
@@ -46,8 +49,8 @@ void UUI_Main::NativeConstruct()
 void UUI_Main::GamePropertiesDisplay()
 {
 	// ProgressBars :
-	DemandWidget->UpdateDemand(GameState->GetResidentialDemand(WealthLevels::Poor),
-		GameState->GetResidentialDemand(WealthLevels::Middle), GameState->GetResidentialDemand(WealthLevels::Rich));
+	DemandWidget->UpdateDemand(GameState->GetResidentialDemand(EWealthLevels::Poor),
+		GameState->GetResidentialDemand(EWealthLevels::Middle), GameState->GetResidentialDemand(EWealthLevels::Rich));
 
 	// Text :
 	TB_Population->SetText(FText::FromString(FString::FormatAsNumber(GameState->GetPopulationCount())));

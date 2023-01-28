@@ -1,7 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LittleBigTown/UserInterface/UI_Demand.h"
+#include "LittleBigTown/UserInterface/Main/UI_Demand.h"
 #include "Components/ProgressBar.h"
 
 void UUI_Demand::UpdateDemand(float PoorDemand, float MiddleDemand, float RichDemand)

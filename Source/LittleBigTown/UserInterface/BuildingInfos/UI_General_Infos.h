@@ -7,41 +7,31 @@
 // struct residential infos definition
 #include "LittleBigTown/Core/Structs.h"
 
-#include "UI_BuildingInfos.generated.h"
-
-// FText MakeProportionText(int32 a, int32 b);
+#include "UI_General_Infos.generated.h"
 
 
 UCLASS()
-class LITTLEBIGTOWN_API UUI_BuildingInfos : public UUserWidget
+class LITTLEBIGTOWN_API UUI_General_Infos : public UUserWidget
 {
 	GENERATED_BODY()
 
-
-public : 
+public:
 
 	void NativeConstruct() override;
-
-	UFUNCTION(BlueprintCallable)
-		void NewDisplayBuildingInfos(class ABuilding* Building);
-
-	UFUNCTION(BlueprintCallable)
-		void HideBuildingInfo();
 
 	// Function to overload
 	// Residential Version
 	UFUNCTION()
 		void UpdateAndDisplayInfos(const struct FBuildingInfosBase& BaseInfos, const struct FResidentialBuildingInfos& ResInfos);
-		
-private : 
+
+private:
 
 	void UpdateAndDisplayBaseInfos(const struct FBuildingInfosBase& BaseInfos);
 
-protected :
+protected:
 
 	void ResetAllComponents();
 
-	TWeakObjectPtr <class AResidentialBuilding> CurrResBuilding;
 
 	UPROPERTY(meta = (BindWidget))
 		class UVerticalBox* VerticalBox;
@@ -49,9 +39,6 @@ protected :
 
 	// --------------------------------------		TEXTBLOCKS		--------------------------------------
 
-
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* TB_Name;
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Wealth;
@@ -67,7 +54,7 @@ protected :
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Level;
-	
+
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_OccupationCount;
 

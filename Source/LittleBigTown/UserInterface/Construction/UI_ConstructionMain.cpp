@@ -156,6 +156,6 @@ void UUI_ConstructionMain::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> Slot
 	ConstructionSelectionWidget->ClearScrollBox();
 	ConstructionSelectionWidget->PopulateScrollBox(GameMode->GetBuildingsMap(SlotType, SlotSize), ComboBox->GetSelectedOption());
 
-	this->SetVisibility(ESlateVisibility::Visible);
+	this->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
 

@@ -4,7 +4,7 @@
 // APlayerPawn
 #include "PlayerPawn.h"
 #include "MainGameMode.h"
-#include "LittleBigTown/UserInterface/UI_ConstructionMain.h"
+#include "LittleBigTown/UserInterface/Construction/UI_ConstructionMain.h"
 // MousePosOnViewport
 #include "Blueprint/WidgetLayoutLibrary.h"
 // GameSettings
@@ -12,7 +12,9 @@
 // Clamp 
 #include "Math/UnrealMathUtility.h"
 // UI_Main
-#include "LittleBigTown/UserInterface/UI_Main.h"
+#include "LittleBigTown/UserInterface/Main/UI_Main.h"
+// Graphs Main
+#include "LittleBigTown/UserInterface/Graphs/UI_GraphsMain.h"
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
 
@@ -266,6 +268,18 @@ void AMainPlayerController::SetBuildingInfosWidget(UUI_BuildingInfos* Widget)
 #endif
 
 	BuildingInfosWidget = Widget;
+}
+
+void AMainPlayerController::SetGraphWidget(UUI_GraphsMain* Widget)
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(Widget, TEXT("Error in AMainPlayerController::SetGraphWidget, Widget == nullptr "));
+
+#endif
+
+	GraphsWidget = Widget;
 }
 
 void AMainPlayerController::SetConstructionWidget(UUI_ConstructionMain* Widget)

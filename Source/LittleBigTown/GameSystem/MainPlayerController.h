@@ -72,8 +72,12 @@ public :
 		UFUNCTION(BlueprintCallable)
 			class UUI_Main* GetMainWidget();
 
+		UFUNCTION(BlueprintCallable)
+			class UUI_GraphsMain* GetGraphsWidget() const { return GraphsWidget; }
+
 		void SetMainWidget(class UUI_Main* Widget);
 		void SetBuildingInfosWidget(class UUI_BuildingInfos* Widget);
+		void SetGraphWidget(class UUI_GraphsMain* Widget);
 
 		// WILL BE DEPRECATED IN FUTURE : UUI_Main'll handle Widgets management EDIT : Maybe not
 		// Called in ThematicUI_Template NativeConstruct
@@ -245,4 +249,7 @@ protected :
 
 	UPROPERTY(BlueprintReadOnly)
 		class UUI_BuildingInfos* BuildingInfosWidget { nullptr };
+
+	UPROPERTY(BlueprintReadOnly)
+		class UUI_GraphsMain* GraphsWidget { nullptr };
 };

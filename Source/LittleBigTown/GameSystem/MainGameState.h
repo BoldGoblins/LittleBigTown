@@ -20,6 +20,15 @@
 #define CLOCK_SPEED 10
 #define DEMAND_MODIFIER 1000
 
+// Demand arrays indices :
+#define INDICE_INDUSTRIAL 0
+#define INDICE_FINANCE 1
+#define INDICE_SCIENCE 2
+#define INDICE_TOURISM 3
+#define INDICE_CRIME 4
+#define INDICE_MILITARY 5
+#define INDICE_SPIRITUAL 6
+
 
 // DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnTimeUpdatedSignature, int32, Hours, int32, Minutes);
 
@@ -48,7 +57,10 @@ public :
 
 		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return City.m_ResBuilArr; }
 
-		void AddOrSubResidents(const TEnumAsByte<WealthLevels>& WealthLevels, int32 Count, int32 IncomePerHabitant);
+		const TArray<double>& GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+
+		void AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthLevels, 
+			const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count, int32 IncomePerHabitant);
 /*
 		UFUNCTION()
 			void UpdateInformations(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos);
@@ -61,7 +73,7 @@ public :
 		int32 GetTotalMoney() const { return TotalMoney; }
 		int32 GetIncomes() const { return TotalIncomes; }
 
-		float GetResidentialDemand(const TEnumAsByte<WealthLevels>& WealthLevels) const;
+		double GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		UFUNCTION(BlueprintCallable)
 			void DebugSetResidentialDemand(float Poor, float Middle, float Rich);

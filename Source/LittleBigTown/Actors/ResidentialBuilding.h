@@ -8,6 +8,7 @@
 #include "LittleBigTown/Core/Structs.h"
 // Enum WealthLevels definition
 #include "LittleBigTown/Core/Enums.h"
+#include "LittleBigTown/Core/Resident.h"
 
 #include "ResidentialBuilding.generated.h"
 
@@ -21,7 +22,7 @@
 // Celui-ci à déjà accès au Building currently displayed via un WeakObjectPtr (lui permet de Unbind la delegate)
 // Du coup, le widget n'a pas besoin des infos passées en paramètre de la delegate...
 // Si pas d'autres communications requises, considérer d'enlever les paramètres et de garder une delegate sans params...
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnResBuildingInfosChangedSignature, const FBuildingInfosBase&, BaseInfos, const FResidentialBuildingInfos&, ResInfos);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnResBuildingInfosChangedSignature);
 
 UCLASS()
 class LITTLEBIGTOWN_API AResidentialBuilding : public ABuilding
@@ -42,18 +43,25 @@ public :
 
 	FOnResBuildingInfosChangedSignature OnResBuildingInfosChangedDelegate;
 
-
 	void BeginPlay() override;
 
 protected : 
 
 	UPROPERTY(BlueprintReadOnly)
-		class AMainGameState* MainGameSate;
+		class AMainGameState* MainGameState;
 
 	UPROPERTY(EditDefaultsOnly)
 		int32 IncomePerHabitant { BASE_INCOMES };
 
 
 	FResidentialBuildingInfos ResidentialInformations;
-	
+
+	TArray <Resident> m_Residents {};
+
+
+private : 
+
+	void GenerateResidents(int32 Count);
+
+
 };

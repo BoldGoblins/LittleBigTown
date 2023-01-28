@@ -19,12 +19,18 @@ enum ESlotSize
 };
 
 UENUM(BlueprintType)
-enum WealthLevels
+enum EWealthLevels
 {
 	Poor, Middle, Rich, DefaultWealthEnum
 };
 
-enum SortingBy
+UENUM(BlueprintType)
+enum ECitySpecialty
+{
+	Industry, Finance, Science, Tourism, Crime, Military, Spiritual, DefaultCitySpecialtyEnum
+};
+
+enum ESortingBy
 {
 	Occupation, Satisfaction
 };

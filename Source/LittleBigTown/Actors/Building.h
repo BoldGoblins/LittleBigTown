@@ -9,6 +9,8 @@
 #include "Building.generated.h"
 
 
+#define LOCTEXT_NAMESPACE "TempoTry"
+
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API ABuilding : public AActor
@@ -38,11 +40,16 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 		FText Name;
 
+	// Ne pas définir l'owner directement dans les infos du building à l'avenir
+	// Le chopper depuis le PC par exemple
+	UPROPERTY(EditDefaultsOnly)
+		FText OwnerName {LOCTEXT("Sarkozy", "Sarkozy") };
+
 	UPROPERTY(EditDefaultsOnly)
 		FText Description;
 
 	UPROPERTY(EditDefaultsOnly)
-		TEnumAsByte <WealthLevels> WealthLevel{ DefaultWealthEnum };
+		TEnumAsByte <EWealthLevels> WealthLevel{ DefaultWealthEnum };
 
 	UPROPERTY(EditDefaultsOnly)
 		int32 Current_Outgoings;
@@ -57,3 +64,5 @@ protected:
 		int32 MaxLevel { 0 };
 
 };
+
+#undef LOCTEXT_NAMESPACE

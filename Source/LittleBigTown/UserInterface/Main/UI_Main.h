@@ -9,7 +9,7 @@
 
 
 // #define BUILDING_INFOS_POS 1
-#define DEMAND_WIDGET_POS 1
+// #define DEMAND_WIDGET_POS 1
 #define FONT_COLOR_RED FSlateColor(FLinearColor(1.0f, 0.0f, 0.0f))
 #define FONT_COLOR_GREEN FSlateColor(FLinearColor(0.0f, 1.0f, 0.0f))
 #define FONT_COLOR_WHITE FSlateColor(FLinearColor(1.0f, 1.0f, 1.0f))
@@ -43,6 +43,8 @@ private :
 	void GamePropertiesDisplay();
 
 protected :
+	UPROPERTY(meta = (BindWidget))
+		class UButton* Button_Demand;
 
 	UPROPERTY(meta = (BindWidget))
 		class UHorizontalBox* HB_High;
