@@ -37,7 +37,6 @@ public :
 	UFUNCTION(BlueprintCallable)
 		void AddSatisfaction(float Satisfaction);
 
-
 	UFUNCTION(BlueprintCallable)
 		const FResidentialBuildingInfos & GetInfosResidential() const { return ResidentialInformations; }
 
@@ -56,7 +55,7 @@ protected :
 
 	FResidentialBuildingInfos ResidentialInformations;
 
-	TArray <Resident> m_Residents {};
+	TArray <FResident> m_Residents {};
 
 
 private : 

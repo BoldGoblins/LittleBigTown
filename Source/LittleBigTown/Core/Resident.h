@@ -4,18 +4,24 @@
 
 #include "CoreMinimal.h"
 #include "LittleBigTown/Core/Enums.h"
+// TEST
+#include "LittleBigTown/Core/SocialClass.h"
 
-class Resident
+struct FResident
 {
-public:
 
-	Resident(const TEnumAsByte<enum ECitySpecialty>& Type) : m_Type(Type) {}
+	FResident(const TEnumAsByte<enum ECitySpecialty>& Type, const FSocialClasses & SocialClass) : m_Type { Type },
+		m_SubClassName { SocialClass.GetRandomSubClass(Type) }, m_Needs { SocialClass.GetMap(Type)[m_SubClassName] } {}
+
+	const TEnumAsByte<enum ECitySpecialty>& GetType() { return m_Type; }
 
 	// ~Resident();
 
-protected : 
-
 	TEnumAsByte<enum ECitySpecialty> m_Type;
+
+	FName m_SubClassName;
+
+	FNeeds m_Needs;
 
 	double m_Satisfaction { 0.50 };
 };

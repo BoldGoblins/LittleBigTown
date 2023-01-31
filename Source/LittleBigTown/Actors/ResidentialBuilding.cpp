@@ -7,7 +7,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "LittleBigTown/GameSystem/MainGameState.h"
 #include "LittleBigTown/Core/Debugger.h"
-
+#include "LittleBigTown/Core/SocialClass.h"
 
 void AResidentialBuilding::BeginPlay()
 {
@@ -52,7 +52,11 @@ void AResidentialBuilding::GenerateResidents(int32 Count)
 		else if (x > Arr[4] && x <= Arr[5]) Specialty = ECitySpecialty::Military;
 		else if (x > Arr[5] && x <= Arr[6]) Specialty = ECitySpecialty::Spiritual;
 
-		m_Residents.Add(Resident(Specialty));
+		// DEBUG : 
+		const auto Resident { FResident(Specialty, MainGameState->GetSocialClasses(InfosBase.m_WealthLevel)) };
+		m_Residents.Add(Resident);
+		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s"), *Resident.m_SubClassName.ToString()));
+
 		MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, Specialty, 1, ResidentialInformations.m_IncomesPerHab);
 	}
 }
@@ -63,19 +67,36 @@ void AResidentialBuilding::UpdateNewHour(int32 Hour)
 
 	int32 OccupationVar { FMath::RoundToInt((Demand * TEN_PERCENT_OCCUPATION) + 
 		((ResidentialInformations.m_SatisfactionPercent - 0.5) * TEN_PERCENT_OCCUPATION)) };
-	
+
+	OccupationVar = FMath::Clamp(OccupationVar, -InfosBase.m_OccupationCurrentCount, InfosBase.m_OccupationMaxCount - InfosBase.m_OccupationCurrentCount);
+	/*
 	if (InfosBase.m_OccupationCurrentCount + OccupationVar > InfosBase.m_OccupationMaxCount)
 		OccupationVar = InfosBase.m_OccupationMaxCount - InfosBase.m_OccupationCurrentCount;
 
 	else if (InfosBase.m_OccupationCurrentCount + OccupationVar < 0)
 		OccupationVar = -InfosBase.m_OccupationCurrentCount;
-
+*/
+	// Modification des infos de l'habitation :
 	InfosBase.m_OccupationCurrentCount += OccupationVar;
-
 	ResidentialInformations.m_TotalIncomes += OccupationVar * ResidentialInformations.m_IncomesPerHab;
-	// MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, ECitySpecialty::Industry, OccupationVar, ResidentialInformations.m_IncomesPerHab);
-	if(OccupationVar != 0 )
+
+	if (OccupationVar > 0)
 		GenerateResidents(OccupationVar);
+
+	else if (OccupationVar < 0)
+	{
+		// méthode pour retirer habitants
+
+		for (int i{ 0 }; i < OccupationVar * (-1); ++i)
+		{
+			MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, m_Residents[0].GetType(), -1, ResidentialInformations.m_IncomesPerHab);
+			m_Residents.RemoveAt(0);
+			// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), m_Residents.Num()));
+		}
+	}
+
+	else
+		return;
 
 	OnResBuildingInfosChangedDelegate.Broadcast();
 }

@@ -9,18 +9,18 @@
 
 struct Demand
 {
-	double m_Industry{ 0.5f };
-	double m_Finance{ 0.5f };
-	double m_Science{ 0.5f };
-	double m_Tourism{ 0.5f };
-	double m_Crime{ 0.5f };
-	double m_Military{ 0.5f };
-	double m_Spirtual{ 0.5f };
+	float m_Industry{ 0.5f };
+	float m_Finance{ 0.5f };
+	float m_Science{ 0.5f };
+	float m_Tourism{ 0.5f };
+	float m_Crime{ 0.5f };
+	float m_Military{ 0.5f };
+	float m_Spirtual{ 0.5f };
 
-	double& AccessCategory(const TEnumAsByte<ECitySpecialty>& Category);
-	double GetAverage() const { return (m_Industry + m_Finance + m_Science + m_Tourism + m_Crime + m_Military + m_Spirtual) / 7; }
+	float& AccessCategory(const TEnumAsByte<ECitySpecialty>& Category);
+	float GetAverage() const { return (m_Industry + m_Finance + m_Science + m_Tourism + m_Crime + m_Military + m_Spirtual) / 7; }
 
-	void SetAllValues(double Value);
+	void SetAllValues(float Value);
 };
 
 struct City
@@ -40,9 +40,9 @@ struct City
 	Demand m_Rich {};
 	*/
 
-	TArray <double> m_DemandPoor{};
-	TArray <double> m_DemandMiddle{};
-	TArray <double> m_DemandRich{};
+	TArray <float> m_DemandPoor{};
+	TArray <float> m_DemandMiddle{};
+	TArray <float> m_DemandRich{};
 
 	TArray <TWeakObjectPtr<class AResidentialBuilding>> m_ResBuilArr;
 

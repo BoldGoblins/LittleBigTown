@@ -57,3 +57,32 @@ struct FResidentialBuildingInfos
 	int32 m_IncomesPerHab{};
 };
 
+USTRUCT(BlueprintType)
+struct FNeeds
+{
+	GENERATED_USTRUCT_BODY()
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_FoodAndDrinks { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Entertainment { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Social { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Health { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Retail { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Luxury { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Tourism { 0.0 };
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
+		float m_Culture { 0.0 };
+};

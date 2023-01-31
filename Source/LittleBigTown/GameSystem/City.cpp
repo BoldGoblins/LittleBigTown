@@ -48,7 +48,7 @@ void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TE
 */
 void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count)
 {
-	int32 Index{ int(Specialty) };
+	int32 Index { int(Specialty) };
 
 #ifdef DEBUG_ONLY
 
@@ -62,13 +62,13 @@ void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TE
 #endif
 
 	int32 Total{ m_CityLevel * DemandModifier };
-	double Percent{ double(Count) / Total };
+	float Percent{ float(Count) / Total };
 
 	switch (WealthLevels)
 	{
-	case EWealthLevels::Poor: m_DemandPoor[Index] = FMath::Clamp(m_DemandPoor[Index] - Percent, -1.0, 1.0); break;
-	case EWealthLevels::Middle: m_DemandMiddle[Index] = FMath::Clamp(m_DemandMiddle[Index] - Percent, -1.0, 1.0); break;
-	case EWealthLevels::Rich: m_DemandRich[Index] = FMath::Clamp(m_DemandRich[Index] - Percent, -1.0, 1.0); break;
+	case EWealthLevels::Poor: m_DemandPoor[Index] = FMath::Clamp(m_DemandPoor[Index] - Percent, -1.0f, 1.0f); break;
+	case EWealthLevels::Middle: m_DemandMiddle[Index] = FMath::Clamp(m_DemandMiddle[Index] - Percent, -1.0f, 1.0f); break;
+	case EWealthLevels::Rich: m_DemandRich[Index] = FMath::Clamp(m_DemandRich[Index] - Percent, -1.0f, 1.0f); break;
 	default: return;
 	}
 }
@@ -101,7 +101,7 @@ void City::SortBuildingArrayBy(TArray<TWeakObjectPtr<AResidentialBuilding>>& Arr
 	}
 }
 
-double& Demand::AccessCategory(const TEnumAsByte<ECitySpecialty>& Category)
+float& Demand::AccessCategory(const TEnumAsByte<ECitySpecialty>& Category)
 {
 
 #ifdef DEBUG_ONLY
@@ -124,7 +124,7 @@ double& Demand::AccessCategory(const TEnumAsByte<ECitySpecialty>& Category)
 	}
 }
 
-void Demand::SetAllValues(double Value)
+void Demand::SetAllValues(float Value)
 {
 	m_Industry = Value;
 	m_Finance = Value;

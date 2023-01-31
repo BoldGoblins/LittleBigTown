@@ -53,7 +53,7 @@ void AMainGameState::BeginPlay()
 	City.DemandModifier = DemandModifier;
 }
 
-const TArray<double> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+const TArray<float> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
 
 #ifdef DEBUG_ONLY
@@ -78,6 +78,24 @@ void AMainGameState::AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthL
 	City.m_PopulationVariation += Count;
 	TotalIncomes += (IncomePerHabitant * Count);
 	City.UpdateDemand(WealthLevels, Specialty, Count);
+}
+
+const FSocialClasses& AMainGameState::GetSocialClasses(const TEnumAsByte<EWealthLevels>& WealthLevel) const
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(WealthLevel != EWealthLevels::DefaultWealthEnum, TEXT("Error in AMainGameState::GetSocialClasses, WealthLevel == Default."));
+
+#endif
+
+	switch (WealthLevel)
+	{
+	case Poor: return m_SC_Poor; break;
+	case Middle: return m_SC_Middle; break;
+	case Rich: return m_SC_Rich; break;
+	default: return m_SC_Poor; break;
+	}
 }
 
 void AMainGameState::AddNewBuilding(ABuilding* Building)
@@ -121,7 +139,7 @@ double AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& We
 }
 */
 
-double AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+float AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
 
 #ifdef DEBUG_ONLY

@@ -11,6 +11,10 @@
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
 #include "LittleBigTown/GameSystem/City.h"
 
+// TEST
+#include "LittleBigTown/Core/SocialClass.h"
+// #include "LittleBigTown/Core/Structs.h"
+
 #include "MainGameState.generated.h"
 
 #define FIRST_YEAR "2000"
@@ -57,10 +61,12 @@ public :
 
 		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return City.m_ResBuilArr; }
 
-		const TArray<double>& GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+		const TArray<float>& GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		void AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthLevels, 
 			const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count, int32 IncomePerHabitant);
+
+		const FSocialClasses& GetSocialClasses (const TEnumAsByte<EWealthLevels>& WealthLevel) const;
 /*
 		UFUNCTION()
 			void UpdateInformations(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos);
@@ -73,7 +79,7 @@ public :
 		int32 GetTotalMoney() const { return TotalMoney; }
 		int32 GetIncomes() const { return TotalIncomes; }
 
-		double GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+		float GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		UFUNCTION(BlueprintCallable)
 			void DebugSetResidentialDemand(float Poor, float Middle, float Rich);
@@ -120,6 +126,7 @@ protected :
 
 	// --------------------------------------		Game properties		--------------------------------------
 
+
 	UPROPERTY(EditDefaultsOnly, Category = "City properties")
 		int32 DemandModifier { DEMAND_MODIFIER };
 
@@ -132,8 +139,14 @@ protected :
 	UPROPERTY(BlueprintReadOnly)
 		int32 TotalOutgoings { 0 };
 
-	City City {};
+	UPROPERTY(EditDefaultsOnly, Category = "SocialClasses")
+		FSocialClasses m_SC_Poor;
 
+	UPROPERTY(EditDefaultsOnly, Category = "SocialClasses")
+		FSocialClasses m_SC_Middle;
 
-	
+	UPROPERTY(EditDefaultsOnly, Category = "SocialClasses")
+		FSocialClasses m_SC_Rich;
+
+	City City{};	
 };
