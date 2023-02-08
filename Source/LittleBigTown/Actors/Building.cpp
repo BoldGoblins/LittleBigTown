@@ -26,13 +26,6 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
-	InfosBase.m_OccupationCurrentCount = 0;
-	InfosBase.m_Outgoings = Current_Outgoings;
-	InfosBase.m_WealthLevel = WealthLevel;
-	InfosBase.m_Name = Name;
-	InfosBase.m_Owner = OwnerName;
-	InfosBase.m_Description = Description;
-	InfosBase.m_CurrentLevel = CurrentLevel;
 }
 
 

@@ -13,49 +13,20 @@
 
 City::City()
 {
-	m_DemandPoor.Init(0.5, 7);
-	m_DemandMiddle.Init(0.5, 7);
-	m_DemandRich.Init(0.5, 7);
+	m_DemandPoor = TMap <TEnumAsByte <ECitySpecialty>, float> { {Industry, 0.5f}, {Crime, 0.5f} };
+	m_DemandMiddle = TMap <TEnumAsByte <ECitySpecialty>, float>{ {Industry, 0.5f}, {Crime, 0.5f} };
+	m_DemandRich = TMap <TEnumAsByte <ECitySpecialty>, float>{ {Industry, 0.5f}, {Crime, 0.5f}, {Finance, 0.5f} };
 
 	// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), m_DemandRich.Num()));
 }
-/*
-void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TEnumAsByte<ECitySpecialty>& Specialty,  int32 Count)
-{
-	// int32 Index { int(Specialty) };
-#ifdef DEBUG_ONLY
 
-	checkf(WealthLevels != EWealthLevels::DefaultWealthEnum,
-		TEXT("Error in City::UpdateDemand, WealthLevels == WealthLevels::DefaultWealthEnum."));
-
-	// checkf(Index >= 0 && Index < 7, TEXT("Error in City::UpdateDemand, false conversion from Specialty to Index."));
-
-	checkf(DemandModifier != 0, TEXT("Error in City::UpdateDemand, DemandModifier == 0. Check this value is set in MainGameState BeginPlay."));
-
-#endif
-
-	int32 Total { m_CityLevel * DemandModifier };
-	float Percent { double(Count) / Total };
-
-	switch (WealthLevels)
-	{
-	case EWealthLevels::Poor: m_Poor.AccessCategory(Specialty) = FMath::Clamp(m_Poor.AccessCategory(Specialty) - Percent, -1.0, 1.0); break;
-	case EWealthLevels::Middle: m_Middle.AccessCategory(Specialty) = FMath::Clamp(m_Middle.AccessCategory(Specialty) - Percent, -1.0, 1.0); break;
-	case EWealthLevels::Rich: m_Rich.AccessCategory(Specialty) = FMath::Clamp(m_Rich.AccessCategory(Specialty) - Percent, -1.0, 1.0); break;
-	default: return;
-	}
-}
-*/
 void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count)
 {
-	int32 Index { int(Specialty) };
 
 #ifdef DEBUG_ONLY
 
 	checkf(WealthLevels != EWealthLevels::DefaultWealthEnum,
 		TEXT("Error in City::UpdateDemand, WealthLevels == WealthLevels::DefaultWealthEnum."));
-
-	checkf(Index >= 0 && Index < 7, TEXT("Error in City::UpdateDemand, false conversion from Specialty to Index."));
 
 	checkf(DemandModifier != 0, TEXT("Error in City::UpdateDemand, DemandModifier == 0. Check this value is set in MainGameState BeginPlay."));
 
@@ -66,10 +37,29 @@ void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TE
 
 	switch (WealthLevels)
 	{
-	case EWealthLevels::Poor: m_DemandPoor[Index] = FMath::Clamp(m_DemandPoor[Index] - Percent, -1.0f, 1.0f); break;
-	case EWealthLevels::Middle: m_DemandMiddle[Index] = FMath::Clamp(m_DemandMiddle[Index] - Percent, -1.0f, 1.0f); break;
-	case EWealthLevels::Rich: m_DemandRich[Index] = FMath::Clamp(m_DemandRich[Index] - Percent, -1.0f, 1.0f); break;
+	case EWealthLevels::Poor: m_DemandPoor[Specialty] = FMath::Clamp(m_DemandPoor[Specialty] - Percent, -1.0f, 1.0f); break;
+	case EWealthLevels::Middle: m_DemandMiddle[Specialty] = FMath::Clamp(m_DemandMiddle[Specialty] - Percent, -1.0f, 1.0f); break;
+	case EWealthLevels::Rich: m_DemandRich[Specialty] = FMath::Clamp(m_DemandRich[Specialty] - Percent, -1.0f, 1.0f); break;
 	default: return;
+	}
+}
+
+const TMap<TEnumAsByte<ECitySpecialty>, float>& City::GetDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(WealthLevels != EWealthLevels::DefaultWealthEnum,
+		TEXT("Error in City::GetDemand, WealthLevels == WealthLevels::DefaultWealthEnum."))
+
+#endif
+
+	switch (WealthLevels)
+	{
+	case EWealthLevels::Poor: return m_DemandPoor;  break;
+	case EWealthLevels::Middle: return m_DemandMiddle; break;
+	case EWealthLevels::Rich: return m_DemandRich; break;
+	default: return m_DemandPoor;  break;
 	}
 }
 
@@ -99,38 +89,4 @@ void City::SortBuildingArrayBy(TArray<TWeakObjectPtr<AResidentialBuilding>>& Arr
 
 		break;
 	}
-}
-
-float& Demand::AccessCategory(const TEnumAsByte<ECitySpecialty>& Category)
-{
-
-#ifdef DEBUG_ONLY
-
-	checkf(Category != ECitySpecialty::DefaultCitySpecialtyEnum,
-		TEXT("Error in Demand::ModifyCat, Category != ECitySpecialty::DefaultCitySpecialtyEnum."));
-
-#endif
-
-	switch (Category)
-	{
-	case Industry: return m_Industry; break;
-	case Finance: return m_Finance; break;
-	case Science: return m_Science; break;
-	case Tourism: return m_Tourism; break;
-	case Crime: return m_Crime; break;
-	case Military: return m_Military; break;
-	case Spiritual: return m_Spirtual; break;
-	default: return  m_Industry;  break;
-	}
-}
-
-void Demand::SetAllValues(float Value)
-{
-	m_Industry = Value;
-	m_Finance = Value;
-	m_Science = Value;
-	m_Tourism = Value;
-	m_Crime = Value;
-	m_Military = Value;
-	m_Spirtual = Value;
 }

@@ -12,16 +12,16 @@
 
 void UUI_General_Infos::NativeConstruct()
 {
-	
+
 }
 
 void UUI_General_Infos::ResetAllComponents()
 {
-	const auto ChildrenArray { VerticalBox->GetAllChildren() };
+	const auto ChildrenArray{ VerticalBox->GetAllChildren() };
 
-	// As we don't want firsts Children (Description and Wealth that would be printed in all cases)
-	// We don't want last index too (Spacer will be displayed anyway)
-	for (int i{ 2 }; i < ChildrenArray.Num() - 1; ++i)
+	// As we don't want first Child (Wealth that would be printed in all cases)
+	// -1 for Description
+	for (int i{ 1 }; i < ChildrenArray.Num() - 1; ++i)
 	{
 		if (ChildrenArray[i])
 			ChildrenArray[i]->SetVisibility(ESlateVisibility::Hidden);
@@ -50,7 +50,6 @@ void UUI_General_Infos::UpdateAndDisplayBaseInfos(const struct FBuildingInfosBas
 
 void UUI_General_Infos::UpdateAndDisplayInfos(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos)
 {
-	ResetAllComponents();
 	UpdateAndDisplayBaseInfos(BaseInfos);
 
 	// Text :

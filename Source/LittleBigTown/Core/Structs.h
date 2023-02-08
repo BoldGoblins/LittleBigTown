@@ -5,8 +5,12 @@
 #include "CoreMinimal.h"
 #include "Enums.h"
 
+
 #include "Structs.generated.h"
 
+#define LOCTEXT_NAMESPACE "TempoTry"
+#define BASE_INCOMES 50
+#define BASE_SATISFACTION 1.0f
 
 // --------------------------------------		Buildings		--------------------------------------
 
@@ -36,15 +40,32 @@ struct FBuildingInfosBase
 
 	FText GetWealthLevelAsText() const;
 
-	FText m_Name {};
-	FText m_Owner{};
-	FText m_Description{};
-	int32 m_CurrentLevel{};
-	int32 m_MaxLevel{};
-	int32 m_OccupationMaxCount{};
+	UPROPERTY(EditDefaultsOnly)
+		FText m_Name {};
+	// Ne pas définir l'owner directement dans les infos du building à l'avenir
+	// Le chopper depuis le PC par exemple
+	UPROPERTY(EditDefaultsOnly)
+		FText m_Owner{ LOCTEXT("Sarkozy", "Sarkozy") };
+
+	UPROPERTY(EditDefaultsOnly)
+		FText m_Description{};
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 m_CurrentLevel{ 1 };
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 m_MaxLevel{};
+	
+	UPROPERTY(EditDefaultsOnly)
+		int32 m_OccupationMaxCount{};
+
 	int32 m_OccupationCurrentCount{};
-	int32 m_Outgoings{};
-	TEnumAsByte <EWealthLevels>  m_WealthLevel{};
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 m_Outgoings{};
+
+	UPROPERTY(EditDefaultsOnly)
+		TEnumAsByte <EWealthLevels>  m_WealthLevel{ DefaultWealthEnum };
 };
 
 USTRUCT(BlueprintType)
@@ -52,9 +73,13 @@ struct FResidentialBuildingInfos
 {
 	GENERATED_USTRUCT_BODY()
 
-	float m_SatisfactionPercent{};
+	UPROPERTY(EditDefaultsOnly)
+		float m_SatisfactionPercent{ BASE_SATISFACTION };
+
+	UPROPERTY(EditDefaultsOnly)
+		int32 m_IncomesPerHab { BASE_INCOMES };
+
 	int32 m_TotalIncomes{};
-	int32 m_IncomesPerHab{};
 };
 
 USTRUCT(BlueprintType)
@@ -86,3 +111,6 @@ struct FNeeds
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		float m_Culture { 0.0 };
 };
+
+
+#undef LOCTEXT_NAMESPACE

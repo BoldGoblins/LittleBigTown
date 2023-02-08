@@ -14,9 +14,7 @@
 
 #define MAX_LEVEL_RESIDENTIAL 5
 #define TEN_PERCENT_OCCUPATION FMath::RoundToInt ((InfosBase.m_OccupationMaxCount * 10) / 100)
-#define OCCUPATION_VARIATION_FACTOR 1.5f
-#define BASE_INCOMES 50
-#define BASE_SATISFACTION 1.0f
+// #define OCCUPATION_VARIATION_FACTOR 1.5f
 
 // Besoin pour communiquer avec le UI_BuildingInfos
 // Celui-ci à déjà accès au Building currently displayed via un WeakObjectPtr (lui permet de Unbind la delegate)
@@ -40,6 +38,8 @@ public :
 	UFUNCTION(BlueprintCallable)
 		const FResidentialBuildingInfos & GetInfosResidential() const { return ResidentialInformations; }
 
+	const TArray <FResident>& GetResidents() const { return m_Residents; }
+
 	FOnResBuildingInfosChangedSignature OnResBuildingInfosChangedDelegate;
 
 	void BeginPlay() override;
@@ -50,10 +50,7 @@ protected :
 		class AMainGameState* MainGameState;
 
 	UPROPERTY(EditDefaultsOnly)
-		int32 IncomePerHabitant { BASE_INCOMES };
-
-
-	FResidentialBuildingInfos ResidentialInformations;
+		FResidentialBuildingInfos ResidentialInformations;
 
 	TArray <FResident> m_Residents {};
 

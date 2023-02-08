@@ -37,14 +37,15 @@ void UUI_GraphDemand::Hide()
 void UUI_GraphDemand::UpdateFrequencies()
 {
 	const auto Frequencies { GameState->GetSpecialtiesFrequencies(LastWealthLevel) };
-	auto PB_Table { HB_ProgressBars->GetAllChildren() };
 
-	// ProgressBars configuration
-	for (int i{ 0 }; i < Frequencies.Num(); ++i)
+	for (const auto element : HB_ProgressBars->GetAllChildren())
+		element->SetVisibility(ESlateVisibility::Hidden);
+
+	for (const auto element : Frequencies)
 	{
-		auto PB { Cast <UProgressBar> (PB_Table[i]) };
-		ReverseProgressBar(Frequencies[i] < 0, PB);
-		PB->SetPercent(Frequencies[i] >= 0 ? Frequencies[i] : Frequencies[i] * -1.0);
+		ReverseProgressBar(element.Value < 0.0f, GetProgressBar(element.Key));
+		GetProgressBar(element.Key)->SetPercent(element.Value >= 0.0f ? element.Value : element.Value * -1.0);
+		GetProgressBar(element.Key)->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 	}
 }
 
@@ -77,6 +78,28 @@ void UUI_GraphDemand::ReverseProgressBar(bool Reverse, UProgressBar* ProgressBar
 	}
 
 	ProgressBar->SynchronizeProperties();
+}
+
+UProgressBar* UUI_GraphDemand::GetProgressBar(const TEnumAsByte<enum ECitySpecialty>& Specialty) const
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(Specialty != DefaultCitySpecialtyEnum, TEXT("Error in UUI_GraphDemand::GetFromSpecialty, Specialty == Default."));
+
+#endif
+
+	switch (Specialty)
+	{
+	case Industry: return PB_Industry; break;
+	case Finance: return PB_Finance; break;
+	case Science: return PB_Science; break;
+	case Tourism: return PB_Tourism; break;
+	case Crime: return PB_Crime; break;
+	case Military: return PB_Military; break;
+	case Spiritual: return PB_Spiritual; break;
+	default: return PB_Industry; break;
+	}
 }
 
 void UUI_GraphDemand::PoorButtonClicked()

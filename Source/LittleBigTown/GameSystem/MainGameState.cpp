@@ -3,7 +3,9 @@
 
 #include "MainGameState.h"
 #include "LittleBigTown/Core/Debugger.h"
-#include "Algo/Accumulate.h"
+// #include "Algo/Accumulate.h"
+#include "LittleBigTown/GameSystem/MainGameMode.h"
+#include "Kismet/GameplayStatics.h"
 
 void AMainGameState::Tick(float DeltaTime)
 {
@@ -15,14 +17,6 @@ void AMainGameState::Tick(float DeltaTime)
 void AMainGameState::PreMonthlySetup()
 {
 	TotalMoney += TotalIncomes;
-
-	// City.m_Poor.SetAllValues(0.5f), City.m_Middle.SetAllValues(0.5f), City.m_Rich.SetAllValues(0.5f);
-	for (int i{ 0 }; i < City.m_DemandPoor.Num(); ++i)
-	{
-		City.m_DemandPoor[i] = 0.5;
-		City.m_DemandMiddle[i] = 0.5;
-		City.m_DemandRich[i] = 0.5;
-	}
 }
 
 void AMainGameState::PreHourSetup()
@@ -51,9 +45,11 @@ void AMainGameState::BeginPlay()
 	}
 	
 	City.DemandModifier = DemandModifier;
+
+	MainGameMode = Cast <AMainGameMode> (UGameplayStatics::GetGameMode(GetWorld()));
 }
 
-const TArray<float> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+const TMap <TEnumAsByte <ECitySpecialty>, float> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
 
 #ifdef DEBUG_ONLY
@@ -98,6 +94,12 @@ const FSocialClasses& AMainGameState::GetSocialClasses(const TEnumAsByte<EWealth
 	}
 }
 
+const TArray<FText>& AMainGameState::GetSpecialtyNames(const TEnumAsByte<enum EWealthLevels>& Wealth) const
+{
+	return MainGameMode->GetSpecialtyNames(Wealth);
+
+}
+
 void AMainGameState::AddNewBuilding(ABuilding* Building)
 {
 	if (!Building)
@@ -118,26 +120,6 @@ void AMainGameState::AddNewBuilding(ABuilding* Building)
 		}
 	}
 }
-/*
-double AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
-{
-
-#ifdef DEBUG_ONLY
-
-	checkf(WealthLevels != EWealthLevels::DefaultWealthEnum,
-		TEXT("Error in AMainGameState::GetResidentialDemand, WealthLevels == WealthLevels::DefaultWealthEnum."))
-
-#endif
-
-	switch (WealthLevels)
-	{
-	case EWealthLevels::Poor: return City.m_Poor.GetAverage();
-	case EWealthLevels::Middle: return City.m_Middle.GetAverage();
-	case EWealthLevels::Rich: return City.m_Rich.GetAverage();
-	default: return 0.0f;
-	}
-}
-*/
 
 float AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
@@ -149,23 +131,24 @@ float AMainGameState::GetResidentialDemand(const TEnumAsByte<EWealthLevels>& Wea
 
 #endif
 
-		switch (WealthLevels)
-		{
-		case EWealthLevels::Poor: return Algo::Accumulate(City.m_DemandPoor, 0.0) / 7;
-		case EWealthLevels::Middle: return Algo::Accumulate(City.m_DemandMiddle, 0.0) / 7;
-		case EWealthLevels::Rich: return Algo::Accumulate(City.m_DemandRich, 0.0) / 7;
-		default: return 0.0f;
-		}
+	float Sum { 0.0f };
+
+	for (const auto element : City.GetDemand(WealthLevels))
+		Sum += element.Value;
+
+	return Sum / City.GetDemand(WealthLevels).Num();
 }
 
 void AMainGameState::DebugSetResidentialDemand(float Poor, float Middle, float Rich)
 {
-	for (int i{ 0 }; i < City.m_DemandPoor.Num(); ++i)
-	{
-		City.m_DemandPoor[i] = Poor;
-		City.m_DemandMiddle[i] = Middle;
-		City.m_DemandRich[i] = Rich;
-	}
+	for (auto element : City.m_DemandPoor)
+		element.Value = Poor;
+
+	for (auto element : City.m_DemandMiddle)
+		element.Value = Middle;
+
+	for (auto element : City.m_DemandRich)
+		element.Value = Rich;
 }
 
 FText AMainGameState::GetGameClockMonth()

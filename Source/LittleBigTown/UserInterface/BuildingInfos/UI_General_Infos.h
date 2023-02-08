@@ -24,13 +24,13 @@ public:
 	UFUNCTION()
 		void UpdateAndDisplayInfos(const struct FBuildingInfosBase& BaseInfos, const struct FResidentialBuildingInfos& ResInfos);
 
+		void ResetAllComponents();
+
 private:
 
 	void UpdateAndDisplayBaseInfos(const struct FBuildingInfosBase& BaseInfos);
 
 protected:
-
-	void ResetAllComponents();
 
 
 	UPROPERTY(meta = (BindWidget))
@@ -42,9 +42,6 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Wealth;
-
-	UPROPERTY(meta = (BindWidget))
-		class UTextBlock* TB_Description;
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Incomes;
@@ -63,6 +60,9 @@ protected:
 
 	UPROPERTY(meta = (BindWidget))
 		class UTextBlock* TB_Satisfaction;
+
+	UPROPERTY(meta = (BindWidget))
+		class UTextBlock* TB_Description;
 
 
 	// --------------------------------------		HORIZONTAL BOXES		--------------------------------------

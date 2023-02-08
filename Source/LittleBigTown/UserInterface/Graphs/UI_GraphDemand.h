@@ -29,6 +29,8 @@ private :
 
 	void ReverseProgressBar(bool Reverse, class UProgressBar* ProgressBar);
 
+	class UProgressBar* GetProgressBar(const TEnumAsByte<enum ECitySpecialty>& Specialty) const;
+
 	UFUNCTION()
 		void PoorButtonClicked();
 
@@ -44,7 +46,7 @@ protected :
 	class AMainGameState* GameState;
 
 	TEnumAsByte <EWealthLevels> LastWealthLevel;
-
+	
 	UPROPERTY(Meta = (BindWidget))
 		class UHorizontalBox* HB_ProgressBars;
 
@@ -60,7 +62,6 @@ protected :
 	UPROPERTY(Meta = (BindWidget))
 		class UButton* Button_Rich;
 
-	/*
 	// ----------------------------------------------- PROGRESS BARS -----------------------------------------------
 
 	UPROPERTY(Meta = (BindWidget))
@@ -83,6 +84,5 @@ protected :
 
 	UPROPERTY(Meta = (BindWidget))
 		class UProgressBar* PB_Spiritual;
-		*/
 
 };

@@ -16,11 +16,8 @@ void AResidentialBuilding::BeginPlay()
 	MainGameState = Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld()));
 
 	// Set Infos values (when EditDefaultsOnly values are set in Editor)
-	InfosBase.m_MaxLevel = MAX_LEVEL_RESIDENTIAL;
-	InfosBase.m_OccupationMaxCount = ResidentsMaxCount;;
-	ResidentialInformations.m_SatisfactionPercent = BASE_SATISFACTION;
-	ResidentialInformations.m_IncomesPerHab = IncomePerHabitant;
-	ResidentialInformations.m_TotalIncomes = IncomePerHabitant * InfosBase.m_OccupationCurrentCount * CurrentLevel;
+	// InfosBase.m_MaxLevel = MAX_LEVEL_RESIDENTIAL;
+	// ResidentialInformations.m_TotalIncomes = IncomePerHabitant * InfosBase.m_OccupationCurrentCount * CurrentLevel;
 
 	MainGameState->OnNewHourDelegate.AddDynamic(this, &ThisClass::UpdateNewHour);
 
@@ -28,35 +25,43 @@ void AResidentialBuilding::BeginPlay()
 
 void AResidentialBuilding::GenerateResidents(int32 Count)
 {
-	const auto Frequencies { MainGameState->GetSpecialtiesFrequencies(InfosBase.m_WealthLevel) };
 
+#ifdef DEBUG_ONLY
+
+	checkf(Count > 0, TEXT("Error in AResidentialBuilding::GenerateResidents : Count > 0."));
+
+#endif 
+
+	const auto Frequencies { MainGameState->GetSpecialtiesFrequencies(InfosBase.m_WealthLevel) };
+	TEnumAsByte <ECitySpecialty> Specialty{ DefaultCitySpecialtyEnum };
 	TArray<int> Arr{};
 	Arr.Init(0, Frequencies.Num());
-
-	Arr[0] = FMath::RoundToInt(Frequencies[0] * 100) + 100;
+	auto It { Frequencies.CreateConstIterator()};
+	Arr[0] = FMath::RoundToInt(It->Value * 100) + 100;
 
 	for (int i{ 1 }; i < Arr.Num(); ++i)
-		Arr[i] = (FMath::RoundToInt(Frequencies[1] * 100) + 100) + Arr[i -1];
+		Arr[i] = (FMath::RoundToInt((++It)->Value * 100) + 100) + Arr[i -1];
 
 	for (int i{ 0 }; i < Count; ++i)
 	{
-		int32 x { FMath::RandRange(1, Arr[6]) };
+		int32 x { FMath::RandRange(1, Arr[Arr.Num() - 1])};
 
-		auto Specialty {ECitySpecialty::DefaultCitySpecialtyEnum};
-		
-		if (x > 0 && x <= Arr[0]) Specialty = ECitySpecialty::Industry;
-		else if (x > Arr[0] && x <= Arr[1]) Specialty = ECitySpecialty::Finance;
-		else if (x > Arr[1] && x <= Arr[2]) Specialty = ECitySpecialty::Science;
-		else if (x > Arr[2] && x <= Arr[3]) Specialty = ECitySpecialty::Tourism;
-		else if (x > Arr[3] && x <= Arr[4]) Specialty = ECitySpecialty::Crime;
-		else if (x > Arr[4] && x <= Arr[5]) Specialty = ECitySpecialty::Military;
-		else if (x > Arr[5] && x <= Arr[6]) Specialty = ECitySpecialty::Spiritual;
+		// Cannot res It
+		auto NewIt{ Frequencies.CreateConstIterator() };
 
-		// DEBUG : 
-		const auto Resident { FResident(Specialty, MainGameState->GetSocialClasses(InfosBase.m_WealthLevel)) };
-		m_Residents.Add(Resident);
-		GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s"), *Resident.m_SubClassName.ToString()));
+		if (x > 0 && x <= Arr[0])
+			Specialty = NewIt->Key;
+		else
+		{
+			for (int j{ 1 }; j < Arr.Num(); ++j)
+			{
+				++NewIt;
 
+				if(x > Arr[j - 1] && x <= Arr[j])
+					Specialty = NewIt->Key;
+			}
+		}	
+		m_Residents.Add(FResident(Specialty, MainGameState->GetSocialClasses(InfosBase.m_WealthLevel)));
 		MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, Specialty, 1, ResidentialInformations.m_IncomesPerHab);
 	}
 }

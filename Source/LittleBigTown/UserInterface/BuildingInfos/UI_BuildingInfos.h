@@ -3,19 +3,18 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+#include "LittleBigTown/UserInterface/Templates/BGUserWidget.h"
 // struct residential infos definition
 #include "LittleBigTown/Core/Structs.h"
+#include "LittleBigTown/UserInterface/BuildingInfos/UI_HappinessInfos.h"
 
 #include "UI_BuildingInfos.generated.h"
 
 // FText MakeProportionText(int32 a, int32 b);
 
-#define WIDGET_GENERAL_POS 0
-
 
 UCLASS()
-class LITTLEBIGTOWN_API UUI_BuildingInfos : public UUserWidget
+class LITTLEBIGTOWN_API UUI_BuildingInfos : public UBGUserWidget
 {
 	GENERATED_BODY()
 
@@ -27,11 +26,18 @@ public :
 	UFUNCTION(BlueprintCallable)
 		void NewDisplayBuildingInfos(class ABuilding* Building);
 
-	UFUNCTION(BlueprintCallable)
-		void HideBuildingInfo();
+		void Hide() override;
 
 	UFUNCTION()
 		void BuildingInfosUpdated();
+
+	UFUNCTION()
+		void GeneralClicked();
+
+	UFUNCTION()
+		void HappinessClicked();
+
+	UUI_HappinessInfos* GetHappinessInfos() const { return HappinessInfosWidget;  }
 
 
 protected :
@@ -40,8 +46,17 @@ protected :
 
 	class UUI_General_Infos* GeneralInfosWidget;
 
+	UUI_HappinessInfos* HappinessInfosWidget;
+
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* WidgetSwitcher;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* B_General;
+
+	UPROPERTY(meta = (BindWidget))
+		class UButton* B_Happiness;
+
 
 	// --------------------------------------		TEXTBLOCKS		--------------------------------------
 

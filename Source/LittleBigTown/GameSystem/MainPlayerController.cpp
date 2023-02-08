@@ -13,6 +13,8 @@
 #include "Math/UnrealMathUtility.h"
 // UI_Main
 #include "LittleBigTown/UserInterface/Main/UI_Main.h"
+// BuildingInfos
+#include "LittleBigTown/UserInterface/BuildingInfos/UI_BuildingInfos.h"
 // Graphs Main
 #include "LittleBigTown/UserInterface/Graphs/UI_GraphsMain.h"
 // DEBUG_ONLY
@@ -243,6 +245,11 @@ UUI_Main* AMainPlayerController::GetMainWidget()
 #endif
 
 	return MainWidget;
+}
+
+UUI_BuildingInfos* AMainPlayerController::GetBuildingInfos() const
+{
+	return BuildingInfosWidget;
 }
 
 void AMainPlayerController::SetMainWidget(UUI_Main* Widget)

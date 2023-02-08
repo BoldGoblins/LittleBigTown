@@ -82,8 +82,6 @@ protected :
 
 	class AMainGameState* GameState;
 
-	// class UUI_BuildingInfos* BuildingInfosWidget;
-
 	class UUI_Demand* DemandWidget;
 
 };

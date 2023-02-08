@@ -30,9 +30,9 @@ const TMap<FName, FNeeds>& FSocialClasses::GetMap(const TEnumAsByte<ECitySpecial
 FName FSocialClasses::GetRandomSubClass(const TEnumAsByte<ECitySpecialty>& CitySpecialty) const
 {
 	TArray <FName> Arr{};
-	int32 i{ FMath::RandRange(0, Arr.Num() - 1) };
-
 	GetMap(CitySpecialty).GetKeys(Arr);
+
+	int32 i{ FMath::RandRange(0, Arr.Num() - 1) };
 
 	return Arr[i];
 }

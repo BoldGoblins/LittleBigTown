@@ -4,7 +4,6 @@
 
 #include "CoreMinimal.h"
 #include "LittleBigTown/Core/Enums.h"
-// TEST
 #include "LittleBigTown/Core/SocialClass.h"
 
 struct FResident
@@ -23,5 +22,5 @@ struct FResident
 
 	FNeeds m_Needs;
 
-	double m_Satisfaction { 0.50 };
+	float m_Satisfaction { 0.50 };
 };

@@ -38,3 +38,18 @@ struct FSocialClasses
 		TMap <FName, FNeeds> m_Spiritual{};
 
 };
+
+USTRUCT(BlueprintType)
+struct FClassNames
+{
+	GENERATED_USTRUCT_BODY()
+
+		UPROPERTY(EditAnywhere)
+		TArray <FText> m_PoorNames{};
+
+	UPROPERTY(EditAnywhere)
+		TArray <FText> m_MiddleNames{};
+
+	UPROPERTY(EditAnywhere)
+		TArray <FText> m_RichNames{};
+};

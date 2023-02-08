@@ -3,8 +3,3 @@
 
 #include "LittleBigTown/Core/Resident.h"
 
-/*
-Resident::~Resident()
-{
-}
-*/

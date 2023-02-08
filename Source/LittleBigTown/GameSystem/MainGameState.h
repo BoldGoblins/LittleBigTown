@@ -10,10 +10,7 @@
 #include "LittleBigTown/Actors/Building.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
 #include "LittleBigTown/GameSystem/City.h"
-
-// TEST
 #include "LittleBigTown/Core/SocialClass.h"
-// #include "LittleBigTown/Core/Structs.h"
 
 #include "MainGameState.generated.h"
 
@@ -61,12 +58,16 @@ public :
 
 		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return City.m_ResBuilArr; }
 
-		const TArray<float>& GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+		const TMap <TEnumAsByte <ECitySpecialty>, float> & GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+
+		// const TArray <int>& GetSpecialtiesFreqCumul(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		void AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthLevels, 
 			const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count, int32 IncomePerHabitant);
 
 		const FSocialClasses& GetSocialClasses (const TEnumAsByte<EWealthLevels>& WealthLevel) const;
+
+		const TArray <FText>& GetSpecialtyNames(const TEnumAsByte<enum EWealthLevels>& Wealth) const;
 /*
 		UFUNCTION()
 			void UpdateInformations(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos);
@@ -103,7 +104,8 @@ public :
 private :
 
 	void PreMonthlySetup();
-
+	// Optimisation : mettre le TArray <int> des fréquences cumulées de la demande en variable membre de la classe et le mettre à jour ici
+	// Transmettre ensuite par const ref aux Residential Buildings
 	void PreHourSetup();
 
 protected :
@@ -121,6 +123,9 @@ protected :
 	// Coefficient applied to DeltaTime in UpdateClock to control Clock speed
 	UPROPERTY(EditDefaultsOnly, Category = "Clock")
 		int32 ClockSpeed { CLOCK_SPEED };
+
+
+	class AMainGameMode* MainGameMode { nullptr };
 
 
 

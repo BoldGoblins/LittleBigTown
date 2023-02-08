@@ -75,6 +75,8 @@ public :
 		UFUNCTION(BlueprintCallable)
 			class UUI_GraphsMain* GetGraphsWidget() const { return GraphsWidget; }
 
+		class UUI_BuildingInfos* GetBuildingInfos() const;
+
 		void SetMainWidget(class UUI_Main* Widget);
 		void SetBuildingInfosWidget(class UUI_BuildingInfos* Widget);
 		void SetGraphWidget(class UUI_GraphsMain* Widget);
