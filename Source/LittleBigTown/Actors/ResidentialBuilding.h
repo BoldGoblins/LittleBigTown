@@ -56,5 +56,7 @@ private :
 
 	void GenerateResidents(int32 Count);
 
+	void RemoveResidents(int32 Count);
+
 
 };

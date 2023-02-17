@@ -8,6 +8,7 @@
 #include "LittleBigTown/GameSystem/MainGameState.h"
 #include "LittleBigTown/Core/Debugger.h"
 #include "LittleBigTown/Core/SocialClass.h"
+#include "Algo/Sort.h"
 
 #define MAX_LEVEL_RESIDENTIAL 5
 // #define TEN_PERCENT_OCCUPATION FMath::RoundToInt ((InfosBase.m_OccupationMaxCount * 10) / 100)
@@ -72,6 +73,24 @@ void AResidentialBuilding::GenerateResidents(int32 Count)
 	}
 }
 
+void AResidentialBuilding::RemoveResidents(int32 Count)
+{
+#ifdef DEBUG_ONLY
+
+	checkf(Count < 0, TEXT("Error in AResidentialBuilding::RemoveResidents : Count < 0."));
+
+#endif 
+
+	// Sort by Satisfaction : Lowers are at Lowers Index
+	Algo::Sort(m_Occupants, [](const FResident& Curr, const FResident& Next) -> bool {
+		return Curr.m_Satisfaction < Next.m_Satisfaction; });
+
+	for (int32 i { 0 }; i  < Count * (-1); i ++)
+		MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, m_Occupants[0].m_Type, -1, ResidentialInformations.m_IncomesPerHab);
+
+	m_Occupants.RemoveAt(0, Count * (-1), true);
+}
+
 void AResidentialBuilding::UpdateNewHour(int32 Hour)
 {
 	double Demand { MainGameState->GetResidentialDemand(InfosBase.m_WealthLevel) };
@@ -89,17 +108,8 @@ void AResidentialBuilding::UpdateNewHour(int32 Hour)
 		GenerateResidents(OccupationVar);
 
 	else if (OccupationVar < 0)
-	{
-		// méthode pour retirer habitants
+		RemoveResidents(OccupationVar);
 
-		for (int i{ 0 }; i < OccupationVar * (-1); ++i)
-		{
-			MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, m_Occupants[0].m_Type, -1, ResidentialInformations.m_IncomesPerHab);
-			m_Occupants.RemoveAt(0);
-
-			// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), m_Residents.Num()));
-		}
-	}
 	else
 		return;
 
@@ -115,8 +125,8 @@ void AResidentialBuilding::AddSatisfaction(float Satisfaction)
 		TEXT("Error in AResidentialBuilding::SetSatisfaction : Satisfaction has'nt a valid value."));
 
 #endif 
-*/
 
+*/
 	ResidentialInformations.m_SatisfactionPercent = FMath::Clamp(ResidentialInformations.m_SatisfactionPercent + Satisfaction, 0.0f, 1.0f);
 
 	// Declare Building Infos Modification :
