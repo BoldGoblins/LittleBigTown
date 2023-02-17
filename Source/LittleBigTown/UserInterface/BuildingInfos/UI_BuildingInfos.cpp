@@ -1,11 +1,14 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// WIDGET BUILDING INFOS :
+// Ce Widget est responsable de la gestion du WeakPtr sur le Building que l'on veut Display
+// Ce ptr est transmis aux autres layers afin que le Widget Parent se réserve la possibilité de le Reset
 
 
 #include "UI_BuildingInfos.h"
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
-#include "Components/Button.h"
+#include "Components/HorizontalBox.h"
 
+#include "LittleBigTown/UserInterface/Templates/Components/BGButton.h"
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_General_Infos.h"
 // Building ref
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
@@ -14,22 +17,34 @@
 #include "LittleBigTown/GameSystem/MainPlayerController.h"
 
 #define WIDGET_GENERAL_POS 0
-#define WIDGET_HAPPINESS_POS 1
 
 
 void UUI_BuildingInfos::NativeConstruct()
 {
-	const auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	MainPlayerController = Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	MainPlayerController->SetBuildingInfosWidget(this);
 
-	if (PC)
-		PC->SetBuildingInfosWidget(this);	
+	for (const auto & Button : ButtonBox->GetAllChildren())
+		Cast <UBGButton>(Button)->OnBGButtonClicked.AddDynamic(this, &ThisClass::ButtonClicked);
 
-	GeneralInfosWidget = Cast <UUI_General_Infos> (WidgetSwitcher->GetChildAt(WIDGET_GENERAL_POS));
-	HappinessInfosWidget = Cast <UUI_HappinessInfos> (WidgetSwitcher->GetChildAt(WIDGET_HAPPINESS_POS));
+	for (const auto & Widget : WidgetSwitcher->GetAllChildren())
+	{
+		const auto & Layer { Cast <UBGLayerWidget>(Widget) };
 
-	B_General->OnClicked.AddDynamic(this, &ThisClass::GeneralClicked);
-	B_Happiness->OnClicked.AddDynamic(this, &ThisClass::HappinessClicked);
+		if(Layer)
+			Layers.Add(Cast <UBGLayerWidget>(Widget));
+	}
+
+#ifdef DEBUG_ONLY
+
+	checkf(ButtonBox->GetChildrenCount() == WidgetSwitcher->GetChildrenCount(),
+		TEXT("Error in UUI_BuildingInfos::NativeConstruct, Button Count in ButtonBox != Index Index Count in WidgetSwitcher."));
+
+	checkf(WidgetSwitcher->GetChildrenCount() == Layers.Num(), TEXT("Error in UUI_BuildingInfos::NativeConstruct, Cast Layer child has failed."));
+
+#endif
 }
+
 // Building passed from BP_MainPlayerController (Click Handle)
 // UpdateAndDisplay is inside the if IsA(Type) because we need to trigger the good overload version of this function
 void UUI_BuildingInfos::NewDisplayBuildingInfos(ABuilding* Building)
@@ -41,70 +56,57 @@ void UUI_BuildingInfos::NewDisplayBuildingInfos(ABuilding* Building)
 
 #endif
 
-	if (!Building)
+	DisplayedBuilding = Building;
+
+	if (!DisplayedBuilding.IsValid())
 		return;
 
-	if (Building->IsA <AResidentialBuilding>())
+	if (DisplayedBuilding.Get()->IsA <AResidentialBuilding>())
 	{
 		const auto ResidentialBuilding { Cast <AResidentialBuilding>(Building) };
 
 		if (!ResidentialBuilding)
 			return;
 
-		CurrResBuilding = ResidentialBuilding;
-		CurrResBuilding->OnResBuildingInfosChangedDelegate.AddDynamic(this, &ThisClass::BuildingInfosUpdated);
-
-		// Mettre plus tard dans une fonction dédiée ?
-		TB_Name->SetText(CurrResBuilding.Get()->GetInfosBase().m_Name);
-		TB_Owner->SetText(CurrResBuilding.Get()->GetInfosBase().m_Owner);
-		// Ca aussi...
-		GeneralInfosWidget->UpdateAndDisplayInfos(CurrResBuilding.Get()->GetInfosBase(), CurrResBuilding.Get()->GetInfosResidential());
+		ResidentialBuilding->OnResBuildingInfosChangedDelegate.AddDynamic(this, &ThisClass::Update);
 		WidgetSwitcher->SetActiveWidgetIndex(WIDGET_GENERAL_POS);
 	}
 
+	TB_Name->SetText(DisplayedBuilding.Get()->GetInfosBase().m_Name);
+	TB_Owner->SetText(DisplayedBuilding.Get()->GetInfosBase().m_Owner);
+	TB_District->SetText(DisplayedBuilding.Get()->GetInfosBase().m_DistrictName);
+
+	Layers[WIDGET_GENERAL_POS]->SetInformations(DisplayedBuilding.Get());
 	SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 }
+
 // Called from BP_MainPlayerController Click Handle
 void UUI_BuildingInfos::Hide()
 {
 	SetVisibility(ESlateVisibility::Collapsed);
-	GeneralInfosWidget->ResetAllComponents();
-	HappinessInfosWidget->ResetWidget(ESlateVisibility::Collapsed);
 
-	if (CurrResBuilding.IsValid())
-	{
-		CurrResBuilding->OnResBuildingInfosChangedDelegate.RemoveDynamic(this, &ThisClass::BuildingInfosUpdated);
-		CurrResBuilding.Reset();
-	}
+	for (const auto& Layer : Layers)
+		Layer->Reset();
+
+	if (!DisplayedBuilding.IsValid())
+		return;
+
+	if(DisplayedBuilding.Get()->IsA<AResidentialBuilding> ())
+		Cast <AResidentialBuilding> (DisplayedBuilding.Get())->OnResBuildingInfosChangedDelegate.RemoveDynamic(this, &ThisClass::Update);
+
+	DisplayedBuilding.Reset();
 }
 
-void UUI_BuildingInfos::BuildingInfosUpdated()
+void UUI_BuildingInfos::Update()
 {
-	// Checker quel ptr est non null, pour décider de quelles infos envoyer, peut être plus besoin de passer tous les params en delegate
-	// Ou sinon définir un nouveau type dans la struct FBuildingInfosBase avec une enum pour le type de bâtiment
-	if (CurrResBuilding.IsValid())
-	{
-		if (WidgetSwitcher->GetActiveWidgetIndex() == 0)
-			GeneralInfosWidget->UpdateAndDisplayInfos(CurrResBuilding.Get()->GetInfosBase(), CurrResBuilding.Get()->GetInfosResidential());
-
-		else if (WidgetSwitcher->GetActiveWidgetIndex() == 1)
-			HappinessInfosWidget->MainDisplay(CurrResBuilding.Get(), false);
-	}
-
+	if (!DisplayedBuilding.IsValid())
+		return;
+		
+	Cast <UBGLayerWidget>(WidgetSwitcher->GetActiveWidget())->SetInformations(DisplayedBuilding.Get(), false);
 }
 
-void UUI_BuildingInfos::GeneralClicked()
+void UUI_BuildingInfos::ButtonClicked(UBGButton* Button)
 {
-	if (CurrResBuilding.IsValid())
-		GeneralInfosWidget->UpdateAndDisplayInfos(CurrResBuilding.Get()->GetInfosBase(), CurrResBuilding.Get()->GetInfosResidential());
-
-	WidgetSwitcher->SetActiveWidgetIndex(WIDGET_GENERAL_POS);
-}
-
-void UUI_BuildingInfos::HappinessClicked()
-{
-	if (CurrResBuilding.IsValid())
-		HappinessInfosWidget->MainDisplay(CurrResBuilding.Get(), true);
-
-	WidgetSwitcher->SetActiveWidgetIndex(WIDGET_HAPPINESS_POS);
+	Cast <UBGLayerWidget>(WidgetSwitcher->GetChildAt(ButtonBox->GetChildIndex(Button)))->SetInformations(DisplayedBuilding.Get(), true);
+	WidgetSwitcher->SetActiveWidgetIndex(ButtonBox->GetChildIndex(Button));
 }

@@ -49,7 +49,7 @@ void AMainGameState::BeginPlay()
 	MainGameMode = Cast <AMainGameMode> (UGameplayStatics::GetGameMode(GetWorld()));
 }
 
-const TMap <TEnumAsByte <ECitySpecialty>, float> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+const TMap <ECitySpecialty, float> & AMainGameState::GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
 
 #ifdef DEBUG_ONLY
@@ -74,6 +74,20 @@ void AMainGameState::AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthL
 	City.m_PopulationVariation += Count;
 	TotalIncomes += (IncomePerHabitant * Count);
 	City.UpdateDemand(WealthLevels, Specialty, Count);
+}
+
+void AMainGameState::UnlockSocialClass(const TEnumAsByte<EWealthLevels>& Wealth, const TEnumAsByte<ECitySpecialty>& Specialty, float DefaultDemand)
+{
+
+#ifdef DEBUG_ONLY
+
+	checkf(!City.GetDemand(Wealth).Contains(Specialty), 
+		TEXT("Error in AMainGameState::UnlockSocialClass : Try to add a Social Class that is already referenced into Map."))
+
+#endif
+
+	if (!City.GetDemand(Wealth).Contains(Specialty))
+		City.AccessDemand(Wealth).Add(MakeTuple(Specialty, DefaultDemand));
 }
 
 const FSocialClasses& AMainGameState::GetSocialClasses(const TEnumAsByte<EWealthLevels>& WealthLevel) const

@@ -1,15 +1,22 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "LittleBigTown/UserInterface/Templates/BGButton.h"
+#include "LittleBigTown/UserInterface/Templates/Components/BGButton.h"
 
 #include "Styling/SlateTypes.h"
+#include "Components/TextBlock.h"
 
 void UBGButton::NativePreConstruct()
 {
 	Super::NativePreConstruct();
 
 	Button->SetStyle(BasicStyle);
+
+	if (TextBlock)
+	{
+		TextBlock->SetText(ButtonText);
+		TextBlock->SetFont(Font);
+	}
 
 	// Add Optionnal Bindings (like image, text, ... here)
 }
@@ -24,7 +31,7 @@ void UBGButton::NativeConstruct()
 
 void UBGButton::OnButtonClicked()
 {
-	if (!bButtonClicked)
+	if (!bButtonClicked && bCanBeSelected)
 		SetButtonClicked(true);
 
 	OnBGButtonClicked.Broadcast(this);

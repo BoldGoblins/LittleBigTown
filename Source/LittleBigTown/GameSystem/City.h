@@ -17,11 +17,18 @@ struct City
 	int32 DemandModifier{0};
 
 	void UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count);
-	const TMap <TEnumAsByte <ECitySpecialty>, float>& GetDemand (const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
-	TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandPoor{};
-	TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandMiddle{};
-	TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandRich{};
+	const TMap <ECitySpecialty, float> & GetDemand (const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+
+	TMap <ECitySpecialty, float>& AccessDemand(const TEnumAsByte<EWealthLevels>& WealthLevels);
+
+	// TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandPoor{};
+	// TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandMiddle{};
+	// TMap <TEnumAsByte <ECitySpecialty>, float> m_DemandRich{};
+
+	TMap <ECitySpecialty, float> m_DemandPoor{};
+	TMap <ECitySpecialty, float> m_DemandMiddle{};
+	TMap <ECitySpecialty, float> m_DemandRich{};
 
 	TArray <TWeakObjectPtr<class AResidentialBuilding>> m_ResBuilArr;
 

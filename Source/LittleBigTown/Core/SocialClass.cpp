@@ -16,13 +16,13 @@ const TMap<FName, FNeeds>& FSocialClasses::GetMap(const TEnumAsByte<ECitySpecial
 
 	switch (CitySpecialty)
 	{
-	case Industry: return m_Industry; break;
-	case Finance: return m_Finance; break;
-	case Science: return m_Science; break;
-	case Tourism: return m_Tourism; break;
-	case Crime: return m_Crime; break;
-	case Military: return m_Military; break;
-	case Spiritual: return m_Spiritual; break;
+	case ECitySpecialty::Industry: return m_Industry; break;
+	case ECitySpecialty::Finance: return m_Finance; break;
+	case ECitySpecialty::Science: return m_Science; break;
+	case ECitySpecialty::Tourism: return m_Tourism; break;
+	case ECitySpecialty::Crime: return m_Crime; break;
+	case ECitySpecialty::Military: return m_Military; break;
+	case ECitySpecialty::Spiritual: return m_Spiritual; break;
 	default: return m_Industry; break;
 	}
 }

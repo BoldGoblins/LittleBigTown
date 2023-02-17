@@ -13,10 +13,12 @@
 
 City::City()
 {
-	m_DemandPoor = TMap <TEnumAsByte <ECitySpecialty>, float> { {Industry, 0.5f}, {Crime, 0.5f} };
-	m_DemandMiddle = TMap <TEnumAsByte <ECitySpecialty>, float>{ {Industry, 0.5f}, {Crime, 0.5f} };
-	m_DemandRich = TMap <TEnumAsByte <ECitySpecialty>, float>{ {Industry, 0.5f}, {Crime, 0.5f}, {Finance, 0.5f} };
-
+	// m_DemandPoor = TMap <TEnumAsByte <ECitySpecialty>, float> { {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f} };
+	// m_DemandMiddle = TMap <TEnumAsByte <ECitySpecialty>, float>{ {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f} };
+	// m_DemandRich = TMap <TEnumAsByte <ECitySpecialty>, float>{ {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f}, {ECitySpecialty::Finance, 0.5f} };
+	m_DemandPoor = TMap <ECitySpecialty, float>{ {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f} };
+	m_DemandMiddle = TMap <ECitySpecialty, float>{ {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f} };
+	m_DemandRich = TMap <ECitySpecialty, float>{ {ECitySpecialty::Industry, 0.5f}, {ECitySpecialty::Crime, 0.5f}, {ECitySpecialty::Finance, 0.5f} };
 	// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), m_DemandRich.Num()));
 }
 
@@ -44,7 +46,7 @@ void City::UpdateDemand(const TEnumAsByte<EWealthLevels>& WealthLevels, const TE
 	}
 }
 
-const TMap<TEnumAsByte<ECitySpecialty>, float>& City::GetDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
+const TMap<ECitySpecialty, float>& City::GetDemand(const TEnumAsByte<EWealthLevels>& WealthLevels) const
 {
 
 #ifdef DEBUG_ONLY
@@ -61,6 +63,24 @@ const TMap<TEnumAsByte<ECitySpecialty>, float>& City::GetDemand(const TEnumAsByt
 	case EWealthLevels::Rich: return m_DemandRich; break;
 	default: return m_DemandPoor;  break;
 	}
+}
+
+TMap<ECitySpecialty, float>& City::AccessDemand(const TEnumAsByte<EWealthLevels>& WealthLevels)
+{
+#ifdef DEBUG_ONLY
+
+	checkf(WealthLevels != EWealthLevels::DefaultWealthEnum,
+		TEXT("Error in City::AccessDemand, WealthLevels == WealthLevels::DefaultWealthEnum."))
+
+#endif
+
+		switch (WealthLevels)
+		{
+		case EWealthLevels::Poor: return m_DemandPoor;  break;
+		case EWealthLevels::Middle: return m_DemandMiddle; break;
+		case EWealthLevels::Rich: return m_DemandRich; break;
+		default: return m_DemandPoor;  break;
+		}
 }
 
 

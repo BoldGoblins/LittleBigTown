@@ -3,26 +3,21 @@
 
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_HappinessInfos.h"
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_ItemHappinessInfos.h"
+#include "LittleBigTown/UserInterface/BuildingInfos/UI_BuildingInfos.h"
 #include "LittleBigTown/Core/Enums.h"
 #include "LittleBigTown/Core/Debugger.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
 #include "LittleBigTown/GameSystem/MainGameState.h"
+#include "LittleBigTown/GameSystem/MainPlayerController.h"
 #include "Components/VerticalBox.h"
-#include "LittleBigTown/UserInterface/Templates/BGButton.h"
+#include "LittleBigTown/UserInterface/Templates/Components/BGButton.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
-#include "Algo/Count.h"
 
 
 #define BUTTON_SIZE 35.0f
 #define DEFAULT_PADDING 4.0f
 #define SUB_WIDGET_ITEM_SIZE 25.0f * SubClassWidget->GetChildAt(0)->RenderTransform.Scale.Y
-
-
-void UUI_HappinessInfos::NativePreConstruct()
-{
-	Super::NativePreConstruct();
-}
 
 void UUI_HappinessInfos::NativeConstruct()
 {
@@ -36,6 +31,7 @@ void UUI_HappinessInfos::NativeConstruct()
 	}
 
 	MainGameState = Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld()));
+	MainPlayerController = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 #ifdef DEBUG_ONLY
 
@@ -46,75 +42,16 @@ void UUI_HappinessInfos::NativeConstruct()
 #endif
 }
 
-void UUI_HappinessInfos::DEBUGPrintClasses()
-{
-	TArray <FString> Names{ "Industrie", "Finance", "Science", "Tourism", "Crime", "Military", "Spiritual" };
-
-	for (int32 i{ 0 }; i < Names.Num(); ++i)
-	{
-		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Red,
-			FString::Printf(TEXT("%s : %d"), *Names[i], GetSpeArray(ECitySpecialty(i)).Num()));
-		DEBUGPrintSubClasses(ECitySpecialty(i));
-	}
-}
-
-void UUI_HappinessInfos::DEBUGPrintSubClasses(const ECitySpecialty& Specialty)
-{
-	TMap <FName, int32> Count;
-	TMap <FName, float> Mean;
-
-	// Init Map
-	for (const auto& Pair : MainGameState->GetSocialClasses(BuildingWealth).GetMap(Specialty))
-	{
-		Count.Add(Pair.Key, 0);
-		Mean.Add(Pair.Key, 0);
-	}
-
-	for (const auto& Resident : GetSpeArray(Specialty))
-	{
-		++Count[Resident.m_SubClassName];
-		Mean[Resident.m_SubClassName] += Resident.m_Satisfaction;
-	}
-
-	for (const auto & Pair : Count)
-		GEngine->AddOnScreenDebugMessage(-1, 15, FColor::Red, 
-			FString::Printf(TEXT("%s : Count : %d, Mean : %f"), *Pair.Key.ToString(), Pair.Value, Mean[Pair.Key] / Pair.Value));
-}
-
-TArray<struct FResident>& UUI_HappinessInfos::GetSpeArray(const TEnumAsByte<enum ECitySpecialty>& Specialty)
-{
-#ifdef DEBUG_ONLY
-
-	checkf(Specialty != DefaultCitySpecialtyEnum,
-		TEXT("Error in UUI_HappinessInfos::GetSortedArray, Specialty is Default."));
-
-#endif
-
-	switch (Specialty)
-	{
-	case Industry: return m_Industry; break;
-	case Finance: return m_Finance; break;
-	case Science: return m_Science; break;
-	case Tourism: return m_Tourism; break;
-	case Crime: return m_Crime; break;
-	case Military: return m_Military; break;
-	case Spiritual: return m_Spiritual; break;
-	default: return m_Industry; break;
-	}
-}
-
 UUI_ItemHappinessInfos* UUI_HappinessInfos::GetSpeItem(const TEnumAsByte<enum ECitySpecialty>& Specialty)
 {
-	return ArrItems[int32(Specialty)];
+	return ArrItems[uint8(Specialty.GetValue())];
 }
-
-void UUI_HappinessInfos::EmptySpeArrays()
+bool UUI_HappinessInfos::IsSubClassDisplayed() const
 {
-	for (int32 i{ 0 }; i < int32(DefaultCitySpecialtyEnum); ++i)
-		GetSpeArray(ECitySpecialty(i)).Empty();
+	return SubClassWidget->GetVisibility() == ESlateVisibility::SelfHitTestInvisible && LastButtonClicked.IsValid();
 }
 
-void UUI_HappinessInfos::ResetSubClassWidget()
+void UUI_HappinessInfos::ResetSubClassesWidget()
 {
 	for (const auto SubWidget : SubClassWidget->GetAllChildren())
 		SubWidget->SetVisibility(ESlateVisibility::Collapsed);
@@ -123,58 +60,54 @@ void UUI_HappinessInfos::ResetSubClassWidget()
 	SubClassWidget->SetVisibility(ESlateVisibility::Collapsed);
 }
 
-void UUI_HappinessInfos::MainDisplay(AResidentialBuilding* Building, bool NewDisplay)
+void UUI_HappinessInfos::SetClassesInformations(AResidentialBuilding* ResBuilding, bool bNewDisplay)
 {
-	TMap <ECitySpecialty, float> Satisfaction { {Industry, 0.0f}, {Finance, 0.0f}, {Science, 0.0f}, {Tourism, 0.0f}, 
-		{Crime, 0.0f}, {Military, 0.0f}, {Spiritual, 0.0f} };
+	TMap <ECitySpecialty, float> Satisfaction{};
 
-	EmptySpeArrays();
+	if (bNewDisplay)
+		Reset();
 
-	if (NewDisplay)
+	for (const auto Spe : TEnumRange<ECitySpecialty>())
 	{
-		BuildingWealth = Building->GetInfosBase().m_WealthLevel;
-		ResetWidget(ESlateVisibility::Collapsed);
+		Satisfaction.Add(Spe, 0.0f);
+
+		for (const auto& Resident : ResBuilding->GetOccupants(Spe))
+			Satisfaction[Resident.m_Type] += Resident.m_Satisfaction;
+		// En passant Resident.m_Type ici à la place de Spé, on s'assure que les Résidents dans la map sont tous du bon type.
 	}
 
-	for (const auto& Resident : Building->GetResidents())
+	for (const auto& Element : Satisfaction)
 	{
-
-#ifdef DEBUG_ONLY
-
-		checkf(Resident.m_Type != DefaultCitySpecialtyEnum, 
-			TEXT("Error in UUI_HappinessInfos::SortBuildingArray, Resident Type in Building Array is Default."));
-
-#endif
-		GetSpeArray(Resident.m_Type).Add(Resident);
-		Satisfaction[Resident.m_Type] += Resident.m_Satisfaction;
-	}
-
-	for (const auto Element : Satisfaction)
-	{
-		GetSpeItem(Element.Key)->SetInformations(GetSpeArray(Element.Key).Num(), Element.Value / GetSpeArray(Element.Key).Num());
+		GetSpeItem(Element.Key)->PopulateInformations(ResBuilding->GetOccupants(Element.Key).Num(), 
+			Element.Value / ResBuilding->GetOccupants(Element.Key).Num());
 
 		// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%s"), GetSpeArray(Element.Key).Num() == 0 ? TEXT("true") : TEXT("false")));
-		if (NewDisplay)
-			GetSpeItem(Element.Key)->SetSpecialtyName(MainGameState->GetSpecialtyNames(Building->GetInfosBase().m_WealthLevel)[int32(Element.Key)]);
+		if (bNewDisplay)
+			GetSpeItem(Element.Key)->PopulateName(MainGameState
+				->GetSpecialtyNames(ResBuilding->GetInfosBase().m_WealthLevel)[int32(Element.Key)]);
 	}
-
-	if (SubClassWidget->GetVisibility() == ESlateVisibility::SelfHitTestInvisible && LastButtonClicked.IsValid())
-		SubClassDisplay(LastButtonClicked.Get(), false);
-
-	// DEBUGPrintClasses();
 }
-void UUI_HappinessInfos::ResetWidget(ESlateVisibility Visible)
-{
-	if (Visible != ESlateVisibility::Collapsed && Visible != ESlateVisibility::Hidden)
-		return;
 
+void UUI_HappinessInfos::SetInformations(ABuilding* Building, bool bNewDisplay)
+{
+	if (Building->IsA <AResidentialBuilding>())
+	{
+		SetClassesInformations(Cast <AResidentialBuilding>(Building), bNewDisplay);
+
+		if (IsSubClassDisplayed())
+			SetSubClassesInformations(LastButtonClicked.Get(), Cast <AResidentialBuilding>(Building), false);
+	}
+}
+
+void UUI_HappinessInfos::Reset()
+{
 	if (LastButtonClicked.IsValid())
 	{
-		Cast <UVerticalBoxSlot> (LastButtonClicked.Get()->Slot)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
+		Cast <UVerticalBoxSlot>(LastButtonClicked.Get()->Slot)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
 		ResetLastButtonClicked();
 	}
 
-	ResetSubClassWidget();
+	ResetSubClassesWidget();
 }
 
 void UUI_HappinessInfos::OnItemClicked(UBGButton* Button)
@@ -186,37 +119,39 @@ void UUI_HappinessInfos::OnItemClicked(UBGButton* Button)
 		return;
 	}
 
-
 	auto const ResetButton { ResetLastButtonClicked() };
 
 	// Un Button a été reset :
 	if (ResetButton)
 	{
 		Cast <UVerticalBoxSlot>(ResetButton->Slot)->SetPadding(FMargin(0.0f, 0.0f, 0.0f, 0.0f));
-		ResetSubClassWidget();
+		ResetSubClassesWidget();
 	}
 
 	// Si le Button Clicked n'est pas le même que le Button Reset
 	if (Button != ResetButton)
 	{
+		const auto& BuildingPtr { MainPlayerController->GetBuildingInfos()->GetBuildingDisplayed() };
 		LastButtonClicked = Button;
-		SubClassDisplay(Button, true);
+
+		if (BuildingPtr.IsValid() && BuildingPtr.Get()->IsA<AResidentialBuilding>())
+			SetSubClassesInformations(Button, Cast<AResidentialBuilding>(BuildingPtr), true);
 	}
 }
 
-void UUI_HappinessInfos::SubClassDisplay(UBGButton* Button, bool NewDisplay)
+void UUI_HappinessInfos::SetSubClassesInformations(class UBGButton* Button, class AResidentialBuilding* ResBuilding, bool NewDisplay)
 {
-	int32 Index {VB_Main->GetChildIndex(Button)};
+	uint8 Index { uint8(VB_Main->GetChildIndex(Button)) };
 	int32 i{ 0 };
-	TMap <FName, float> Count {};
+	TMap <FName, float> Count{};
 
 	// Init Map
-	for (const auto& Pair : MainGameState->GetSocialClasses(BuildingWealth).GetMap(ECitySpecialty(Index)))
+	for (const auto& Pair : MainGameState->GetSocialClasses(ResBuilding->GetInfosBase().m_WealthLevel).GetMap(ECitySpecialty(Index)))
 		Count.Add(Pair.Key, 0.0f);
 
 	TMap <FName, float> Mean { Count };
 
-	for (const auto& Element : GetSpeArray(ECitySpecialty(Index)))
+	for (const auto& Element : ResBuilding->GetOccupants(ECitySpecialty(Index)))
 	{
 		Mean[Element.m_SubClassName] += Element.m_Satisfaction;
 		++Count[Element.m_SubClassName];
@@ -224,15 +159,12 @@ void UUI_HappinessInfos::SubClassDisplay(UBGButton* Button, bool NewDisplay)
 
 	for (const auto& Pair : Mean)
 	{
-		// int32 Count{ int32(Algo::CountIf(GetSpeArray(ECitySpecialty(Index)), [&Pair](const FResident& Resident)-> bool
-			// { return Resident.m_SubClassName == Pair.Key; })) };
-
-		const auto Item { Cast <UUI_ItemHappinessInfos> (SubClassWidget->GetAllChildren()[i]) };
-		Item->SetInformations(Count[Pair.Key], Pair.Value / Count[Pair.Key]);
+		const auto Item{ Cast <UUI_ItemHappinessInfos>(SubClassWidget->GetAllChildren()[i]) };
+		Item->PopulateInformations(Count[Pair.Key], Pair.Value / Count[Pair.Key]);
 
 		if (NewDisplay)
 		{
-			Item->SetSpecialtyName(FText::FromString(Pair.Key.ToString()));
+			Item->PopulateName(FText::FromString(Pair.Key.ToString()));
 			Item->SetVisibility(ESlateVisibility::SelfHitTestInvisible);
 		}
 

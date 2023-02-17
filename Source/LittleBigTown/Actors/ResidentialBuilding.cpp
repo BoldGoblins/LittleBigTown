@@ -9,17 +9,22 @@
 #include "LittleBigTown/Core/Debugger.h"
 #include "LittleBigTown/Core/SocialClass.h"
 
+#define MAX_LEVEL_RESIDENTIAL 5
+// #define TEN_PERCENT_OCCUPATION FMath::RoundToInt ((InfosBase.m_OccupationMaxCount * 10) / 100)
+
 void AResidentialBuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
 	MainGameState = Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld()));
-
-	// Set Infos values (when EditDefaultsOnly values are set in Editor)
-	// InfosBase.m_MaxLevel = MAX_LEVEL_RESIDENTIAL;
-	// ResidentialInformations.m_TotalIncomes = IncomePerHabitant * InfosBase.m_OccupationCurrentCount * CurrentLevel;
-
 	MainGameState->OnNewHourDelegate.AddDynamic(this, &ThisClass::UpdateNewHour);
+
+
+#ifdef DEBUG_ONLY
+
+	checkf(InfosBase.m_OccupationMaxCount >= 5, TEXT("Error in AResidentialBuilding::BeginPlay : Minimum d'habitants requis = 5."));
+
+#endif 
 
 }
 
@@ -33,7 +38,7 @@ void AResidentialBuilding::GenerateResidents(int32 Count)
 #endif 
 
 	const auto Frequencies { MainGameState->GetSpecialtiesFrequencies(InfosBase.m_WealthLevel) };
-	TEnumAsByte <ECitySpecialty> Specialty{ DefaultCitySpecialtyEnum };
+	TEnumAsByte <ECitySpecialty> Specialty{ ECitySpecialty::DefaultCitySpecialtyEnum };
 	TArray<int> Arr{};
 	Arr.Init(0, Frequencies.Num());
 	auto It { Frequencies.CreateConstIterator()};
@@ -60,8 +65,9 @@ void AResidentialBuilding::GenerateResidents(int32 Count)
 				if(x > Arr[j - 1] && x <= Arr[j])
 					Specialty = NewIt->Key;
 			}
-		}	
-		m_Residents.Add(FResident(Specialty, MainGameState->GetSocialClasses(InfosBase.m_WealthLevel)));
+		}
+
+		m_Occupants.Add(FResident(Specialty, MainGameState->GetSocialClasses(InfosBase.m_WealthLevel)));
 		MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, Specialty, 1, ResidentialInformations.m_IncomesPerHab);
 	}
 }
@@ -69,18 +75,12 @@ void AResidentialBuilding::GenerateResidents(int32 Count)
 void AResidentialBuilding::UpdateNewHour(int32 Hour)
 {
 	double Demand { MainGameState->GetResidentialDemand(InfosBase.m_WealthLevel) };
+	const int32 Constant {FMath::Clamp(FMath::RoundToInt((InfosBase.m_OccupationMaxCount * 10) / 100), 1, 500)};
+	int32 OccupationVar { FMath::RoundToInt((Demand * Constant) + ((ResidentialInformations.m_SatisfactionPercent - 0.5) * Constant)) };
 
-	int32 OccupationVar { FMath::RoundToInt((Demand * TEN_PERCENT_OCCUPATION) + 
-		((ResidentialInformations.m_SatisfactionPercent - 0.5) * TEN_PERCENT_OCCUPATION)) };
-
+	// Ne pas enlever plus d'habitants qu'il n'y en a ou ne pas en ajouter plus que le logement ne peut en contenir
 	OccupationVar = FMath::Clamp(OccupationVar, -InfosBase.m_OccupationCurrentCount, InfosBase.m_OccupationMaxCount - InfosBase.m_OccupationCurrentCount);
-	/*
-	if (InfosBase.m_OccupationCurrentCount + OccupationVar > InfosBase.m_OccupationMaxCount)
-		OccupationVar = InfosBase.m_OccupationMaxCount - InfosBase.m_OccupationCurrentCount;
 
-	else if (InfosBase.m_OccupationCurrentCount + OccupationVar < 0)
-		OccupationVar = -InfosBase.m_OccupationCurrentCount;
-*/
 	// Modification des infos de l'habitation :
 	InfosBase.m_OccupationCurrentCount += OccupationVar;
 	ResidentialInformations.m_TotalIncomes += OccupationVar * ResidentialInformations.m_IncomesPerHab;
@@ -94,12 +94,12 @@ void AResidentialBuilding::UpdateNewHour(int32 Hour)
 
 		for (int i{ 0 }; i < OccupationVar * (-1); ++i)
 		{
-			MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, m_Residents[0].GetType(), -1, ResidentialInformations.m_IncomesPerHab);
-			m_Residents.RemoveAt(0);
+			MainGameState->AddOrSubResidents(InfosBase.m_WealthLevel, m_Occupants[0].m_Type, -1, ResidentialInformations.m_IncomesPerHab);
+			m_Occupants.RemoveAt(0);
+
 			// GEngine->AddOnScreenDebugMessage(-1, 5, FColor::Red, FString::Printf(TEXT("%d"), m_Residents.Num()));
 		}
 	}
-
 	else
 		return;
 

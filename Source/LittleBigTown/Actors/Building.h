@@ -5,11 +5,10 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "LittleBigTown/Core/Structs.h"
+#include "LittleBigTown/Core/Resident.h"
 
 #include "Building.generated.h"
 
-
-// #define LOCTEXT_NAMESPACE "TempoTry"
 
 UCLASS(Abstract)
 class LITTLEBIGTOWN_API ABuilding : public AActor
@@ -24,6 +23,15 @@ public:
 
 	const FBuildingInfosBase& GetInfosBase() const { return InfosBase; }
 
+	const TArray <FResident>& GetAllOccupants() const { return m_Occupants; }
+
+	const TArray <FResident> GetOccupants(const ECitySpecialty& Specialty) const;
+
+	const TArray <FResident> GetOccupants(const FString & SubClassName) const;
+
+	UFUNCTION(BlueprintCallable)
+		void SetDistrictName(const FName& DistrictName) { InfosBase.m_DistrictName = FText::FromString(DistrictName.ToString()); }
+
 protected:
 
 	UPROPERTY(BlueprintReadOnly)
@@ -32,9 +40,8 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UStaticMeshComponent* StaticMeshComponent{};
 
-
 	UPROPERTY(EditDefaultsOnly)
 		FBuildingInfosBase InfosBase;
-};
 
-// #undef LOCTEXT_NAMESPACE
+	TArray <FResident> m_Occupants{};
+};

@@ -6,18 +6,26 @@
 #include "Components/HorizontalBox.h"
 #include "Components/ProgressBar.h"
 #include "Components/VerticalBox.h"
+#include "LittleBigTown/Actors/ResidentialBuilding.h"
+
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+// #include "LittleBigTown/GameSystem/MainPlayerController.h"
 
-void UUI_General_Infos::NativeConstruct()
+
+void UUI_General_Infos::SetInformations(ABuilding* Building, bool bNewDisplay)
 {
+	SetBaseInfos(Building->GetInfosBase(), bNewDisplay);
+
+	if (Building->IsA <AResidentialBuilding>())
+		SetResidentialInfos(Cast <AResidentialBuilding>(Building)->GetInfosResidential());
+	// else if Commercial, ...
 
 }
 
-void UUI_General_Infos::ResetAllComponents()
+void UUI_General_Infos::Reset()
 {
-	const auto ChildrenArray{ VerticalBox->GetAllChildren() };
+	const auto & ChildrenArray { VerticalBox->GetAllChildren() };
 
 	// As we don't want first Child (Wealth that would be printed in all cases)
 	// -1 for Description
@@ -27,15 +35,20 @@ void UUI_General_Infos::ResetAllComponents()
 			ChildrenArray[i]->SetVisibility(ESlateVisibility::Hidden);
 	}
 }
-void UUI_General_Infos::UpdateAndDisplayBaseInfos(const struct FBuildingInfosBase& BaseInfos)
+
+void UUI_General_Infos::SetBaseInfos(const struct FBuildingInfosBase& BaseInfos, bool bNewDisplay)
 {
 	// Text :
+	if (bNewDisplay)
+	{
+		TB_OccupationMax->SetText(FText::FromString(FString::FromInt(BaseInfos.m_OccupationMaxCount)));
+		TB_Wealth->SetText(BaseInfos.GetWealthLevelAsText());
+		TB_Description->SetText(BaseInfos.m_Description);
+	}
+
 	TB_Outgoings->SetText(FText::FromString(FString::FromInt(BaseInfos.m_Outgoings)));
 	TB_Level->SetText(FText::FromString(FString::FromInt(BaseInfos.m_CurrentLevel)));
 	TB_OccupationCount->SetText(FText::FromString(FString::FromInt(BaseInfos.m_OccupationCurrentCount)));
-	TB_OccupationMax->SetText(FText::FromString(FString::FromInt(BaseInfos.m_OccupationMaxCount)));
-	TB_Wealth->SetText(BaseInfos.GetWealthLevelAsText());
-	TB_Description->SetText(BaseInfos.m_Description);
 
 	// ProgressBars :
 	PB_Level->SetPercent(0.1f);
@@ -47,11 +60,8 @@ void UUI_General_Infos::UpdateAndDisplayBaseInfos(const struct FBuildingInfosBas
 	PB_Level->SetVisibility(ESlateVisibility::Visible);
 	PB_Occupation->SetVisibility(ESlateVisibility::Visible);
 }
-
-void UUI_General_Infos::UpdateAndDisplayInfos(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos)
+void UUI_General_Infos::SetResidentialInfos(const FResidentialBuildingInfos& ResInfos)
 {
-	UpdateAndDisplayBaseInfos(BaseInfos);
-
 	// Text :
 	TB_Incomes->SetText(FText::FromString(FString::FromInt(ResInfos.m_TotalIncomes)));
 	TB_Satisfaction->SetText(FText::FromString(FString::FromInt(int(ResInfos.m_SatisfactionPercent * 100))));

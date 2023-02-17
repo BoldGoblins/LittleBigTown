@@ -26,36 +26,34 @@ public :
 	UFUNCTION(BlueprintCallable)
 		void NewDisplayBuildingInfos(class ABuilding* Building);
 
-		void Hide() override;
+	void Hide() override;
 
-	UFUNCTION()
-		void BuildingInfosUpdated();
+	void Update() override;
 
-	UFUNCTION()
-		void GeneralClicked();
+	// Fonction check l'index du Button dans la Box pour définir l'index du Switcher
+	// Button et Child du Widget Switcher doivent être inséré dans le même ordre
+	void ButtonClicked(class UBGButton* Button) override;
 
-	UFUNCTION()
-		void HappinessClicked();
+	// UUI_HappinessInfos* GetHappinessInfos() const { return HappinessInfosWidget;  }
 
-	UUI_HappinessInfos* GetHappinessInfos() const { return HappinessInfosWidget;  }
+	const TWeakObjectPtr <ABuilding>& GetBuildingDisplayed() const { return DisplayedBuilding; }
 
+private :
 
-protected :
+	TArray <class UBGLayerWidget*> Layers {};
 
-	TWeakObjectPtr <class AResidentialBuilding> CurrResBuilding;
+	TWeakObjectPtr <class ABuilding> DisplayedBuilding;
 
-	class UUI_General_Infos* GeneralInfosWidget;
+	class AMainPlayerController* MainPlayerController { nullptr };
 
-	UUI_HappinessInfos* HappinessInfosWidget;
+protected:
+
 
 	UPROPERTY(meta = (BindWidget))
 		class UWidgetSwitcher* WidgetSwitcher;
 
 	UPROPERTY(meta = (BindWidget))
-		class UButton* B_General;
-
-	UPROPERTY(meta = (BindWidget))
-		class UButton* B_Happiness;
+		class UHorizontalBox* ButtonBox;
 
 
 	// --------------------------------------		TEXTBLOCKS		--------------------------------------

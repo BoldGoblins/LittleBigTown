@@ -3,7 +3,8 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "Blueprint/UserWidget.h"
+// #include "Blueprint/UserWidget.h"
+#include "LittleBigTown/UserInterface/Templates/BGLayerWidget.h"
 // struct residential infos definition
 #include "LittleBigTown/Core/Structs.h"
 
@@ -11,24 +12,22 @@
 
 
 UCLASS()
-class LITTLEBIGTOWN_API UUI_General_Infos : public UUserWidget
+class LITTLEBIGTOWN_API UUI_General_Infos : public UBGLayerWidget
 {
 	GENERATED_BODY()
 
 public:
+	
+	// Building ptr doit avoir été check par le Widget Parent avant transmission.
+	void SetInformations(class ABuilding * Building, bool bNewDisplay = true) override;
 
-	void NativeConstruct() override;
-
-	// Function to overload
-	// Residential Version
-	UFUNCTION()
-		void UpdateAndDisplayInfos(const struct FBuildingInfosBase& BaseInfos, const struct FResidentialBuildingInfos& ResInfos);
-
-		void ResetAllComponents();
+	void Reset() override;
 
 private:
 
-	void UpdateAndDisplayBaseInfos(const struct FBuildingInfosBase& BaseInfos);
+	void SetBaseInfos(const struct FBuildingInfosBase& BaseInfos, bool bNewDisplay);
+
+	void SetResidentialInfos(const struct FResidentialBuildingInfos& ResInfos);
 
 protected:
 
@@ -66,7 +65,6 @@ protected:
 
 
 	// --------------------------------------		HORIZONTAL BOXES		--------------------------------------
-
 
 
 	UPROPERTY(meta = (BindWidget))

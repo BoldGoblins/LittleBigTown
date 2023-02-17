@@ -18,9 +18,9 @@ public :
 
 		void NativePreConstruct() override;
 
-		void SetSpecialtyName(const FText& Name);
+		void PopulateName(const FText& Name);
 		
-		void SetInformations(int32 Count, float Satisfaction);
+		void PopulateInformations(int32 Count, float Satisfaction);
 
 		const int32 GetCount() const;
 

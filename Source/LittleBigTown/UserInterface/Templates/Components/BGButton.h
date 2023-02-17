@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/Button.h"
-#include "Blueprint/UserWidget.h"
+#include "LittleBigTown/UserInterface/Templates/BGComponentWidget.h"
 
 #include "BGButton.generated.h"
 
@@ -13,7 +13,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnBGButtonClickedSignature, UBGButt
 
 
 UCLASS()
-class LITTLEBIGTOWN_API UBGButton : public UUserWidget
+class LITTLEBIGTOWN_API UBGButton : public UBGComponentWidget
 {
 	GENERATED_BODY()
 
@@ -45,11 +45,24 @@ protected :
 	UPROPERTY(Meta = (BindWidget))
 		UButton* Button;
 
+	UPROPERTY(Meta = (BindWidgetOptional))
+		class UTextBlock* TextBlock;
+
+	UPROPERTY(EditAnywhere, Category = "Text")
+		FText ButtonText;
+
+	UPROPERTY(EditAnywhere, Category = "Text")
+		FSlateFontInfo Font;
+
 	UPROPERTY(EditAnywhere, Category = "Style")
 		struct FButtonStyle BasicStyle;
 
 	UPROPERTY(EditAnywhere, Category = "Style")
 		struct FButtonStyle OnClickedStyle;
+
+	// Si le Button peut être sélectionné (mis en subrillance une fois cliqué)
+	UPROPERTY(EditAnywhere, Category = "Settings")
+		bool bCanBeSelected { false };
 
 	UPROPERTY(BlueprintReadOnly)
 		bool bButtonClicked{ false };

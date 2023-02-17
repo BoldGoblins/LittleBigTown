@@ -58,20 +58,20 @@ public :
 
 		const TArray <TWeakObjectPtr<AResidentialBuilding>>& GetBuildingResArray() { return City.m_ResBuilArr; }
 
-		const TMap <TEnumAsByte <ECitySpecialty>, float> & GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
+		const TMap <ECitySpecialty, float>& GetSpecialtiesFrequencies(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		// const TArray <int>& GetSpecialtiesFreqCumul(const TEnumAsByte<EWealthLevels>& WealthLevels) const;
 
 		void AddOrSubResidents(const TEnumAsByte<EWealthLevels>& WealthLevels, 
 			const TEnumAsByte<ECitySpecialty>& Specialty, int32 Count, int32 IncomePerHabitant);
 
+		UFUNCTION(BlueprintCallable)
+			void UnlockSocialClass(const TEnumAsByte <EWealthLevels>& Wealth, const TEnumAsByte <ECitySpecialty>& Specialty, float DefaultDemand = 0.5f);
+
 		const FSocialClasses& GetSocialClasses (const TEnumAsByte<EWealthLevels>& WealthLevel) const;
 
 		const TArray <FText>& GetSpecialtyNames(const TEnumAsByte<enum EWealthLevels>& Wealth) const;
-/*
-		UFUNCTION()
-			void UpdateInformations(const FBuildingInfosBase& BaseInfos, const FResidentialBuildingInfos& ResInfos);
-*/
+
 		UFUNCTION(BlueprintCallable)
 			void AddNewBuilding(ABuilding* Building);
 

@@ -11,6 +11,7 @@
 #define LOCTEXT_NAMESPACE "TempoTry"
 #define BASE_INCOMES 50
 #define BASE_SATISFACTION 1.0f
+#define BASE_OCCUPATION_MAX 5
 
 // --------------------------------------		Buildings		--------------------------------------
 
@@ -57,7 +58,7 @@ struct FBuildingInfosBase
 		int32 m_MaxLevel{};
 	
 	UPROPERTY(EditDefaultsOnly)
-		int32 m_OccupationMaxCount{};
+		int32 m_OccupationMaxCount{ BASE_OCCUPATION_MAX };
 
 	int32 m_OccupationCurrentCount{};
 
@@ -66,6 +67,8 @@ struct FBuildingInfosBase
 
 	UPROPERTY(EditDefaultsOnly)
 		TEnumAsByte <EWealthLevels>  m_WealthLevel{ DefaultWealthEnum };
+
+	FText m_DistrictName{};
 };
 
 USTRUCT(BlueprintType)
@@ -86,6 +89,14 @@ USTRUCT(BlueprintType)
 struct FNeeds
 {
 	GENERATED_USTRUCT_BODY()
+
+	friend FNeeds operator+(const FNeeds& Lhs, const FNeeds& Rhs);
+
+	friend FNeeds operator/(const FNeeds& Lhs, int32 X);
+
+	FNeeds& operator= (const FNeeds& Rhs);
+
+	FNeeds& operator += (const FNeeds& Rhs);
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly)
 		float m_FoodAndDrinks { 0.0 };

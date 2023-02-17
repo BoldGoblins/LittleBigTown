@@ -25,12 +25,12 @@ void UUI_ItemHappinessInfos::NativePreConstruct()
 	}
 }
 
-void UUI_ItemHappinessInfos::SetSpecialtyName(const FText & Name)
+void UUI_ItemHappinessInfos::PopulateName(const FText & Name)
 {
 	TB_SpecialtyName->SetText(Name);
 }
 
-void UUI_ItemHappinessInfos::SetInformations(int32 Count, float Satisfaction)
+void UUI_ItemHappinessInfos::PopulateInformations(int32 Count, float Satisfaction)
 {
 	TB_SpecialtyCount->SetText(FText::FromString(FString::FormatAsNumber(Count)));
 	PB_Satisfaction->SetPercent(Satisfaction);

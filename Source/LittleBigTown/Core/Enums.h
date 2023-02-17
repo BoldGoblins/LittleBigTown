@@ -25,10 +25,11 @@ enum EWealthLevels
 };
 
 UENUM(BlueprintType)
-enum ECitySpecialty
+enum class ECitySpecialty : uint8
 {
 	Industry, Finance, Science, Tourism, Crime, Military, Spiritual, DefaultCitySpecialtyEnum
 };
+ENUM_RANGE_BY_FIRST_AND_LAST(ECitySpecialty, ECitySpecialty::Industry, ECitySpecialty::Spiritual);
 
 enum ESortingBy
 {

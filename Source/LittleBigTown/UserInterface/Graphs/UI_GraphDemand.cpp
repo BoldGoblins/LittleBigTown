@@ -85,19 +85,19 @@ UProgressBar* UUI_GraphDemand::GetProgressBar(const TEnumAsByte<enum ECitySpecia
 
 #ifdef DEBUG_ONLY
 
-	checkf(Specialty != DefaultCitySpecialtyEnum, TEXT("Error in UUI_GraphDemand::GetFromSpecialty, Specialty == Default."));
+	checkf(Specialty != ECitySpecialty::DefaultCitySpecialtyEnum, TEXT("Error in UUI_GraphDemand::GetFromSpecialty, Specialty == Default."));
 
 #endif
 
 	switch (Specialty)
 	{
-	case Industry: return PB_Industry; break;
-	case Finance: return PB_Finance; break;
-	case Science: return PB_Science; break;
-	case Tourism: return PB_Tourism; break;
-	case Crime: return PB_Crime; break;
-	case Military: return PB_Military; break;
-	case Spiritual: return PB_Spiritual; break;
+	case ECitySpecialty::Industry: return PB_Industry; break;
+	case ECitySpecialty::Finance: return PB_Finance; break;
+	case ECitySpecialty::Science: return PB_Science; break;
+	case ECitySpecialty::Tourism: return PB_Tourism; break;
+	case ECitySpecialty::Crime: return PB_Crime; break;
+	case ECitySpecialty::Military: return PB_Military; break;
+	case ECitySpecialty::Spiritual: return PB_Spiritual; break;
 	default: return PB_Industry; break;
 	}
 }

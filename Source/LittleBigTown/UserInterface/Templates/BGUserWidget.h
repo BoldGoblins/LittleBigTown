@@ -14,9 +14,18 @@ class LITTLEBIGTOWN_API UBGUserWidget : public UUserWidget
 
 public : 
 
-	// Default Implémentation
-
 	UFUNCTION(BlueprintCallable)
 		virtual void Hide();
-	// virtual void Reset() ?
+
+	UFUNCTION(BlueprintCallable)
+		virtual void Display();
+
+	// Update a Widget allready Displayed
+	UFUNCTION()
+		virtual void Update();
+
+	UFUNCTION()
+		virtual void ButtonClicked(class UBGButton* Button);
+	
+	virtual void Reset();
 };

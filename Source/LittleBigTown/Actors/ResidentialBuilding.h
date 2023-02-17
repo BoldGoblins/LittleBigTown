@@ -11,9 +11,6 @@
 #include "LittleBigTown/Core/Resident.h"
 
 #include "ResidentialBuilding.generated.h"
-
-#define MAX_LEVEL_RESIDENTIAL 5
-#define TEN_PERCENT_OCCUPATION FMath::RoundToInt ((InfosBase.m_OccupationMaxCount * 10) / 100)
 // #define OCCUPATION_VARIATION_FACTOR 1.5f
 
 // Besoin pour communiquer avec le UI_BuildingInfos
@@ -38,7 +35,7 @@ public :
 	UFUNCTION(BlueprintCallable)
 		const FResidentialBuildingInfos & GetInfosResidential() const { return ResidentialInformations; }
 
-	const TArray <FResident>& GetResidents() const { return m_Residents; }
+	// const TArray <FResident>& GetResidents() const { return m_Residents; }
 
 	FOnResBuildingInfosChangedSignature OnResBuildingInfosChangedDelegate;
 
@@ -52,7 +49,7 @@ protected :
 	UPROPERTY(EditDefaultsOnly)
 		FResidentialBuildingInfos ResidentialInformations;
 
-	TArray <FResident> m_Residents {};
+	//  <FResident> m_Residents {};
 
 
 private : 

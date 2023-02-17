@@ -2,8 +2,11 @@
 
 
 #include "Building.h"
+
 #include "Components/SceneComponent.h"
 #include "Components/StaticMeshComponent.h"
+#include "Algo/Copy.h"
+
 
 // Sets default values
 ABuilding::ABuilding()
@@ -26,6 +29,29 @@ void ABuilding::BeginPlay()
 {
 	Super::BeginPlay();
 
+}
+
+const TArray<FResident> ABuilding::GetOccupants(const ECitySpecialty& Specialty) const
+{
+	TArray <FResident> ToRet {};
+	
+	for (const auto& Resident : m_Occupants)
+	{
+		if (Resident.m_Type == Specialty)
+			ToRet.Add(Resident);
+	}
+
+	return ToRet;
+}
+
+const TArray<FResident> ABuilding::GetOccupants(const FString& SubClassName) const
+{
+	TArray <FResident> Copy{};
+
+	Algo::CopyIf(m_Occupants, Copy, [&SubClassName](const FResident& Resident)-> bool {
+		return Resident.m_SubClassName.ToString() == SubClassName; });
+
+	return Copy;
 }
 
 

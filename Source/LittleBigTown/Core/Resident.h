@@ -9,14 +9,17 @@
 struct FResident
 {
 
-	FResident(const TEnumAsByte<enum ECitySpecialty>& Type, const FSocialClasses & SocialClass) : m_Type { Type },
-		m_SubClassName { SocialClass.GetRandomSubClass(Type) }, m_Needs { SocialClass.GetMap(Type)[m_SubClassName] } {}
+	FResident(const TEnumAsByte <ECitySpecialty>& Type, const FSocialClasses & SocialClass) : m_Type { Type },
+		m_SubClassName { SocialClass.GetRandomSubClass(Type).ToString() }, m_Needs{SocialClass.GetMap(Type)[m_SubClassName]} 
+	{
 
-	const TEnumAsByte<enum ECitySpecialty>& GetType() { return m_Type; }
+	}
+
+	// const TEnumAsByte<enum ECitySpecialty>& GetType() { return m_Type; }
 
 	// ~Resident();
 
-	TEnumAsByte<enum ECitySpecialty> m_Type;
+	ECitySpecialty m_Type;
 
 	FName m_SubClassName;
 
