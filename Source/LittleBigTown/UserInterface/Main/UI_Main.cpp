@@ -2,7 +2,7 @@
 
 
 #include "UI_Main.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 #include "Components/ProgressBar.h"
 #include "Components/TextBlock.h"
 #include "LittleBigTown/GameSystem/MainGameState.h"
@@ -34,9 +34,9 @@ void UUI_Main::NativeConstruct()
 	GameState->OnNewMinuteDelegate.AddDynamic(this, &ThisClass::SetClockMinuteUpdate);
 
 	// Set MainWidget in PC
-	const auto PC { Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	const auto PC { Cast <ABGMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
-	if (PC)
+	if (IsValid(PC))
 		PC->SetMainWidget(this);
 
 	// DemandWidget = Cast <UUI_Demand> (HB_Low->GetChildAt(DEMAND_WIDGET_POS));
@@ -44,6 +44,12 @@ void UUI_Main::NativeConstruct()
 	DemandWidget = Cast <UUI_Demand>(Button_Demand->GetChildAt(0));
 
 	GamePropertiesDisplay();
+
+#ifdef DEBUG_ONLY
+
+	checkf(IsValid(PC), TEXT("Error in UUI_Main::NativeConstruct, PlayerController Ref invalid."));
+
+#endif
 }
 
 void UUI_Main::GamePropertiesDisplay()

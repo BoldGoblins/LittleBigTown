@@ -17,6 +17,7 @@
 #include "Components/ArrowComponent.h"
 // DrawDebug
 #include "DrawDebugHelpers.h"
+#include "LittleBigTown/Core/Debugger.h"
 
 // Sets default values
 APlayerPawn::APlayerPawn()
@@ -72,7 +73,7 @@ bool APlayerPawn::CollisionQueryAlongXYAxis()
 		FHitResult Result{};
 		FCollisionQueryParams CollisionParams;
 
-		float Angle{ static_cast <float> (360 / 8) * i };
+		float Angle { static_cast <float> (360 / 8) * i };
 		// Optimiser (end = start + 250)
 		FVector Start{ Forward.RotateAngleAxis(Angle, ArrowComp->GetUpVector()) };
 		Start *= 50;
@@ -95,7 +96,7 @@ bool APlayerPawn::CollisionQueryAlongXYAxis()
 
 float APlayerPawn::FindAvailableDistanceUnderPawn()
 {
-	FVector Start{ GetActorLocation() };
+	FVector Start { GetActorLocation() };
 	// Ensure we don't begin the line trace into the sphere (which radius is 32)
 	Start.X += 50;
 
@@ -123,7 +124,7 @@ void APlayerPawn::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
 }
-
+/*
 void APlayerPawn::Move(const FVector& World, float scale)
 {
 
@@ -160,6 +161,35 @@ void APlayerPawn::Move(const FVector& World, float scale)
 	if (RequiredZLocation != GetActorLocation().Z)
 		TryMovePawnAtRequiredZLocation();
 }
+*/
+void APlayerPawn::Move(bool bForwardAxis, float Scale)
+{
+	if (CollisionQueryAlongXYAxis())
+	{
+		FVector PawnLoc{ GetActorLocation() };
+
+		do
+		{
+			PawnLoc.Z += 500;
+			SetActorLocation(PawnLoc, true);
+
+		} while (CollisionQueryAlongXYAxis());
+	}
+
+	FVector Direction{};
+
+	if (bForwardAxis)
+		Direction = ArrowComp->GetForwardVector() * Scale;
+	else
+		Direction = ArrowComp->GetRightVector() * Scale;
+
+	SetActorLocation(GetActorLocation() + Direction, true);
+
+	// check if pawn is allready at RequiredZLocation and if not, try to set it to
+	if (RequiredZLocation != GetActorLocation().Z)
+		TryMovePawnAtRequiredZLocation();
+
+}
 
 void APlayerPawn::Zoom(float ZoomScale)
 {
@@ -168,7 +198,7 @@ void APlayerPawn::Zoom(float ZoomScale)
 
 	FVector NewLocation { (DirectionXY * ZoomUnits) + PawnLocation};
 	// Set XY location but not Z
-	SetActorLocation(FVector(NewLocation.X, NewLocation.Y, PawnLocation.Z));
+	SetActorLocation(FVector(NewLocation.X, NewLocation.Y, PawnLocation.Z), true);
 	// Set Z location
 	TryMovePawnAtRequiredZLocation();
 }

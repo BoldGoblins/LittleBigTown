@@ -41,7 +41,9 @@ public:
 	// Move along a direction given by World, at a certain scale
 	// Function called by MouseEdgeScrolling (Player Controller)
 	// Call AddMovementInput function itself
-	void Move(const FVector& World, float scale);
+	// void Move(const FVector& World, float scale);
+
+	void Move(bool bForwardAxis, float Scale);
 
 	// Called by Zoom, updates CamZoomDestination, so movement can be triggered via Tick statement (Interep)
 	// Call TryToMovePawnAtRequiredZLocation

@@ -55,6 +55,6 @@ protected:
 
 	class AMainGameState* MainGameState { nullptr };
 
-	class AMainPlayerController* MainPlayerController{ nullptr };
+	class ABGMainPlayerController* MainPlayerController{ nullptr };
 	
 };

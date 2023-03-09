@@ -5,7 +5,7 @@
 #include "Modules/ModuleManager.h"
 
 IMPLEMENT_PRIMARY_GAME_MODULE( FDefaultGameModuleImpl, LittleBigTown, "LittleBigTown" );
-
+/*
 void MyPersonalLibrary::AddOptionsToComboBoxString(UComboBoxString* ComboBox, const TArray<FString>& Options)
 {
 #ifdef DEBUG_ONLY
@@ -25,4 +25,5 @@ void MyPersonalLibrary::AddOptionsToComboBoxString(UComboBoxString* ComboBox, co
 	ComboBox->RefreshOptions();
 	ComboBox->SetSelectedIndex(0);
 }
+*/
 

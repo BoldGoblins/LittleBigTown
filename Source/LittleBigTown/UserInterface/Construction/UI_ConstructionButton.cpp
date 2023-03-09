@@ -8,7 +8,7 @@
 #include "UI_ConstructionMain.h"
 #include "Kismet/GameplayStatics.h"
 #include "UI_ConstructionSelection.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
 
@@ -27,25 +27,26 @@ void UUI_ConstructionButton::NativeConstruct()
 
 	Button->OnClicked.AddUniqueDynamic(this, &ThisClass::OnClickedHandle);
 
-	auto PC{ Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	// auto PC{ Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
-	if (PC)
-		PlayerController = PC;
+	// if (PC)
+		// PlayerController = PC;
 
 }
 
 void UUI_ConstructionButton::OnClickedHandle()
 {
+	const auto PlayerController { Cast <ABGMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
 #ifdef DEBUG_ONLY
 
-	checkf(PlayerController,
+	checkf(IsValid(PlayerController),
 		TEXT("Error in UUIBuildingButton::OnClickedHandle : PlayerController == nullptr."));
 
-#endif DEBUG_ONLY
+#endif
 
 
-	if (!PlayerController)
+	if (!IsValid(PlayerController))
 		return;
 
 	const auto ConstructionWidget { PlayerController->GetConstructionWidget() };

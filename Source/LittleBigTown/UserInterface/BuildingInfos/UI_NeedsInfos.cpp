@@ -11,8 +11,9 @@
 #include "Components/ProgressBar.h"
 #include "Components/ComboBoxString.h"
 #include "LittleBigTown/GameSystem/MainGameState.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 #include "Kismet/GameplayStatics.h"
+#include "LittleBigTown/Core/Debugger.h"
 
 #define COMBOBOX_INDEX 1
 
@@ -21,12 +22,18 @@ void UUI_NeedsInfos::NativeConstruct()
 	Super::NativeConstruct();
 
 	MainGameState = Cast <AMainGameState> (UGameplayStatics::GetGameState(GetWorld()));
-	MainPlayerController = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	MainPlayerController = Cast <ABGMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 	CB_Classes = Cast <UBGComboBoxString>(GP_Classes->GetChildAt(COMBOBOX_INDEX));
 	CB_SubClasses = Cast <UBGComboBoxString>(GP_SubClasses->GetChildAt(COMBOBOX_INDEX));
 
 	CB_Classes->OnBGComboBoxStringChanged.AddDynamic(this, &ThisClass::ComboSelectionChanged);
 	CB_SubClasses->OnBGComboBoxStringChanged.AddDynamic(this, &ThisClass::ComboSelectionChanged);
+
+#ifdef DEBUG_ONLY
+
+	checkf(IsValid(MainPlayerController), TEXT("Error in UUI_NeedsInfos::NativeConstruct, PlayerController Ref Invalid."));
+
+#endif
 }
 
 void UUI_NeedsInfos::SetInformations(ABuilding* Building, bool bNewDisplay)
@@ -54,6 +61,9 @@ void UUI_NeedsInfos::Reset()
 
 void UUI_NeedsInfos::ComboSelectionChanged(UBGComboBoxString* ComboBox, const FString& Option, int32 Index)
 {
+	if (!IsValid(MainPlayerController))
+		return;
+
 	const auto& Building { MainPlayerController->GetBuildingInfos()->GetBuildingDisplayed() };
 
 	if (!Building.IsValid())

@@ -4,25 +4,30 @@
 
 
 #include "UI_BuildingInfos.h"
+
 #include "Components/TextBlock.h"
 #include "Components/WidgetSwitcher.h"
 #include "Components/HorizontalBox.h"
+#include "Kismet/GameplayStatics.h"
+
 
 #include "LittleBigTown/UserInterface/Templates/Components/BGButton.h"
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_General_Infos.h"
-// Building ref
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
-// DEBUG_ONLY
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 #include "LittleBigTown/Core/Debugger.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+
 
 #define WIDGET_GENERAL_POS 0
 
 
 void UUI_BuildingInfos::NativeConstruct()
 {
-	MainPlayerController = Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
-	MainPlayerController->SetBuildingInfosWidget(this);
+	// MainPlayerController = Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	MainPlayerController = Cast <ABGMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0));
+
+	if (MainPlayerController.IsValid())
+		MainPlayerController->SetBuildingInfosWidget(this);
 
 	for (const auto & Button : ButtonBox->GetAllChildren())
 		Cast <UBGButton>(Button)->OnBGButtonClicked.AddDynamic(this, &ThisClass::ButtonClicked);
@@ -36,6 +41,8 @@ void UUI_BuildingInfos::NativeConstruct()
 	}
 
 #ifdef DEBUG_ONLY
+
+	checkf(MainPlayerController.IsValid(), TEXT("Error in UUI_BuildingInfos::NativeConstruct, PlayerControllerPtr invalid."));
 
 	checkf(ButtonBox->GetChildrenCount() == WidgetSwitcher->GetChildrenCount(),
 		TEXT("Error in UUI_BuildingInfos::NativeConstruct, Button Count in ButtonBox != Index Index Count in WidgetSwitcher."));

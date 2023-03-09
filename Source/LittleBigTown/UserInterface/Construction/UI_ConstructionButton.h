@@ -34,7 +34,7 @@ public :
 
 protected :
 
-	class AMainPlayerController* PlayerController { nullptr };
+	// class AMainPlayerController* PlayerController { nullptr };
 
 	UPROPERTY(EditAnywhere, Category = "Style")
 		struct FButtonStyle BasicStyle;

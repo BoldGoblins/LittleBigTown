@@ -5,14 +5,14 @@
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_ItemHappinessInfos.h"
 #include "LittleBigTown/UserInterface/BuildingInfos/UI_BuildingInfos.h"
 #include "LittleBigTown/Core/Enums.h"
-#include "LittleBigTown/Core/Debugger.h"
 #include "LittleBigTown/Actors/ResidentialBuilding.h"
 #include "LittleBigTown/GameSystem/MainGameState.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 #include "Components/VerticalBox.h"
 #include "LittleBigTown/UserInterface/Templates/Components/BGButton.h"
 #include "Components/VerticalBoxSlot.h"
 #include "Kismet/GameplayStatics.h"
+#include "LittleBigTown/Core/Debugger.h"
 
 
 #define BUTTON_SIZE 35.0f
@@ -31,13 +31,15 @@ void UUI_HappinessInfos::NativeConstruct()
 	}
 
 	MainGameState = Cast <AMainGameState>(UGameplayStatics::GetGameState(GetWorld()));
-	MainPlayerController = Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
+	MainPlayerController = Cast <ABGMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0));
 
 #ifdef DEBUG_ONLY
 
 	checkf(ArrItems.Num() == 7, TEXT("Error in UUI_HappinessInfos::NativeConstruct : ArrButtons.Num() != 7."));
 	checkf(SubClassWidget->GetAllChildren().Num() == 7, 
 		TEXT("Error in UUI_HappinessInfos::NativeConstruct : Children of SubClassWidget != 7."));
+
+	checkf(IsValid(MainPlayerController), TEXT("Error in UUI_HappinessInfos::NativeConstruct, PlayerController Ref invalid."));
 
 #endif
 }
@@ -129,7 +131,7 @@ void UUI_HappinessInfos::OnItemClicked(UBGButton* Button)
 	}
 
 	// Si le Button Clicked n'est pas le même que le Button Reset
-	if (Button != ResetButton)
+	if (Button != ResetButton && IsValid(MainPlayerController))
 	{
 		const auto& BuildingPtr { MainPlayerController->GetBuildingInfos()->GetBuildingDisplayed() };
 		LastButtonClicked = Button;

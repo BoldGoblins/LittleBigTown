@@ -7,6 +7,8 @@
 #include "Components/StaticMeshComponent.h"
 #include "Algo/Copy.h"
 
+#include "LittleBigTown/Core/Debugger.h"
+
 
 // Sets default values
 ABuilding::ABuilding()
@@ -52,6 +54,27 @@ const TArray<FResident> ABuilding::GetOccupants(const FString& SubClassName) con
 		return Resident.m_SubClassName.ToString() == SubClassName; });
 
 	return Copy;
+}
+
+float ABuilding::GetBuildingHeight() const
+{
+	FVector Origin{};
+	FVector BoxHalfExtent{};
+	GetActorBounds(false, Origin, BoxHalfExtent);
+
+#ifdef DEBUG_ONLY
+
+	// UE_LOG(LogTemp, Warning, TEXT("WARNING : ABuilding::GetBuildingHeight, Building Origin (Z Axis) != 0.0f."));
+	// PrintString(TEXT("WARNING : ABuilding::GetBuildingHeight, Building Origin (Z Axis) != 0.0f."));
+	// PrintString(FString::Printf(TEXT("Origin : %s, Extent : %s"), *Origin.ToString(), *BoxHalfExtent.ToString()));
+
+#endif
+
+	if (FMath::IsNearlyZero(Origin.Z, 0.0f))
+		return BoxHalfExtent.Z * 2;
+
+	else
+		return (BoxHalfExtent.Z * 2) + Origin.Z;
 }
 
 

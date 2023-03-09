@@ -35,19 +35,33 @@ public :
 	UFUNCTION(BlueprintCallable)
 		const FResidentialBuildingInfos & GetInfosResidential() const { return ResidentialInformations; }
 
+	void GetSpawnableResident(FResident* ResidentPtr);
+
+	const FVector& GetSpawnTarget() const { return _SpawnTarget; }
+
+	void TimerSpawnPedestrian();
+
 	// const TArray <FResident>& GetResidents() const { return m_Residents; }
 
 	FOnResBuildingInfosChangedSignature OnResBuildingInfosChangedDelegate;
 
 	void BeginPlay() override;
 
+	UPROPERTY(BlueprintReadWrite)
+		int32 _DistancePedestrianSpawn { 500 };
+
 protected : 
 
 	UPROPERTY(BlueprintReadOnly)
 		class AMainGameState* MainGameState;
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 		FResidentialBuildingInfos ResidentialInformations;
+
+	FTimerHandle SpawnTimerHandle {};
+
+	UPROPERTY(BlueprintReadOnly)
+		FVector _SpawnTarget {};
 
 	//  <FResident> m_Residents {};
 
@@ -57,6 +71,16 @@ private :
 	void GenerateResidents(int32 Count);
 
 	void RemoveResidents(int32 Count);
+
+	// Create Rand Table pour choisir une Spécialité au hasard (pondération selon % de demande) 
+	// Doit être appelé dans GenerateResident()
+	void CreateRandTable(TArray <int32> & Arr, const TMap<ECitySpecialty, float> & Freq);
+
+	// Permet d'ajouter un FResident dans m_Occupation en le plaçant à l'Index permettant de maintenir un ordre croissant de Satisfaction
+	// Ce classement est valable si et seul. si la Satisfaction de base (à l'instanciation) pour un FResident == 0.5f
+	void EmplaceResident(const TEnumAsByte <ECitySpecialty>& Specialty);
+
+// 	int32 _ResidentSpawnIndex { 0 };
 
 
 };

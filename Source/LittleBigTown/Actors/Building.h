@@ -29,6 +29,9 @@ public:
 
 	const TArray <FResident> GetOccupants(const FString & SubClassName) const;
 
+
+	float GetBuildingHeight() const;
+
 	UFUNCTION(BlueprintCallable)
 		void SetDistrictName(const FName& DistrictName) { InfosBase.m_DistrictName = FText::FromString(DistrictName.ToString()); }
 
@@ -40,7 +43,7 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditDefaultsOnly)
 		class UStaticMeshComponent* StaticMeshComponent{};
 
-	UPROPERTY(EditDefaultsOnly)
+	UPROPERTY(EditAnywhere)
 		FBuildingInfosBase InfosBase;
 
 	TArray <FResident> m_Occupants{};

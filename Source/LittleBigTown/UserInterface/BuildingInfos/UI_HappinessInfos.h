@@ -39,7 +39,7 @@ private :
 
 	class AMainGameState* MainGameState { nullptr };
 
-	class AMainPlayerController* MainPlayerController { nullptr };
+	class ABGMainPlayerController* MainPlayerController { nullptr };
 
 	TArray <class UUI_ItemHappinessInfos*> ArrItems{};
 	 

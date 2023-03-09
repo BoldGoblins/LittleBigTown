@@ -51,6 +51,6 @@ protected:
 	UPROPERTY(meta = (BindWidget))
 		class UScrollBox* ScrollBox;
 
-	class AMainPlayerController* PlayerController { nullptr };
+	class ABGMainPlayerController* PlayerController { nullptr };
 
 };

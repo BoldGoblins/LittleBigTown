@@ -2,21 +2,31 @@
 
 
 #include "LittleBigTown/UserInterface/Graphs/UI_GraphsMain.h"
-#include "LittleBigTown/UserInterface/Graphs/UI_GraphDemand.h"
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
-#include "LittleBigTown/Core/Debugger.h"
 
 #include "Components/WidgetSwitcher.h"
 #include "Kismet/GameplayStatics.h"
+
+#include "LittleBigTown/UserInterface/Graphs/UI_GraphDemand.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
+
+#include "LittleBigTown/Core/Debugger.h"
 
 void UUI_GraphsMain::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	const auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
-	PC->SetGraphWidget(this);
+	const auto PC { Cast <ABGMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+
+	if (IsValid(PC))
+		PC->SetGraphWidget(this);
 
 	GraphDemand = Cast <UUI_GraphDemand> (WidgetSwitcher->GetChildAt(0));
+
+#ifdef DEBUG_ONLY
+
+	checkf(IsValid(PC), TEXT("Error in UUI_GraphsMain::NativeConstruct, PlayerController Ref invalid."));
+
+#endif
 }
 
 void UUI_GraphsMain::DisplayGraph(int32 Index)

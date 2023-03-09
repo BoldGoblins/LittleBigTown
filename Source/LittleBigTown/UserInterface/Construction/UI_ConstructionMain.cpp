@@ -5,9 +5,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "LittleBigTown/Actors/ConstructibleSlot.h"
 // temp
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 // DEBUG_ONLY
 #include "LittleBigTown/Core/Debugger.h"
+
 
 void UUI_ConstructionMain::UpdateFromNewSelection(FString String, ESelectInfo::Type Type)
 {
@@ -26,9 +27,10 @@ void UUI_ConstructionMain::NativeConstruct()
 	GameMode = Cast <AMainGameMode> (UGameplayStatics::GetGameMode(GetWorld()));
 
 	// Set ConstructionWidget into PC
-	const auto PC { Cast <AMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	const auto PC { Cast <ABGMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
-	PC->SetConstructionWidget(this);
+	if (IsValid(PC))
+		PC->SetConstructionWidget(this);
 
 	ComboBox->OnSelectionChanged.AddDynamic(this, &ThisClass::UpdateFromNewSelection);
 
@@ -41,6 +43,7 @@ void UUI_ConstructionMain::NativeConstruct()
 
 	checkf(ValidationWidget, TEXT("Error in UThematicUI_Template::NativeConstruct, ValidationWidget == nullptr"));
 	checkf(SelectionWidget, TEXT("Error in UThematicUI_Template::NativeConstruct, SelectionWidget == nullptr"));
+	checkf(IsValid(PC), TEXT("Error in UThematicUI_Template::NativeConstruct, PlayerController Ref not valid."));
 
 #endif
 
@@ -150,7 +153,20 @@ void UUI_ConstructionMain::UpdateAndDisplayInterface(TEnumAsByte<ESlotType> Slot
 	LastSlotType = SlotType;
 	LastSlotSize = SlotSize;
 
-	MyPersonalLibrary::AddOptionsToComboBoxString(ComboBox, CheckTypeAndSize(SlotSize, SlotType));
+	// MyPersonalLibrary::AddOptionsToComboBoxString(ComboBox, CheckTypeAndSize(SlotSize, SlotType));
+
+	const auto Table { CheckTypeAndSize(SlotSize, SlotType) };
+
+	if (!ComboBox || Table.Num() == 0)
+		return;
+
+	ComboBox->ClearOptions();
+
+	for (const auto S : Table)
+		ComboBox->AddOption(S);
+
+	ComboBox->RefreshOptions();
+	ComboBox->SetSelectedIndex(0);
 
 	ConstructionSelectionWidget->ResetScrollBox(true);
 	ConstructionSelectionWidget->ClearScrollBox();

@@ -44,7 +44,9 @@ private :
 
 	TWeakObjectPtr <class ABuilding> DisplayedBuilding;
 
-	class AMainPlayerController* MainPlayerController { nullptr };
+	TWeakObjectPtr <class ABGMainPlayerController> MainPlayerController { nullptr };
+
+	// class AMainPlayerController* MainPlayerController { nullptr };
 
 protected:
 

@@ -3,7 +3,7 @@
 
 #include "UI_ConstructionSelection.h"
 
-#include "LittleBigTown/GameSystem/MainPlayerController.h"
+#include "LittleBigTown/GameSystem/BGMainPlayerController.h"
 #include "LittleBigTown/GameSystem/MainGameMode.h"
 #include "UI_ConstructionButton.h"
 #include "UI_ConstructionMain.h"
@@ -18,10 +18,17 @@ void UUI_ConstructionSelection::NativeConstruct()
 {
 	Super::NativeConstruct();
 
-	auto PC { Cast <AMainPlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
+	auto PC { Cast <ABGMainPlayerController> (UGameplayStatics::GetPlayerController(GetWorld(), 0)) };
 
-	if (PC)
+	if (IsValid(PC))
 		PlayerController = PC;
+
+#ifdef DEBUG_ONLY
+
+	checkf(IsValid(PlayerController), TEXT("Error in UUI_BuildingSelection::NativeConstruct, PlayerController == nullptr"));
+
+#endif
+
 }
 
 void UUI_ConstructionSelection::ButtonInteraction(UUI_ConstructionButton* Button)
@@ -29,7 +36,6 @@ void UUI_ConstructionSelection::ButtonInteraction(UUI_ConstructionButton* Button
 
 #ifdef DEBUG_ONLY
 
-	checkf(PlayerController, TEXT("Error in UUI_BuildingSelection::ButtonInteraction, PlayerController == nullptr"));
 	checkf(Button, TEXT("Error in UUI_BuildingSelection::ButtonInteraction, Button == nullptr"));
 
 #endif

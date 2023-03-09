@@ -23,6 +23,8 @@
 
 //GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("%f : %f"), CamRotation.Pitch, CamRotation.Yaw));
 
+#define SCALE_PAWN_MOVEMENT (ZoomFactor * 250) * (GetWorld()->DeltaTimeSeconds * 60)
+
 AMainPlayerController::AMainPlayerController()
 {
 	InputModeGameAndUI.SetLockMouseToViewportBehavior(EMouseLockMode::LockAlways);
@@ -60,17 +62,33 @@ void AMainPlayerController::MouseEdgeScrolling ()
 	if (DisablePawnControl)
 		return;
 
+	// Cap Scale pour qu'il ne dépende pas des FPS
+	float Scale { SCALE_PAWN_MOVEMENT };
+	/*
 	if (FMath::IsNearlyEqual(MousePos.X, 0, 10.0f) && !DisableCameraMovements)
-		PlayerPawn->Move(FVector::LeftVector, ZoomFactor);
+		PlayerPawn->Move(FVector::LeftVector, Scale);
 	
 	else if (FMath::IsNearlyEqual(MousePos.X, ScreenSize.X, 10.0f) && !DisableCameraMovements)
-		PlayerPawn->Move(FVector::RightVector, ZoomFactor);
+		PlayerPawn->Move(FVector::RightVector, Scale);
 
 	if (FMath::IsNearlyEqual(MousePos.Y, 0, 10.0f) && !DisableCameraMovements)
-		PlayerPawn->Move(FVector::ForwardVector, ZoomFactor);
+		PlayerPawn->Move(FVector::ForwardVector, Scale);
 
 	else if (FMath::IsNearlyEqual(MousePos.Y, ScreenSize.Y, 10.0f) && !DisableCameraMovements)
-		PlayerPawn->Move(FVector::BackwardVector, ZoomFactor);
+		PlayerPawn->Move(FVector::BackwardVector, Scale);
+		*/
+
+	if (FMath::IsNearlyEqual(MousePos.X, 0, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(false, Scale * -1);
+
+	else if (FMath::IsNearlyEqual(MousePos.X, ScreenSize.X, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(false, Scale);
+
+	if (FMath::IsNearlyEqual(MousePos.Y, 0, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(true, Scale);
+
+	else if (FMath::IsNearlyEqual(MousePos.Y, ScreenSize.Y, 10.0f) && !DisableCameraMovements)
+		PlayerPawn->Move(true, Scale * -1);
 
 }
 
@@ -170,25 +188,40 @@ void AMainPlayerController::MoveKeyboardForward(float Axis)
 {
 	if (DisablePawnControl)
 		return;
-
+	/*
 	if (InputComponent->GetAxisValue("KeyboardMoveForward") == 1.0f)
 		PlayerPawn->Move(FVector::ForwardVector, ZoomFactor);
 	else if (InputComponent->GetAxisValue("KeyboardMoveForward") == -1.0f)
 		PlayerPawn->Move(FVector::BackwardVector, ZoomFactor);
 	else
 		return;
+*/
 
+	if (InputComponent->GetAxisValue("KeyboardMoveForward") == 1.0f)
+		PlayerPawn->Move(true, SCALE_PAWN_MOVEMENT);
+	else if (InputComponent->GetAxisValue("KeyboardMoveForward") == -1.0f)
+		PlayerPawn->Move(true, SCALE_PAWN_MOVEMENT * -1);
+	else
+		return;
 }
 
 void AMainPlayerController::MoveKeyboardRight(float Axis)
 {
 	if (DisablePawnControl)
 		return;
-
+	/*
 	if (InputComponent->GetAxisValue("KeyboardMoveRight") == 1.0f)
 		PlayerPawn->Move(FVector::RightVector, ZoomFactor);
 	else if (InputComponent->GetAxisValue("KeyboardMoveRight") == -1.0f)
 		PlayerPawn->Move(FVector::LeftVector, ZoomFactor);
+	else
+		return;
+		*/
+
+	if (InputComponent->GetAxisValue("KeyboardMoveRight") == 1.0f)
+		PlayerPawn->Move(false, SCALE_PAWN_MOVEMENT);
+	else if (InputComponent->GetAxisValue("KeyboardMoveRight") == -1.0f)
+		PlayerPawn->Move(false, SCALE_PAWN_MOVEMENT * -1);
 	else
 		return;
 }
@@ -199,6 +232,9 @@ void AMainPlayerController::Tick(float DeltaTime)
 
 	// Updating position of the mouse at each frame
 	MousePos = UWidgetLayoutLibrary::GetMousePositionOnViewport(World) * UWidgetLayoutLibrary::GetViewportScale(World);
+
+	// PrintString(FString::Printf(TEXT("Mouse : %s"), *MousePos.ToString()));
+
 	// Updating screen size at each frame
 	GEngine->GameViewport->GetViewportSize(ScreenSize);
 	// Checking for EdgeScrolling at each frame

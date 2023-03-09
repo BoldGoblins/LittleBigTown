@@ -15,11 +15,12 @@ DefaultEngine.ini :
 +ActiveClassRedirects=(OldClassName="LBT_UI_Main",NewClassName="UI_Main")
 */
 
-
+/*
 namespace MyPersonalLibrary
 {
 	// Clear and Refresh the ComboBox automatically
 	void AddOptionsToComboBoxString(UComboBoxString* ComboBox, const TArray <FString>& Options);
 }
+*/
 
 

@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "LittleBigTown/Core/Enums.h"
 #include "LittleBigTown/Core/SocialClass.h"
+#include "LittleBigTown/Actors/Pedestrian.h"
 
 struct FResident
 {
@@ -17,7 +18,7 @@ struct FResident
 
 	// const TEnumAsByte<enum ECitySpecialty>& GetType() { return m_Type; }
 
-	// ~Resident();
+	~FResident();
 
 	ECitySpecialty m_Type;
 
@@ -26,4 +27,8 @@ struct FResident
 	FNeeds m_Needs;
 
 	float m_Satisfaction { 0.50 };
+
+	// Pedestrian associated with this Resident
+	// Delete it in the Resident's Destructor to ensure a "Ghost" representation of this Resident doesn't still be walking into the town...
+	TWeakObjectPtr <APedestrian> _Pedestrian { nullptr };
 };
